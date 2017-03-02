@@ -10,7 +10,7 @@ namespace Mikemirten\Component\JsonApi\Document;
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-class SingleResourceDocument extends AbstractDocument
+class SingleIdentifierDocument extends AbstractDocument
 {
     /**
      * Resource identifier
