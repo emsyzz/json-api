@@ -40,6 +40,6 @@ class MetadataExtension implements ExtensionInterface
      */
     public function supports(): array
     {
-        return ['metadata'];
+        return ['meta'];
     }
 }

@@ -15,7 +15,7 @@ class MetadataExtensionTest extends TestCase
     {
         $handler = new MetadataExtension();
 
-        $this->assertSame(['metadata'], $handler->supports());
+        $this->assertSame(['meta'], $handler->supports());
     }
 
     public function testHandle()
