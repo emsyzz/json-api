@@ -2,6 +2,8 @@
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,6 +24,8 @@ class SingleResourceDocumentTest extends TestCase
         $resource = $this->createMock(ResourceObject::class);
         $document = new SingleResourceDocument($resource, ['test' => 42]);
 
+        $this->assertInstanceOf(MetadataAwareInterface::class, $document);
+
         $this->assertFalse($document->hasMetadataAttribute('qwerty'));
         $this->assertTrue($document->hasMetadataAttribute('test'));
         $this->assertSame(42, $document->getMetadataAttribute('test'));
@@ -30,10 +34,12 @@ class SingleResourceDocumentTest extends TestCase
 
     public function testLinks()
     {
-        $link = $this->createMock(LinkObject::class);
-
         $resource = $this->createMock(ResourceObject::class);
         $document = new SingleResourceDocument($resource);
+
+        $this->assertInstanceOf(LinksAwareInterface::class, $document);
+
+        $link = $this->createMock(LinkObject::class);
         $document->setLink('test', $link);
 
         $this->assertFalse($document->hasLink('qwerty'));

@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
 
 /**
@@ -12,7 +13,7 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-class LinkObject
+class LinkObject implements MetadataAwareInterface
 {
     use MetadataContainer;
 

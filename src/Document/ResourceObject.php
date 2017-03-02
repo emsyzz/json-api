@@ -4,7 +4,9 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Document;
 
 use Mikemirten\Component\JsonApi\Document\Behaviour\AttributesContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\ResourceBehaviour;
 
@@ -15,7 +17,7 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\ResourceBehaviour;
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-class ResourceObject
+class ResourceObject implements MetadataAwareInterface, LinksAwareInterface
 {
     use ResourceBehaviour;
     use AttributesContainer;

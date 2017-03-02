@@ -2,6 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,6 +22,8 @@ class LinkObjectTest extends TestCase
         $link = new LinkObject('http://test.com', [
             'test' => 42
         ]);
+
+        $this->assertInstanceOf(MetadataAwareInterface::class, $link);
 
         $this->assertFalse($link->hasMetadataAttribute('qwerty'));
         $this->assertTrue($link->hasMetadataAttribute('test'));
