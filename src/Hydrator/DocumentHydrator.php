@@ -8,6 +8,7 @@ use Mikemirten\Component\JsonApi\Document\NoDataDocument;
 use Mikemirten\Component\JsonApi\Document\ResourceCollectionDocument;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Document\SingleResourceDocument;
+use Mikemirten\Component\JsonApi\Exception\InvalidDocumentException;
 use Mikemirten\Component\JsonApi\Hydrator\Extension\ExtensionInterface;
 
 /**

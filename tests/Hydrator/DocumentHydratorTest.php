@@ -23,6 +23,28 @@ class DocumentHydratorTest extends TestCase
         $this->assertInstanceOf(NoDataDocument::class, $document);
     }
 
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\InvalidDocumentException
+     */
+    public function testMissingResourceId()
+    {
+        $hydrator = new DocumentHydrator();
+        $document = $hydrator->hydrate(json_decode('{"data": {"type": "Test"}}'));
+
+        $this->assertInstanceOf(NoDataDocument::class, $document);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\InvalidDocumentException
+     */
+    public function testMissingResourceType()
+    {
+        $hydrator = new DocumentHydrator();
+        $document = $hydrator->hydrate(json_decode('{"data": {"id": "1"}}'));
+
+        $this->assertInstanceOf(NoDataDocument::class, $document);
+    }
+
     public function testSingleResourceDocument()
     {
         $hydrator = new DocumentHydrator();
