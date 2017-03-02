@@ -1,14 +1,14 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document\Behaviour;
+namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
 /**
  * Metadata-container behaviour
  *
  * @see http://jsonapi.org/format/#document-meta
  *
- * @package Mikemirten\JsonApi\Component\Document\Behaviour
+ * @package Mikemirten\Component\JsonApi\Document\Behaviour
  */
 trait MetadataContainer
 {

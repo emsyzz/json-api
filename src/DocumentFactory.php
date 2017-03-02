@@ -1,20 +1,20 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component;
+namespace Mikemirten\Component\JsonApi;
 
-use Mikemirten\JsonApi\Component\Document\AbstractDocument;
-use Mikemirten\JsonApi\Component\Document\LinkObject;
-use Mikemirten\JsonApi\Component\Document\NoDataDocument;
-use Mikemirten\JsonApi\Component\Document\ResourceCollectionDocument;
-use Mikemirten\JsonApi\Component\Document\ResourceObject;
-use Mikemirten\JsonApi\Component\Document\SingleResourceDocument;
-use Mikemirten\JsonApi\Component\Exception\InvalidDocumentException;
+use Mikemirten\Component\JsonApi\Document\AbstractDocument;
+use Mikemirten\Component\JsonApi\Document\LinkObject;
+use Mikemirten\Component\JsonApi\Document\NoDataDocument;
+use Mikemirten\Component\JsonApi\Document\ResourceCollectionDocument;
+use Mikemirten\Component\JsonApi\Document\ResourceObject;
+use Mikemirten\Component\JsonApi\Document\SingleResourceDocument;
+use Mikemirten\Component\JsonApi\Exception\InvalidDocumentException;
 
 /**
  * Factory of documents
  *
- * @package Mikemirten\JsonApi\Component
+ * @package Mikemirten\Component\JsonApi
  */
 class DocumentFactory
 {

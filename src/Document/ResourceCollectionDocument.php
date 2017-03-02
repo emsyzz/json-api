@@ -1,14 +1,14 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document;
+namespace Mikemirten\Component\JsonApi\Document;
 
 /**
  * Resource Collection Document
  *
  * @see http://jsonapi.org/format/#document-structure
  *
- * @package Mikemirten\JsonApi\Component\Document
+ * @package Mikemirten\Component\JsonApi\Document
  */
 class ResourceCollectionDocument extends AbstractDocument implements \IteratorAggregate
 {

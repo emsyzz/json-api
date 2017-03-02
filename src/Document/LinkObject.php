@@ -1,16 +1,16 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document;
+namespace Mikemirten\Component\JsonApi\Document;
 
-use Mikemirten\JsonApi\Component\Document\Behaviour\MetadataContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
 
 /**
  * Link Object
  *
  * @see http://jsonapi.org/format/#document-links
  *
- * @package Mikemirten\JsonApi\Component\Document
+ * @package Mikemirten\Component\JsonApi\Document
  */
 class LinkObject
 {

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document\Behaviour;
+namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
 /**
  * Class ResourceBehaviour
@@ -9,7 +9,7 @@ namespace Mikemirten\JsonApi\Component\Document\Behaviour;
  * @see http://jsonapi.org/format/#document-resource-objects
  * @see http://jsonapi.org/format/#document-resource-identifier-objects
  *
- * @package Mikemirten\JsonApi\Component\Document\Behaviour
+ * @package Mikemirten\Component\JsonApi\Document\Behaviour
  */
 trait ResourceBehaviour
 {

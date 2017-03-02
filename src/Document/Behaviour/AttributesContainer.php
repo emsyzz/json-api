@@ -1,14 +1,14 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document\Behaviour;
+namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
 /**
  * Attributes-container behaviour
  *
  * @see http://jsonapi.org/format/#document-resource-object-attributes
  *
- * @package Mikemirten\JsonApi\Component\Document\Behaviour
+ * @package Mikemirten\Component\JsonApi\Document\Behaviour
  */
 trait AttributesContainer
 {

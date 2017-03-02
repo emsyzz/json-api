@@ -1,16 +1,16 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document\Behaviour;
+namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
-use Mikemirten\JsonApi\Component\Document\LinkObject;
+use Mikemirten\Component\JsonApi\Document\LinkObject;
 
 /**
  * Links-container behaviour
  *
  * @see http://jsonapi.org/format/#document-links
  *
- * @package Mikemirten\JsonApi\Component\Document\Behaviour
+ * @package Mikemirten\Component\JsonApi\Document\Behaviour
  */
 trait LinksContainer
 {

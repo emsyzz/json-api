@@ -1,19 +1,19 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document;
+namespace Mikemirten\Component\JsonApi\Document;
 
-use Mikemirten\JsonApi\Component\Document\Behaviour\AttributesContainer;
-use Mikemirten\JsonApi\Component\Document\Behaviour\LinksContainer;
-use Mikemirten\JsonApi\Component\Document\Behaviour\MetadataContainer;
-use Mikemirten\JsonApi\Component\Document\Behaviour\ResourceBehaviour;
+use Mikemirten\Component\JsonApi\Document\Behaviour\AttributesContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\ResourceBehaviour;
 
 /**
  * Resource Object
  *
  * @see http://jsonapi.org/format/#document-resource-objects
  *
- * @package Mikemirten\JsonApi\Component\Document
+ * @package Mikemirten\Component\JsonApi\Document
  */
 class ResourceObject
 {

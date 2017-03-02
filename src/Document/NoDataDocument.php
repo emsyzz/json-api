@@ -1,14 +1,14 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document;
+namespace Mikemirten\Component\JsonApi\Document;
 
 /**
  * No data document
  *
  * @see http://jsonapi.org/format/#document-structure
  *
- * @package Mikemirten\JsonApi\Component\Document
+ * @package Mikemirten\Component\JsonApi\Document
  */
 class NoDataDocument extends AbstractDocument
 {

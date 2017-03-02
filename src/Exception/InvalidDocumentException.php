@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikemirten\JsonApi\Component\Exception;
+namespace Mikemirten\Component\JsonApi\Exception;
 
 class InvalidDocumentException extends JsonApiException
 {

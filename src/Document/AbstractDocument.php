@@ -1,10 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document;
+namespace Mikemirten\Component\JsonApi\Document;
 
-use Mikemirten\JsonApi\Component\Document\Behaviour\LinksContainer;
-use Mikemirten\JsonApi\Component\Document\Behaviour\MetadataContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
 
 /**
  * Abstract Document
@@ -14,7 +14,7 @@ use Mikemirten\JsonApi\Component\Document\Behaviour\MetadataContainer;
  * Represents base JsonAPI-document structure
  * Supposed to be extended by case-based documents
  *
- * @package Mikemirten\JsonApi\Component\Document
+ * @package Mikemirten\Component\JsonApi\Document
  */
 abstract class AbstractDocument
 {

@@ -1,14 +1,14 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\JsonApi\Component\Document;
+namespace Mikemirten\Component\JsonApi\Document;
 
 /**
  * Single resource document
  *
  * @see http://jsonapi.org/format/#document-structure
  *
- * @package Mikemirten\JsonApi\Component
+ * @package Mikemirten\Component\JsonApi
  */
 class SingleIdentifierDocument extends AbstractDocument
 {
