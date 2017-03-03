@@ -40,6 +40,16 @@ class ResourceCollectionDocument extends AbstractDocument implements \IteratorAg
     }
 
     /**
+     * Get first resource from collection
+     *
+     * @return ResourceObject
+     */
+    public function getFirstResource(): ResourceObject
+    {
+        return reset($this->resources);
+    }
+
+    /**
      * Get all resources
      *
      * @return ResourceObject[]

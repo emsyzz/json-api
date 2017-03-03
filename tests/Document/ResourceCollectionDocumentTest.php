@@ -17,6 +17,7 @@ class ResourceCollectionDocumentTest extends TestCase
         $resource = $this->createMock(ResourceObject::class);
         $document->addResource($resource);
 
+        $this->assertSame($resource, $document->getFirstResource());
         $this->assertSame([$resource], $document->getResources());
     }
 

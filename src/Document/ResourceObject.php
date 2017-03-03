@@ -8,6 +8,8 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\RelationshipsAwareInterface;
+use Mikemirten\Component\JsonApi\Document\Behaviour\RelationshipsContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\ResourceBehaviour;
 
 /**
@@ -17,12 +19,13 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\ResourceBehaviour;
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-class ResourceObject implements MetadataAwareInterface, LinksAwareInterface
+class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, RelationshipsAwareInterface
 {
     use ResourceBehaviour;
     use AttributesContainer;
     use MetadataContainer;
     use LinksContainer;
+    use RelationshipsContainer;
 
     /**
      * ResourceObject constructor.

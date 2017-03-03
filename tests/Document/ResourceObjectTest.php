@@ -4,6 +4,7 @@ namespace Mikemirten\Component\JsonApi\Document;
 
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
+use Mikemirten\Component\JsonApi\Document\Behaviour\RelationshipsAwareInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -58,5 +59,20 @@ class ResourceObjectTest extends TestCase
         $this->assertTrue($resource->hasLink('test'));
         $this->assertSame($link, $resource->getLink('test'));
         $this->assertSame(['test' => $link], $resource->getLinks());
+    }
+
+    public function testRelationships()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $this->assertInstanceOf(RelationshipsAwareInterface::class, $resource);
+
+        $relationship = $this->createMock(AbstractRelationship::class);
+        $resource->setRelationship('test', $relationship);
+
+        $this->assertFalse($resource->hasRelationship('qwerty'));
+        $this->assertTrue($resource->hasRelationship('test'));
+        $this->assertSame($relationship, $resource->getRelationship('test'));
+        $this->assertSame(['test' => $relationship], $resource->getRelationships());
     }
 }

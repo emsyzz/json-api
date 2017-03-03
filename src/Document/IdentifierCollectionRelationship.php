@@ -7,18 +7,18 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\IdentifierCollectionAwareInt
 use Mikemirten\Component\JsonApi\Document\Behaviour\IdentifierCollectionContainer;
 
 /**
- * Identifier Collection Document
+ * Identifier Collection Relationship
  *
- * @see http://jsonapi.org/format/#document-structure
+ * @see http://jsonapi.org/format/#document-resource-object-relationships
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-class IdentifierCollectionDocument extends AbstractDocument implements IdentifierCollectionAwareInterface
+class IdentifierCollectionRelationship extends AbstractRelationship implements IdentifierCollectionAwareInterface
 {
     use IdentifierCollectionContainer;
 
     /**
-     * IdentifierCollectionDocument constructor.
+     * IdentifierCollectionRelationship constructor.
      *
      * @param array $metadata
      */
