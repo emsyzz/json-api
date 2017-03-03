@@ -29,9 +29,7 @@ class DocumentHydratorTest extends TestCase
     public function testMissingResourceId()
     {
         $hydrator = new DocumentHydrator();
-        $document = $hydrator->hydrate(json_decode('{"data": {"type": "Test"}}'));
-
-        $this->assertInstanceOf(NoDataDocument::class, $document);
+        $hydrator->hydrate(json_decode('{"data": {"type": "Test"}}'));
     }
 
     /**
@@ -40,9 +38,7 @@ class DocumentHydratorTest extends TestCase
     public function testMissingResourceType()
     {
         $hydrator = new DocumentHydrator();
-        $document = $hydrator->hydrate(json_decode('{"data": {"id": "1"}}'));
-
-        $this->assertInstanceOf(NoDataDocument::class, $document);
+        $hydrator->hydrate(json_decode('{"data": {"id": "1"}}'));
     }
 
     public function testSingleResourceDocument()

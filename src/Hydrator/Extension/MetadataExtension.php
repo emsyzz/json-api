@@ -8,7 +8,7 @@ use Mikemirten\Component\JsonApi\Exception\InvalidDocumentException;
 use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
 
 /**
- * "data" section handler
+ * "data" object extension
  *
  * @see http://jsonapi.org/format/#document-resource-objects
  *
