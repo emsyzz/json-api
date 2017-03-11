@@ -75,4 +75,73 @@ class ResourceObjectTest extends TestCase
         $this->assertSame($relationship, $resource->getRelationship('test'));
         $this->assertSame(['test' => $relationship], $resource->getRelationships());
     }
+
+    public function testToArrayBasics()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $this->assertSame(
+            [
+                'id'   => '42',
+                'type' => 'test'
+            ],
+            $resource->toArray()
+        );
+    }
+
+    public function testToArrayAttributes()
+    {
+        $resource = new ResourceObject('42', 'test');
+        $resource->setAttribute('test_attr', 'qwerty');
+
+        $this->assertSame(
+            ['test_attr' => 'qwerty'],
+            $resource->toArray()['attributes']
+        );
+    }
+
+    public function testToArrayRelationships()
+    {
+        $relationship = $this->createMock(AbstractRelationship::class);
+
+        $relationship->expects($this->once())
+            ->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $resource = new ResourceObject('42', 'test');
+        $resource->setRelationship('test_rel', $relationship);
+
+        $this->assertSame(
+            ['test_rel' => ['test' => 'qwerty']],
+            $resource->toArray()['relationships']
+        );
+    }
+
+    public function testToArrayMetadata()
+    {
+        $resource = new ResourceObject('42', 'test');
+        $resource->setMetadataAttribute('test_attr', 'qwerty');
+
+        $this->assertSame(
+            ['test_attr' => 'qwerty'],
+            $resource->toArray()['meta']
+        );
+    }
+
+    public function testToArrayLinks()
+    {
+        $link = $this->createMock(LinkObject::class);
+
+        $link->expects($this->once())
+            ->method('getReference')
+            ->willReturn('http://qwerty.com');
+
+        $resource = new ResourceObject('42', 'test');
+        $resource->setLink('test_link', $link);
+
+        $this->assertSame(
+            ['test_link' => 'http://qwerty.com'],
+            $resource->toArray()['links']
+        );
+    }
 }

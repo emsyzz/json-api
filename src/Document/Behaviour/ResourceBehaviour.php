@@ -46,4 +46,17 @@ trait ResourceBehaviour
     {
         return $this->type;
     }
+
+    /**
+     * Cast resource to an array
+     *
+     * @return array
+     */
+    protected function resourceToArray(): array
+    {
+        return [
+            'id'   => $this->getId(),
+            'type' => $this->getType()
+        ];
+    }
 }

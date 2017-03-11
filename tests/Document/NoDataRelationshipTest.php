@@ -37,4 +37,55 @@ class NoDataRelationshipTest extends TestCase
         $this->assertSame($link, $relationship->getLink('test'));
         $this->assertSame(['test' => $link], $relationship->getLinks());
     }
+
+    public function testToArrayMetadata()
+    {
+        $relationship = new NoDataRelationship();
+        $relationship->setMetadataAttribute('test', 'qwerty');
+
+        $this->assertSame(
+            [
+                'meta' => ['test' => 'qwerty']
+            ],
+            $relationship->toArray()
+        );
+    }
+
+    public function testToArrayLinks()
+    {
+        $document = new NoDataRelationship();
+        $document->setLink('test_link', $this->createLink(
+            'http://test.com',
+            ['link_meta' => 123]
+        ));
+
+        $this->assertSame(
+            [
+                'links' => [
+                    'test_link' => [
+                        'href' => 'http://test.com',
+                        'meta' => [
+                            'link_meta' => 123
+                        ]
+                    ]
+                ]
+            ],
+            $document->toArray());
+    }
+
+    public function createLink(string $reference, array $metadata = []): LinkObject
+    {
+        $link = $this->createMock(LinkObject::class);
+
+        $link->method('hasMetadata')
+            ->willReturn(! empty($metadata));
+
+        $link->method('getMetadata')
+            ->willReturn($metadata);
+
+        $link->method('getReference')
+            ->willReturn($reference);
+
+        return $link;
+    }
 }

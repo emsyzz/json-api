@@ -40,4 +40,16 @@ class SingleIdentifierRelationship extends AbstractRelationship
     {
         return $this->identifier;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        $data['data'] = $this->getIdentifier()->toArray();
+
+        return $data;
+    }
 }

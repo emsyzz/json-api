@@ -55,6 +55,16 @@ trait RelationshipsContainer
     }
 
     /**
+     * Contains any relationships ?
+     *
+     * @return bool
+     */
+    public function hasRelationships(): bool
+    {
+        return count($this->relationships) > 0;
+    }
+
+    /**
      * Get relationships
      *
      * @return AbstractRelationship[]
@@ -62,5 +72,22 @@ trait RelationshipsContainer
     public function getRelationships(): array
     {
         return $this->relationships;
+    }
+
+    /**
+     * Cast relationships to an array
+     *
+     * @return array
+     */
+    protected function relationshipsToArray(): array
+    {
+        $relationships = [];
+
+        foreach ($this->relationships as $name => $relationship)
+        {
+            $relationships[$name] = $relationship->toArray();
+        }
+
+        return $relationships;
     }
 }

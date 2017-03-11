@@ -53,6 +53,16 @@ trait MetadataContainer
     }
 
     /**
+     * Contains any metadata ?
+     *
+     * @return bool
+     */
+    public function hasMetadata(): bool
+    {
+        return count($this->metadata) > 0;
+    }
+
+    /**
      * Get all attributes of metadata
      *
      * @return array

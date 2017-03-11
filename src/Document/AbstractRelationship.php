@@ -22,4 +22,24 @@ abstract class AbstractRelationship implements MetadataAwareInterface, LinksAwar
 {
     use MetadataContainer;
     use LinksContainer;
+
+    /**
+     * Cast to an array
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $data = [];
+
+        if ($this->hasMetadata()) {
+            $data['meta'] = $this->getMetadata();
+        }
+
+        if ($this->hasLinks()) {
+            $data['links'] = $this->linksToArray();
+        }
+
+        return $data;
+    }
 }

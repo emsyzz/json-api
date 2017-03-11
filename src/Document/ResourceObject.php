@@ -42,4 +42,32 @@ class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, Rel
         $this->attributes = $attributes;
         $this->metadata   = $metadata;
     }
+
+    /**
+     * Cast to an array
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $data = $this->resourceToArray();
+
+        if ($this->hasMetadata()) {
+            $data['meta'] = $this->getMetadata();
+        }
+
+        if ($this->hasLinks()) {
+            $data['links'] = $this->linksToArray();
+        }
+
+        if ($this->hasAttributes()) {
+            $data['attributes'] = $this->getAttributes();
+        }
+
+        if ($this->hasRelationships()) {
+            $data['relationships'] = $this->relationshipsToArray();
+        }
+
+        return $data;
+    }
 }

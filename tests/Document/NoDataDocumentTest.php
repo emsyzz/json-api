@@ -37,4 +37,57 @@ class NoDataDocumentTest extends TestCase
         $this->assertSame($link, $document->getLink('test'));
         $this->assertSame(['test' => $link], $document->getLinks());
     }
+
+    public function testToArrayLinks()
+    {
+        $document = new NoDataDocument();
+        $document->setLink('test_link', $this->createLink(
+            'http://test.com',
+            ['link_meta' => 123]
+        ));
+
+        $this->assertSame(
+            [
+                'links' => [
+                    'test_link' => [
+                        'href' => 'http://test.com',
+                        'meta' => [
+                            'link_meta' => 123
+                        ]
+                    ]
+                ]
+            ],
+            $document->toArray());
+    }
+
+    public function testToArrayMetadata()
+    {
+        $document = new NoDataDocument();
+        $document->setMetadataAttribute('test_meta', 456);
+
+        $this->assertSame(
+            [
+                'meta' => [
+                    'test_meta' => 456
+                ]
+            ],
+            $document->toArray()
+        );
+    }
+
+    public function createLink(string $reference, array $metadata = []): LinkObject
+    {
+        $link = $this->createMock(LinkObject::class);
+
+        $link->method('hasMetadata')
+            ->willReturn(! empty($metadata));
+
+        $link->method('getMetadata')
+            ->willReturn($metadata);
+
+        $link->method('getReference')
+            ->willReturn($reference);
+
+        return $link;
+    }
 }

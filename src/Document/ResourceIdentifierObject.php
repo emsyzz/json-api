@@ -32,4 +32,20 @@ class ResourceIdentifierObject implements MetadataAwareInterface
         $this->type     = $type;
         $this->metadata = $metadata;
     }
+
+    /**
+     * Cast to an array
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $data = $this->resourceToArray();
+
+        if ($this->hasMetadata()) {
+            $data['meta'] = $this->getMetadata();
+        }
+
+        return $data;
+    }
 }

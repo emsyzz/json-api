@@ -42,6 +42,16 @@ trait IdentifierCollectionContainer
     }
 
     /**
+     * Contains any identifiers
+     *
+     * @return bool
+     */
+    public function hasIdentifiers(): bool
+    {
+        return count($this->identifiers) > 0;
+    }
+
+    /**
      * Get resource identifiers
      *
      * @return ResourceIdentifierObject[]
@@ -56,6 +66,23 @@ trait IdentifierCollectionContainer
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->identifiers);
+        return new \ArrayIterator($this->getIdentifiers());
+    }
+
+    /**
+     * Cast identifiers to an array
+     *
+     * @return array
+     */
+    protected function identifiersToArray(): array
+    {
+        $data = [];
+
+        foreach ($this->getIdentifiers() as $identifier)
+        {
+            $data[] = $identifier->toArray();
+        }
+
+        return $data;
     }
 }

@@ -53,6 +53,16 @@ trait AttributesContainer
     }
 
     /**
+     * Contains any attributes ?
+     *
+     * @return bool
+     */
+    public function hasAttributes(): bool
+    {
+        return count($this->attributes) > 0;
+    }
+
+    /**
      * Get all attributes
      *
      * @return array

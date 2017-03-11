@@ -60,4 +60,39 @@ class IdentifierCollectionRelationshipTest extends TestCase
         $this->assertSame($link, $relationship->getLink('test'));
         $this->assertSame(['test' => $link], $relationship->getLinks());
     }
+
+    public function testToArrayResources()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+
+        $resource->expects($this->once())
+            ->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $document = new IdentifierCollectionRelationship();
+        $document->addIdentifier($resource);
+
+        $this->assertSame(
+            [
+                'data' => [
+                    ['test' => 'qwerty']
+                ]
+            ],
+            $document->toArray()
+        );
+    }
+
+    public function testToArrayMetadata()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+        $relationship->setMetadataAttribute('test', 'qwerty');
+
+        $this->assertSame(
+            [
+                'meta' => ['test' => 'qwerty'],
+                'data' => []
+            ],
+            $relationship->toArray()
+        );
+    }
 }

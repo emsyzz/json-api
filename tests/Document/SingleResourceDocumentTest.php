@@ -47,4 +47,54 @@ class SingleResourceDocumentTest extends TestCase
         $this->assertSame($link, $document->getLink('test'));
         $this->assertSame(['test' => $link], $document->getLinks());
     }
+
+    public function testToArray()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $document = new SingleResourceDocument($resource);
+
+        $document->setLink(
+            'test_link',
+            $this->createLink(
+                'http://test_link.com',
+                ['test' => 123]
+            )
+        );
+
+        $this->assertSame(
+            [
+                'links' => [
+                    'test_link' => [
+                        'href' => 'http://test_link.com',
+                        'meta' => ['test' => 123]
+                    ]
+                ],
+                'data' => [
+                    'test' => 'qwerty'
+                ]
+            ],
+            $document->toArray()
+        );
+    }
+
+    public function createLink(string $reference, array $metadata = []): LinkObject
+    {
+        $link = $this->createMock(LinkObject::class);
+
+        $link->method('hasMetadata')
+            ->willReturn(! empty($metadata));
+
+        $link->method('getMetadata')
+            ->willReturn($metadata);
+
+        $link->method('getReference')
+            ->willReturn($reference);
+
+        return $link;
+    }
 }

@@ -64,6 +64,27 @@ class ResourceCollectionDocument extends AbstractDocument implements \IteratorAg
      */
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator($this->resources);
+        return new \ArrayIterator($this->getResources());
+    }
+
+    /**
+     * Cast to an array
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $resources = [];
+
+        foreach ($this->getResources() as $resource)
+        {
+            $resources[] = $resource->toArray();
+        }
+
+        $data = parent::toArray();
+
+        $data['data'] = $resources;
+
+        return $data;
     }
 }

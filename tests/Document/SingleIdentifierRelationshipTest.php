@@ -47,4 +47,58 @@ class SingleIdentifierRelationshipTest extends TestCase
         $this->assertSame($link, $relationship->getLink('test'));
         $this->assertSame(['test' => $link], $relationship->getLinks());
     }
+
+    public function testToArrayIdentifier()
+    {
+        $identifier = $this->createMock(ResourceIdentifierObject::class);
+
+        $identifier->expects($this->once())
+            ->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $this->assertSame(
+            [
+                'data' => ['test' => 'qwerty']
+            ],
+            $relationship->toArray()
+        );
+    }
+
+    public function testToArrayMetadata()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+        $relationship->setMetadataAttribute('test', 'qwerty');
+
+        $this->assertSame(
+            [
+                'meta' => ['test' => 'qwerty'],
+                'data' => []
+            ],
+            $relationship->toArray()
+        );
+    }
+
+    public function testToArrayLinks()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $link = $this->createMock(LinkObject::class);
+
+        $link->method('getReference')
+            ->willReturn('http://qwerty.com');
+
+        $relationship->setLink('test', $link);
+
+        $this->assertSame(
+            [
+                'links' => ['test' => 'http://qwerty.com'],
+                'data'  => []
+            ],
+            $relationship->toArray()
+        );
+    }
 }

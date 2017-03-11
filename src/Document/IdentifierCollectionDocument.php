@@ -26,4 +26,16 @@ class IdentifierCollectionDocument extends AbstractDocument implements Identifie
     {
         $this->metadata = $metadata;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        $data['data'] = $this->identifiersToArray();
+
+        return $data;
+    }
 }

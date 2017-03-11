@@ -40,4 +40,16 @@ class SingleResourceDocument extends AbstractDocument
     {
         return $this->resource;
     }
+
+    /**
+ * {@inheritdoc}
+ */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        $data['data'] = $this->getResource()->toArray();
+
+        return $data;
+    }
 }

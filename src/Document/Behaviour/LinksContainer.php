@@ -63,4 +63,39 @@ trait LinksContainer
     {
         return $this->links;
     }
+
+    /**
+     * Contains any links ?
+     *
+     * @return bool
+     */
+    public function hasLinks(): bool
+    {
+        return count($this->links) > 0;
+    }
+
+    /**
+     * Cast links to an array
+     *
+     * @return array
+     */
+    protected function linksToArray(): array
+    {
+        $links = [];
+
+        foreach ($this->links as $name => $link)
+        {
+            if (! $link->hasMetadata()) {
+                $links[$name] = $link->getReference();
+                continue;
+            }
+
+            $links[$name] = [
+                'href' => $link->getReference(),
+                'meta' => $link->getMetadata()
+            ];
+        }
+
+        return $links;
+    }
 }

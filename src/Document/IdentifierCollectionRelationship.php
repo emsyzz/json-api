@@ -26,4 +26,16 @@ class IdentifierCollectionRelationship extends AbstractRelationship implements I
     {
         $this->metadata = $metadata;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function toArray(): array
+    {
+        $data = parent::toArray();
+
+        $data['data'] = $this->identifiersToArray();
+
+        return $data;
+    }
 }
