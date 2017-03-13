@@ -9,11 +9,11 @@ use PHPUnit\Framework\TestCase;
 /**
  * @group document
  */
-class IdentifierCollectionRelationshipTest extends TestCase
+class IdentifierCollectionDocumentTest extends TestCase
 {
     public function testIdentifiers()
     {
-        $relationship = new IdentifierCollectionRelationship();
+        $relationship = new IdentifierCollectionDocument();
 
         $this->assertEmpty($relationship->getIdentifiers());
 
@@ -28,7 +28,7 @@ class IdentifierCollectionRelationshipTest extends TestCase
     {
         $identifier = $this->createMock(ResourceIdentifierObject::class);
 
-        $relationship = new IdentifierCollectionRelationship();
+        $relationship = new IdentifierCollectionDocument();
         $relationship->addIdentifier($identifier);
 
         $this->assertSame([$identifier], iterator_to_array($relationship));
@@ -36,7 +36,7 @@ class IdentifierCollectionRelationshipTest extends TestCase
 
     public function testMetadata()
     {
-        $relationship = new IdentifierCollectionRelationship(['test' => 42]);
+        $relationship = new IdentifierCollectionDocument(['test' => 42]);
 
         $this->assertInstanceOf(MetadataAwareInterface::class, $relationship);
 
@@ -48,7 +48,7 @@ class IdentifierCollectionRelationshipTest extends TestCase
 
     public function testLinks()
     {
-        $relationship = new IdentifierCollectionRelationship();
+        $relationship = new IdentifierCollectionDocument();
 
         $this->assertInstanceOf(LinksAwareInterface::class, $relationship);
 
@@ -69,7 +69,7 @@ class IdentifierCollectionRelationshipTest extends TestCase
             ->method('toArray')
             ->willReturn(['test' => 'qwerty']);
 
-        $relationship = new IdentifierCollectionRelationship();
+        $relationship = new IdentifierCollectionDocument();
         $relationship->addIdentifier($resource);
 
         $this->assertSame(
@@ -84,7 +84,7 @@ class IdentifierCollectionRelationshipTest extends TestCase
 
     public function testToArrayLinks()
     {
-        $relationship = new IdentifierCollectionRelationship();
+        $relationship = new IdentifierCollectionDocument();
         $relationship->setLink('test_link', $this->createLink(
             'http://test.com',
             ['link_meta' => 123]
@@ -107,7 +107,7 @@ class IdentifierCollectionRelationshipTest extends TestCase
 
     public function testToArrayMetadata()
     {
-        $relationship = new IdentifierCollectionRelationship();
+        $relationship = new IdentifierCollectionDocument();
         $relationship->setMetadataAttribute('test', 'qwerty');
 
         $this->assertSame(

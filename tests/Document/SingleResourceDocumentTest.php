@@ -48,23 +48,15 @@ class SingleResourceDocumentTest extends TestCase
         $this->assertSame(['test' => $link], $document->getLinks());
     }
 
-    public function testToArray()
+    public function testToArrayLinks()
     {
         $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('toArray')
-            ->willReturn(['test' => 'qwerty']);
-
         $document = new SingleResourceDocument($resource);
 
-        $document->setLink(
-            'test_link',
-            $this->createLink(
-                'http://test_link.com',
-                ['test' => 123]
-            )
-        );
+        $document->setLink('test_link', $this->createLink(
+            'http://test_link.com',
+            ['test' => 123]
+        ));
 
         $this->assertSame(
             [
@@ -74,6 +66,40 @@ class SingleResourceDocumentTest extends TestCase
                         'meta' => ['test' => 123]
                     ]
                 ],
+                'data' => []
+            ],
+            $document->toArray()
+        );
+    }
+
+    public function testToArrayMetadata()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+
+        $relationship = new SingleResourceDocument($resource);
+        $relationship->setMetadataAttribute('test', 'qwerty');
+
+        $this->assertSame(
+            [
+                'meta' => ['test' => 'qwerty'],
+                'data' => []
+            ],
+            $relationship->toArray()
+        );
+    }
+
+    public function testToArrayResource()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $document = new SingleResourceDocument($resource);
+
+        $this->assertSame(
+            [
                 'data' => [
                     'test' => 'qwerty'
                 ]
