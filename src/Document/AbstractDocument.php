@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
@@ -22,6 +23,7 @@ abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInt
 {
     use MetadataContainer;
     use LinksContainer;
+    use ErrorsContainer;
 
     /**
      * Cast to an array
@@ -38,6 +40,10 @@ abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInt
 
         if ($this->hasLinks()) {
             $data['links'] = $this->linksToArray();
+        }
+
+        if ($this->hasErrors()) {
+            $data['errors'] = $this->errorsToArray();
         }
 
         return $data;
