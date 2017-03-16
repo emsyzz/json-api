@@ -6,6 +6,9 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @group document
+ */
 class ResourceCollectionDocumentTest extends TestCase
 {
     public function testResources()
@@ -113,6 +116,36 @@ class ResourceCollectionDocumentTest extends TestCase
                 'data' => []
             ],
             $relationship->toArray()
+        );
+    }
+
+    public function testErrors()
+    {
+        $document = new ResourceCollectionDocument();
+        $error    = $this->createMock(ErrorObject::class);
+
+        $this->assertFalse($document->hasErrors());
+
+        $document->addError($error);
+
+        $this->assertTrue($document->hasErrors());
+        $this->assertSame([$error], $document->getErrors());
+    }
+
+    public function testToArrayErrors()
+    {
+        $document = new ResourceCollectionDocument();
+
+        $error = $this->createMock(ErrorObject::class);
+
+        $error->method('toArray')
+            ->willReturn(['test' => '123']);
+
+        $document->addError($error);
+
+        $this->assertSame(
+            [['test' => '123']],
+            $document->toArray()['errors']
         );
     }
 

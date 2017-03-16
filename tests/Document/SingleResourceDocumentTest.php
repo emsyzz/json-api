@@ -32,6 +32,38 @@ class SingleResourceDocumentTest extends TestCase
         $this->assertSame(['test' => 42], $document->getMetadata());
     }
 
+    public function testErrors()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+        $document = new SingleResourceDocument($resource);
+        $error    = $this->createMock(ErrorObject::class);
+
+        $this->assertFalse($document->hasErrors());
+
+        $document->addError($error);
+
+        $this->assertTrue($document->hasErrors());
+        $this->assertSame([$error], $document->getErrors());
+    }
+
+    public function testToArrayErrors()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+        $document = new SingleResourceDocument($resource);
+
+        $error = $this->createMock(ErrorObject::class);
+
+        $error->method('toArray')
+            ->willReturn(['test' => '123']);
+
+        $document->addError($error);
+
+        $this->assertSame(
+            [['test' => '123']],
+            $document->toArray()['errors']
+        );
+    }
+
     public function testLinks()
     {
         $resource = $this->createMock(ResourceObject::class);
