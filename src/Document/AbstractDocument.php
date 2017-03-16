@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
@@ -19,7 +20,7 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInterface
+abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInterface, ErrorsAwareInterface
 {
     use MetadataContainer;
     use LinksContainer;

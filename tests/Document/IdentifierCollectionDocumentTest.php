@@ -2,6 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use PHPUnit\Framework\TestCase;
@@ -51,6 +52,7 @@ class IdentifierCollectionDocumentTest extends TestCase
         $document = new IdentifierCollectionDocument();
         $error    = $this->createMock(ErrorObject::class);
 
+        $this->assertInstanceOf(ErrorsAwareInterface::class, $document);
         $this->assertFalse($document->hasErrors());
 
         $document->addError($error);

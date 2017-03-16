@@ -2,6 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\Document;
 
+use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
 use PHPUnit\Framework\TestCase;
@@ -38,6 +39,7 @@ class SingleResourceDocumentTest extends TestCase
         $document = new SingleResourceDocument($resource);
         $error    = $this->createMock(ErrorObject::class);
 
+        $this->assertInstanceOf(ErrorsAwareInterface::class, $document);
         $this->assertFalse($document->hasErrors());
 
         $document->addError($error);
