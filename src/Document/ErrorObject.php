@@ -224,27 +224,13 @@ class ErrorObject implements LinksAwareInterface, MetadataAwareInterface
      */
     public function toArray(): array
     {
-        $data = [];
-
-        if ($this->hasId()) {
-            $data['id'] = $this->getId();
-        }
-
-        if ($this->hasStatus()) {
-            $data['status'] = $this->getStatus();
-        }
-
-        if ($this->hasCode()) {
-            $data['code'] = $this->getCode();
-        }
-
-        if ($this->hasTitle()) {
-            $data['title'] = $this->getTitle();
-        }
-
-        if ($this->hasDetail()) {
-            $data['detail'] = $this->getDetail();
-        }
+        $data = array_filter([
+            'id'     => $this->id,
+            'status' => $this->status,
+            'code'   => $this->code,
+            'title'  => $this->title,
+            'detail' => $this->detail
+        ]);
 
         if ($this->hasLinks()) {
             $data['links'] = $this->linksToArray();
