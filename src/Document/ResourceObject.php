@@ -50,24 +50,16 @@ class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, Rel
      */
     public function toArray(): array
     {
-        $data = $this->resourceToArray();
+        $data = [
+            'meta'          => $this->getMetadata(),
+            'links'         => $this->linksToArray(),
+            'attributes'    => $this->getAttributes(),
+            'relationships' => $this->relationshipsToArray()
+        ];
 
-        if ($this->hasMetadata()) {
-            $data['meta'] = $this->getMetadata();
-        }
-
-        if ($this->hasLinks()) {
-            $data['links'] = $this->linksToArray();
-        }
-
-        if ($this->hasAttributes()) {
-            $data['attributes'] = $this->getAttributes();
-        }
-
-        if ($this->hasRelationships()) {
-            $data['relationships'] = $this->relationshipsToArray();
-        }
-
-        return $data;
+        return array_merge(
+            $this->resourceToArray(),
+            array_filter($data, 'count')
+        );
     }
 }
