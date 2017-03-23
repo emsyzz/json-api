@@ -27,24 +27,51 @@ abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInt
     use ErrorsContainer;
 
     /**
+     * JsonAPI-object
+     *
+     * @see http://jsonapi.org/format/#document-jsonapi-object
+     *
+     * @var JsonApiObject
+     */
+    protected $jsonApi;
+
+    /**
+     * Set JsonAPI-object
+     *
+     * @param JsonApiObject $jsonApi
+     */
+    public function setJsonApi(JsonApiObject $jsonApi)
+    {
+        $this->jsonApi = $jsonApi;
+    }
+
+    /**
+     * Set JsonAPI-object
+     *
+     * @return JsonApiObject
+     */
+    public function getJsonApi(): JsonApiObject
+    {
+        return $this->jsonApi;
+    }
+
+    /**
      * Cast to an array
      *
      * @return array
      */
     public function toArray(): array
     {
-        $data = [];
+        $data = [
+            'meta'   => $this->getMetadata(),
+            'links'  => $this->linksToArray(),
+            'errors' => $this->errorsToArray()
+        ];
 
-        if ($this->hasMetadata()) {
-            $data['meta'] = $this->getMetadata();
-        }
+        $data = array_filter($data, 'count');
 
-        if ($this->hasLinks()) {
-            $data['links'] = $this->linksToArray();
-        }
-
-        if ($this->hasErrors()) {
-            $data['errors'] = $this->errorsToArray();
+        if ($this->jsonApi !== null) {
+            $data['jsonapi'] = $this->jsonApi->toArray();
         }
 
         return $data;

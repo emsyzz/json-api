@@ -142,6 +142,38 @@ class SingleResourceDocumentTest extends TestCase
         );
     }
 
+    public function testJsonApi()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+        $document = new SingleResourceDocument($resource);
+        $jsonApi  = new JsonApiObject();
+
+        $document->setJsonApi($jsonApi);
+
+        $this->assertSame($jsonApi, $document->getJsonApi());
+    }
+
+    public function testJsonApiToArray()
+    {
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->method('toArray')
+            ->willReturn([]);
+
+        $document = new SingleResourceDocument($resource);
+        $jsonApi  = new JsonApiObject();
+
+        $document->setJsonApi($jsonApi);
+
+        $this->assertSame(
+            [
+                'jsonapi' => ['version' => '1.0'],
+                'data'    => []
+            ],
+            $document->toArray()
+        );
+    }
+
     public function createLink(string $reference, array $metadata = []): LinkObject
     {
         $link = $this->createMock(LinkObject::class);

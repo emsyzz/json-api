@@ -107,6 +107,31 @@ class NoDataDocumentTest extends TestCase
         );
     }
 
+    public function testJsonApi()
+    {
+        $document = new NoDataDocument();
+        $jsonApi  = new JsonApiObject();
+
+        $document->setJsonApi($jsonApi);
+
+        $this->assertSame($jsonApi, $document->getJsonApi());
+    }
+
+    public function testJsonApiToArray()
+    {
+        $document = new NoDataDocument();
+        $jsonApi  = new JsonApiObject();
+
+        $document->setJsonApi($jsonApi);
+
+        $this->assertSame(
+            [
+                'jsonapi' => ['version' => '1.0']
+            ],
+            $document->toArray()
+        );
+    }
+
     public function createLink(string $reference, array $metadata = []): LinkObject
     {
         $link = $this->createMock(LinkObject::class);
