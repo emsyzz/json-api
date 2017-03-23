@@ -35,4 +35,15 @@ class JsonApiExtensionTest extends TestCase
 
         $extension->hydrate($document, (object) ['version' => '1.2.3'], $hydrator);
     }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\InvalidDocumentException
+     */
+    public function testNoLinksAware()
+    {
+        $hydrator = $this->createMock(DocumentHydrator::class);
+        $handler  = new JsonApiExtension();
+
+        $handler->hydrate(new \stdClass(), (object) ['test' => 12345], $hydrator);
+    }
 }

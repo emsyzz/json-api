@@ -17,6 +17,14 @@ class JsonApiObjectTest extends TestCase
         $this->assertSame('2.3.4', $jsonApi->getVersion());
     }
 
+    public function testSetVersion()
+    {
+        $jsonApi = new JsonApiObject();
+        $jsonApi->setVersion('2.3.5');
+
+        $this->assertSame('2.3.5', $jsonApi->getVersion());
+    }
+
     public function testMetadata()
     {
         $document = new JsonApiObject('1.0', ['test' => 42]);
