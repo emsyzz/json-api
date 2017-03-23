@@ -3,35 +3,36 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Hydrator\Extension;
 
-use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
-use Mikemirten\Component\JsonApi\Exception\InvalidDocumentException;
+use Mikemirten\Component\JsonApi\Document\Behaviour\IncludedResourcesAwareInterface;
 use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
 
 /**
- * "data" object extension
+ * "included" extension
  *
- * @see http://jsonapi.org/format/#document-resource-objects
+ * @see http://jsonapi.org/format/#document-compound-documents
  *
  * @package Mikemirten\Component\JsonApi\Hydrator\Extension
  */
-class MetadataExtension implements ExtensionInterface
+class IncludedExtension implements ExtensionInterface
 {
     /**
      * {@inheritdoc}
      */
     public function hydrate($object, $source, DocumentHydrator $hydrator)
     {
-        if (! $object instanceof MetadataAwareInterface) {
+        if (! $object instanceof IncludedResourcesAwareInterface) {
             throw new InvalidDocumentException(sprintf(
                 'Given instance of "%s" does not implements "%s"',
                 get_class($object),
-                MetadataAwareInterface::class
+                IncludedResourcesAwareInterface::class
             ));
         }
 
-        foreach ($source as $name => $value)
+        foreach ($source as $item)
         {
-            $object->setMetadataAttribute($name, $value);
+            $resource = $hydrator->hydrateResource($item);
+
+            $object->addIncludedResource($resource);
         }
     }
 
@@ -40,6 +41,6 @@ class MetadataExtension implements ExtensionInterface
      */
     public function supports(): array
     {
-        return ['meta'];
+        return ['included'];
     }
 }

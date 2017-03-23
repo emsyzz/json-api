@@ -13,7 +13,7 @@ use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
  *
  * @see http://jsonapi.org/format/#document-links
  *
- * @package Mikemirten\Component\JsonApi\Hydrator\SectionHandler
+ * @package Mikemirten\Component\JsonApi\Hydrator\Extension
  */
 class LinksExtension implements ExtensionInterface
 {

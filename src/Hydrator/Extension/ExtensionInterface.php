@@ -9,7 +9,7 @@ use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
 /**
  * Interface of hydrator's extension
  *
- * @package Mikemirten\Component\JsonApi\Hydrator\SectionHandler
+ * @package Mikemirten\Component\JsonApi\Hydrator\Extension
  */
 interface ExtensionInterface
 {

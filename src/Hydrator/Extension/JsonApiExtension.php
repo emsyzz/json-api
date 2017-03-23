@@ -13,7 +13,7 @@ use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
  *
  * @see http://jsonapi.org/format/#document-jsonapi-object
  *
- * @package Mikemirten\Component\JsonApi\Hydrator\SectionHandler
+ * @package Mikemirten\Component\JsonApi\Hydrator\Extension
  */
 class JsonApiExtension implements ExtensionInterface
 {

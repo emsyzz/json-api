@@ -103,7 +103,7 @@ class DocumentHydrator
      */
     protected function processSingleResourceDocument($source): SingleResourceDocument
     {
-        $resource = $this->createResource($source->data);
+        $resource = $this->hydrateResource($source->data);
         $document = new SingleResourceDocument($resource);
 
         $this->hydrateObject($document, $source);
@@ -123,7 +123,7 @@ class DocumentHydrator
 
         foreach ($source->data as $resourceSrc)
         {
-            $document->addResource($this->createResource($resourceSrc));
+            $document->addResource($this->hydrateResource($resourceSrc));
         }
 
         $this->hydrateObject($document, $source);
@@ -137,7 +137,7 @@ class DocumentHydrator
      * @param  mixed $source
      * @return ResourceObject
      */
-    protected function createResource($source): ResourceObject
+    public function hydrateResource($source): ResourceObject
     {
         if (! isset($source->id)) {
             throw new InvalidDocumentException('Resource contains no ID');
