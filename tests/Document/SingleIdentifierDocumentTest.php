@@ -168,4 +168,44 @@ class SingleIdentifierDocumentTest extends TestCase
             $document->toArray()
         );
     }
+
+    public function testIncluded()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+        $document = new SingleIdentifierDocument($resource);
+        $included = $this->createMock(ResourceObject::class);
+
+        $this->assertFalse($document->hasIncludedResources());
+
+        $document->addIncludedResource($included);
+
+        $this->assertTrue($document->hasIncludedResources());
+        $this->assertSame([$included], $document->getIncludedResources());
+    }
+
+    public function testIncludedToArray()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+
+        $resource->method('toArray')
+            ->willReturn([]);
+
+        $document = new SingleIdentifierDocument($resource);
+        $included = $this->createMock(ResourceObject::class);
+
+        $included->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $document->addIncludedResource($included);
+
+        $this->assertSame(
+            [
+                'included' => [
+                    ['test' => 'qwerty']
+                ],
+                'data' => []
+            ],
+            $document->toArray()
+        );
+    }
 }

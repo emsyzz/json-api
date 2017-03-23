@@ -177,6 +177,40 @@ class IdentifierCollectionDocumentTest extends TestCase
         );
     }
 
+    public function testIncluded()
+    {
+        $document = new IdentifierCollectionDocument();
+        $resource = $this->createMock(ResourceObject::class);
+
+        $this->assertFalse($document->hasIncludedResources());
+
+        $document->addIncludedResource($resource);
+
+        $this->assertTrue($document->hasIncludedResources());
+        $this->assertSame([$resource], $document->getIncludedResources());
+    }
+
+    public function testIncludedToArray()
+    {
+        $document = new IdentifierCollectionDocument();
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->method('toArray')
+            ->willReturn(['test' => 'qwerty']);
+
+        $document->addIncludedResource($resource);
+
+        $this->assertSame(
+            [
+                'included' => [
+                    ['test' => 'qwerty']
+                ],
+                'data' => []
+            ],
+            $document->toArray()
+        );
+    }
+
     public function createLink(string $reference, array $metadata = []): LinkObject
     {
         $link = $this->createMock(LinkObject::class);

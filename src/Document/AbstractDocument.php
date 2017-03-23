@@ -5,6 +5,8 @@ namespace Mikemirten\Component\JsonApi\Document;
 
 use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\ErrorsContainer;
+use Mikemirten\Component\JsonApi\Document\Behaviour\IncludedResourcesAwareInterface;
+use Mikemirten\Component\JsonApi\Document\Behaviour\IncludedResourcesContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface;
 use Mikemirten\Component\JsonApi\Document\Behaviour\LinksContainer;
 use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataAwareInterface;
@@ -20,11 +22,16 @@ use Mikemirten\Component\JsonApi\Document\Behaviour\MetadataContainer;
  *
  * @package Mikemirten\Component\JsonApi\Document
  */
-abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInterface, ErrorsAwareInterface
+abstract class AbstractDocument implements
+    MetadataAwareInterface,
+    LinksAwareInterface,
+    ErrorsAwareInterface,
+    IncludedResourcesAwareInterface
 {
     use MetadataContainer;
     use LinksContainer;
     use ErrorsContainer;
+    use IncludedResourcesContainer;
 
     /**
      * JsonAPI-object
@@ -63,9 +70,10 @@ abstract class AbstractDocument implements MetadataAwareInterface, LinksAwareInt
     public function toArray(): array
     {
         $data = [
-            'meta'   => $this->getMetadata(),
-            'links'  => $this->linksToArray(),
-            'errors' => $this->errorsToArray()
+            'meta'     => $this->getMetadata(),
+            'links'    => $this->linksToArray(),
+            'errors'   => $this->errorsToArray(),
+            'included' => $this->includedResourcesToArray()
         ];
 
         $data = array_filter($data, 'count');
