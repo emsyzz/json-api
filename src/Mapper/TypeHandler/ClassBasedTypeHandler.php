@@ -72,12 +72,12 @@ class ClassBasedTypeHandler implements TypeHandlerInterface
             return $name;
         }
 
-        $pos = strpos($name, $this->delimiter);
+        $pos = strrpos($name, $this->delimiter);
 
         if ($pos === false) {
             return $name;
         }
 
-        return substr($name, $pos);
+        return substr($name, $pos + 1);
     }
 }
