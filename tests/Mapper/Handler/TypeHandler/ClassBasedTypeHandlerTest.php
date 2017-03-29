@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikemirten\Component\JsonApi\Mapper\TypeHandler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler;
 
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +15,7 @@ class ClassBasedTypeHandlerTest extends TestCase
         $handler = new ClassBasedTypeHandler(true, '.');
 
         $this->assertSame(
-            'Mikemirten.Component.JsonApi.Mapper.TypeHandler.ClassBasedTypeHandler',
+            'Mikemirten.Component.JsonApi.Mapper.Handler.TypeHandler.ClassBasedTypeHandler',
             $handler->getType($handler)
         );
     }

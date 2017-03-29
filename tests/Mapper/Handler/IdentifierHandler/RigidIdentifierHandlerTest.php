@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikemirten\Component\JsonApi\Mapper\IdentifierHandler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler;
 
 use PHPUnit\Framework\TestCase;
 

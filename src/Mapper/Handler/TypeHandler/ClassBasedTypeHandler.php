@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\Component\JsonApi\Mapper\TypeHandler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler;
 
 /**
  * Type handler based on class of object

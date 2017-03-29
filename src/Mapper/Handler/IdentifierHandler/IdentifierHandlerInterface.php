@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\Component\JsonApi\Mapper\IdentifierHandler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler;
 
 /**
  * Interface of identifier handler
