@@ -4,6 +4,8 @@
 
 This repository contains PHP-implementation of the [JsonAPI standard](http://jsonapi.org/).
 
+An integration with the [Symfony Framework](https://symfony.com/) can be found inside of [JsonApi-Bundle repository](https://github.com/mikemirten/JsonApi-Bundle).
+
 ## How to install
 Through composer:
 
@@ -18,7 +20,9 @@ The component contains a number of modules:
 - Object mapper
 
 ### Document
-The document represents the Json API standard as a number of classes. The root of the document represented by four of them:
+The document represents the Json-API standard as a number of classes. These classes can be useful for a project work with requests and/or responses contains serialized data of Json-API standard.
+
+The root of the document represented by four of them:
 
 ```Mikemirten\Component\JsonApi\Document\NoDataDocument```: Document contains no resources.
 
@@ -94,3 +98,6 @@ The hydrator allows to create a structure of document by just decoded JSON.
 
 ### HTTP-Client
 A simple HTTP-client compatible with PSR-7, handles bodies of requests and responses converting them to/from document.
+
+### Object Mapper
+Allows to map objects to a document's resources.
