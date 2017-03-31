@@ -5,6 +5,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 use JMS\Serializer\ArrayTransformerInterface;
 use JMS\Serializer\DeserializationContext;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
+use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -31,7 +32,9 @@ class JmsArrayTransformerHandlerTest extends TestCase
             ->with('test', 'qwerty');
 
         $handler = new JmsArrayTransformerHandler($transformer);
-        $handler->toResource($object, $resource);
+        $context = $this->createMock(MappingContext::class);
+
+        $handler->toResource($object, $resource, $context);
     }
 
     public function testFromResource()
@@ -55,6 +58,8 @@ class JmsArrayTransformerHandlerTest extends TestCase
             ->willReturn(['test' => 'qwerty']);
 
         $handler = new JmsArrayTransformerHandler($transformer);
-        $handler->fromResource($object, $resource);
+        $context = $this->createMock(MappingContext::class);
+
+        $handler->fromResource($object, $resource, $context);
     }
 }

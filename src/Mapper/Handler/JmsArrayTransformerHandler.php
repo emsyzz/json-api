@@ -6,6 +6,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 use JMS\Serializer\ArrayTransformerInterface;
 use JMS\Serializer\DeserializationContext;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
+use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 
 /**
  * Attributes handler
@@ -40,7 +41,7 @@ class JmsArrayTransformerHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function toResource($object, ResourceObject $resource)
+    public function toResource($object, ResourceObject $resource, MappingContext $context)
     {
         $data = $this->transformer->toArray($object);
 
@@ -53,13 +54,13 @@ class JmsArrayTransformerHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function fromResource($object, ResourceObject $resource)
+    public function fromResource($object, ResourceObject $resource, MappingContext $context)
     {
         $data = $resource->getAttributes();
 
-        $context = new DeserializationContext();
-        $context->setAttribute('target', $object);
+        $deserializationContext = new DeserializationContext();
+        $deserializationContext->setAttribute('target', $object);
 
-        $this->transformer->fromArray($data, get_class($object), $context);
+        $this->transformer->fromArray($data, get_class($object), $deserializationContext);
     }
 }

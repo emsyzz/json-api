@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler;
 
+use Mikemirten\Component\JsonApi\Mapper\MappingContext;
+
 /**
  * Identifier handler with rigidly set parameters for any objects
  *
@@ -39,7 +41,7 @@ class RigidIdentifierHandler implements IdentifierHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getIdentifier($object): string
+    public function getIdentifier($object, MappingContext $context): string
     {
         return (string) $object->{$this->getter}();
     }
@@ -47,7 +49,7 @@ class RigidIdentifierHandler implements IdentifierHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function setIdentifier($object, string $identifier)
+    public function setIdentifier($object, string $identifier, MappingContext $context)
     {
         if ($this->setter === null) {
             return;

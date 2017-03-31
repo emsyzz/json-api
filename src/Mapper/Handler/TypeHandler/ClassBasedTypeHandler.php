@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler;
 
+use Mikemirten\Component\JsonApi\Mapper\MappingContext;
+
 /**
  * Type handler based on class of object
  *
@@ -47,7 +49,7 @@ class ClassBasedTypeHandler implements TypeHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getType($object): string
+    public function getType($object, MappingContext $context): string
     {
         $class = get_class($object);
 

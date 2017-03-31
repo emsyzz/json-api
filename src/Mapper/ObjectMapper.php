@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Mapper;
 
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
+use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionProviderInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\HandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler\IdentifierHandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler\TypeHandlerInterface;
@@ -22,6 +24,13 @@ use Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler\TypeHandlerInterface
  */
 class ObjectMapper
 {
+    /**
+     * Provider of mapping definition
+     *
+     * @var DefinitionProviderInterface
+     */
+    protected $definitionProvider;
+
     /**
      * Required identifier handler
      * Must always be present regardless of other handlers
@@ -48,13 +57,18 @@ class ObjectMapper
     /**
      * ObjectMapper constructor.
      *
-     * @param IdentifierHandlerInterface $identifierHandler
-     * @param TypeHandlerInterface       $typeHandler
+     * @param DefinitionProviderInterface $definitionProvider
+     * @param IdentifierHandlerInterface  $identifierHandler
+     * @param TypeHandlerInterface        $typeHandler
      */
-    public function __construct(IdentifierHandlerInterface $identifierHandler, TypeHandlerInterface $typeHandler)
-    {
-        $this->identifierHandler = $identifierHandler;
-        $this->typeHandler       = $typeHandler;
+    public function __construct(
+        DefinitionProviderInterface $definitionProvider,
+        IdentifierHandlerInterface  $identifierHandler,
+        TypeHandlerInterface        $typeHandler
+    ) {
+        $this->definitionProvider = $definitionProvider;
+        $this->identifierHandler  = $identifierHandler;
+        $this->typeHandler        = $typeHandler;
     }
 
     /**
@@ -75,14 +89,16 @@ class ObjectMapper
      */
     public function toResource($object): ResourceObject
     {
-        $id   = $this->identifierHandler->getIdentifier($object);
-        $type = $this->typeHandler->getType($object);
+        $context = $this->createContext(get_class($object));
+
+        $id   = $this->identifierHandler->getIdentifier($object, $context);
+        $type = $this->typeHandler->getType($object, $context);
 
         $resource = new ResourceObject($id, $type);
 
         foreach ($this->handlers as $handler)
         {
-            $handler->toResource($object, $resource);
+            $handler->toResource($object, $resource, $context);
         }
 
         return $resource;
@@ -96,11 +112,26 @@ class ObjectMapper
      */
     public function fromResource($object, ResourceObject $resource)
     {
-        $this->identifierHandler->setIdentifier($object, $resource->getId());
+        $context = $this->createContext(get_class($object));
+
+        $this->identifierHandler->setIdentifier($object, $resource->getId(), $context);
 
         foreach ($this->handlers as $handler)
         {
-            $handler->fromResource($object, $resource);
+            $handler->fromResource($object, $resource, $context);
         }
+    }
+
+    /**
+     * Create mapping context for given class
+     *
+     * @param  string $class
+     * @return MappingContext
+     */
+    protected function createContext(string $class): MappingContext
+    {
+        $definition = $this->definitionProvider->getDefinition($class);
+
+        return new MappingContext($this, $definition);
     }
 }

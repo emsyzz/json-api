@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
+use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 
 /**
  * Interface of mapping handler.
@@ -18,14 +19,16 @@ interface HandlerInterface
      *
      * @param  mixed          $object
      * @param  ResourceObject $resource
+     * @param  MappingContext $context
      */
-    public function toResource($object, ResourceObject $resource);
+    public function toResource($object, ResourceObject $resource, MappingContext $context);
 
     /**
      * Transfer data from resource to object
      *
      * @param  mixed          $object
      * @param  ResourceObject $resource
+     * @param  MappingContext $context
      */
-    public function fromResource($object, ResourceObject $resource);
+    public function fromResource($object, ResourceObject $resource, MappingContext $context);
 }

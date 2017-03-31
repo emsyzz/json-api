@@ -2,6 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler;
 
+use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -21,8 +22,9 @@ class RigidIdentifierHandlerTest extends TestCase
         };
 
         $handler = new RigidIdentifierHandler('getId');
+        $context = $this->createMock(MappingContext::class);
 
-        $this->assertSame('123', $handler->getIdentifier($object));
+        $this->assertSame('123', $handler->getIdentifier($object, $context));
     }
 
     public function testSetIdentifier()
@@ -38,7 +40,9 @@ class RigidIdentifierHandlerTest extends TestCase
         };
 
         $handler = new RigidIdentifierHandler('getId', 'setId');
-        $handler->setIdentifier($object, '123');
+        $context = $this->createMock(MappingContext::class);
+
+        $handler->setIdentifier($object, '123', $context);
 
         $this->assertSame('123', $object->id);
     }
