@@ -27,8 +27,8 @@ class RelationshipHandler implements HandlerInterface
         foreach ($definitions as $definition)
         {
             $relationship = $definition->isCollection()
-                ? $this->createIdentifierCollectionRelationship($object, $definition)
-                : $this->createSingleIdentifierRelationship($object, $definition);
+                ? $this->createIdentifierCollectionRelationship($object, $definition, $context)
+                : $this->createSingleIdentifierRelationship($object, $definition, $context);
 
             $resource->setRelationship($definition->getName(), $relationship);
         }
@@ -47,15 +47,14 @@ class RelationshipHandler implements HandlerInterface
      *
      * @param  mixed                  $object
      * @param  RelationshipDefinition $definition
-     * @return ResourceIdentifierObject
+     * @return SingleIdentifierRelationship
      */
-    protected function createSingleIdentifierRelationship($object, RelationshipDefinition $definition): SingleIdentifierRelationship
+    protected function createSingleIdentifierRelationship($object, RelationshipDefinition $definition, MappingContext $context): SingleIdentifierRelationship
     {
         $relatedObject = $object->{$definition->getGetter()}();
 
-        $idGetter     = $definition->getIdentifierGetter();
-        $identifier   = (string) $relatedObject->$idGetter();
-        $resourceType = $definition->getResourceType();
+        $identifier   = $this->resolveIdentifier($relatedObject, $definition, $context);
+        $resourceType = $this->resolveType($relatedObject, $definition, $context);
 
         $resource = new ResourceIdentifierObject($identifier, $resourceType);
 
@@ -69,22 +68,56 @@ class RelationshipHandler implements HandlerInterface
      * @param  RelationshipDefinition $definition
      * @return IdentifierCollectionRelationship
      */
-    protected function createIdentifierCollectionRelationship($object, RelationshipDefinition $definition): IdentifierCollectionRelationship
+    protected function createIdentifierCollectionRelationship($object, RelationshipDefinition $definition, MappingContext $context): IdentifierCollectionRelationship
     {
-        $idGetter     = $definition->getIdentifierGetter();
-        $resourceType     = $definition->getResourceType();
-
         $relationship = new IdentifierCollectionRelationship();
         $collection   = $object->{$definition->getGetter()}();
 
         foreach ($collection as $relatedObject)
         {
-            $identifier = (string) $relatedObject->$idGetter();
-            $resource   = new ResourceIdentifierObject($identifier, $resourceType);
+            $identifier   = $this->resolveIdentifier($relatedObject, $definition, $context);
+            $resourceType = $this->resolveType($relatedObject, $definition, $context);
+            $resource     = new ResourceIdentifierObject($identifier, $resourceType);
 
             $relationship->addIdentifier($resource);
         }
 
         return $relationship;
+    }
+
+    /**
+     * Resolve ID of resource
+     *
+     * @param  mixed                  $object
+     * @param  RelationshipDefinition $definition
+     * @param  MappingContext         $context
+     * @return string
+     */
+    protected function resolveIdentifier($object, RelationshipDefinition $definition, MappingContext $context): string
+    {
+        if ($definition->hasIdentifierGetter()) {
+            $method = $definition->getIdentifierGetter();
+
+            return (string) $object->$method();
+        }
+
+        return $context->getIdentifierHandler()->getIdentifier($object, $context);
+    }
+
+    /**
+     * Resolve type of resource
+     *
+     * @param  mixed                  $object
+     * @param  RelationshipDefinition $definition
+     * @param  MappingContext         $context
+     * @return string
+     */
+    protected function resolveType($object, RelationshipDefinition $definition, MappingContext $context): string
+    {
+        if ($definition->hasResourceType()) {
+            return $definition->getResourceType();
+        }
+
+        return $context->getTypeHandler()->getType($object, $context);
     }
 }

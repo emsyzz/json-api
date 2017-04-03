@@ -66,13 +66,11 @@ class Relationship
      * Relationship constructor.
      *
      * @param string $name
-     * @param string $resourceType
      * @param int    $relationType
      */
-    public function __construct(string $name, string $resourceType, int $relationType)
+    public function __construct(string $name, int $relationType)
     {
         $this->name         = $name;
-        $this->resourceType = $resourceType;
         $this->relationType = $relationType;
     }
 
@@ -164,6 +162,16 @@ class Relationship
     }
 
     /**
+     * Has identifier type defined ?
+     *
+     * @return bool
+     */
+    public function hasIdentifierGetter(): bool
+    {
+        return $this->identifierGetter !== null;
+    }
+
+    /**
      * Get getter-method to access an identifier of related object
      *
      * @return string
@@ -171,6 +179,26 @@ class Relationship
     public function getIdentifierGetter(): string
     {
         return $this->identifierGetter;
+    }
+
+    /**
+     * Set type of resource
+     *
+     * @param string $type
+     */
+    public function setResourceType(string $type)
+    {
+        $this->resourceType = $type;
+    }
+
+    /**
+     * Has resource type defined ?
+     *
+     * @return bool
+     */
+    public function hasResourceType(): bool
+    {
+        return $this->resourceType !== null;
     }
 
     /**

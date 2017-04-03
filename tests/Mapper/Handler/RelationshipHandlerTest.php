@@ -7,6 +7,7 @@ use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Document\SingleIdentifierRelationship;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Relationship;
+use Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler\TypeHandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 use PHPUnit\Framework\TestCase;
 
@@ -47,7 +48,9 @@ class RelationshipHandlerTest extends TestCase
                 $this->assertSame('stdClass', $identifier->getType());
             });
 
-        $handler = new RelationshipHandler();
+        $typeHandler = $this->createMock(TypeHandlerInterface::class);
+
+        $handler = new RelationshipHandler($typeHandler);
         $context = $this->createContext();
 
         $handler->toResource($object, $resource, $context);
@@ -84,7 +87,9 @@ class RelationshipHandlerTest extends TestCase
                 $this->assertSame('stdClass', $identifier->getType());
             });
 
-        $handler = new RelationshipHandler();
+        $typeHandler = $this->createMock(TypeHandlerInterface::class);
+
+        $handler = new RelationshipHandler($typeHandler);
         $context = $this->createContext(true);
 
         $handler->toResource($object, $resource, $context);
@@ -100,8 +105,14 @@ class RelationshipHandlerTest extends TestCase
         $relationship->method('getGetter')
             ->willReturn('getRelationship');
 
+        $relationship->method('hasIdentifierGetter')
+            ->willReturn('getId');
+
         $relationship->method('getIdentifierGetter')
             ->willReturn('getId');
+
+        $relationship->method('hasResourceType')
+            ->willReturn(true);
 
         $relationship->method('getResourceType')
             ->willReturn('stdClass');
