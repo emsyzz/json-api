@@ -60,7 +60,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
      *
      * @param  RelationshipAnnotation $annotation
      * @param  \ReflectionProperty    $property
-     * @return Definition
+     * @return Relationship
      */
     protected function createRelationship(RelationshipAnnotation $annotation, \ReflectionProperty $property): Relationship
     {
@@ -72,19 +72,33 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
 
         $relationship = new Relationship($name, $type);
 
-        $getter = ($annotation->getter === null)
-            ? ('get' . ucfirst($name))
-            : $annotation->getter;
-
-        $relationship->setGetter($getter);
-
         if ($annotation->resourceType !== null) {
             $relationship->setResourceType($annotation->resourceType);
         }
 
+        $this->handleGetter($annotation, $relationship);
         $this->handleIdentifier($annotation, $relationship);
 
         return $relationship;
+    }
+
+    /**
+     * Handler getter of related object
+     *
+     * @param RelationshipAnnotation $annotation
+     * @param Relationship           $relationship
+     */
+    protected function handleGetter(RelationshipAnnotation $annotation, Relationship $relationship)
+    {
+        if ($annotation->getter === null) {
+            $name   = $relationship->getName();
+            $getter = 'get' . ucfirst($name);
+
+            $relationship->setGetter($getter);
+            return;
+        }
+
+        $relationship->setGetter($annotation->getter);
     }
 
     /**
