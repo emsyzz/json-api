@@ -2,7 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\Mapper;
 
-use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,7 +14,7 @@ class MappingContextTest extends TestCase
     public function testContextData()
     {
         $mapper     = $this->createMock(ObjectMapper::class);
-        $definition = $this->createMock(DefinitionInterface::class);
+        $definition = $this->createMock(Definition::class);
 
         $context = new MappingContext($mapper, $definition);
 

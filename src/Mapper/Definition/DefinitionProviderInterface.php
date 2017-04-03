@@ -14,7 +14,7 @@ interface DefinitionProviderInterface
      * Get mapping definition for given class
      *
      * @param  string $class
-     * @return DefinitionInterface
+     * @return Definition
      */
-    public function getDefinition(string $class): DefinitionInterface;
+    public function getDefinition(string $class): Definition;
 }

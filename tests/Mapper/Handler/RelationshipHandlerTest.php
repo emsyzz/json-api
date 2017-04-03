@@ -5,7 +5,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 use Mikemirten\Component\JsonApi\Document\IdentifierCollectionRelationship;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Document\SingleIdentifierRelationship;
-use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Relationship;
 use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 use PHPUnit\Framework\TestCase;
@@ -109,7 +109,7 @@ class RelationshipHandlerTest extends TestCase
         $relationship->method('isCollection')
             ->willReturn($toMany);
 
-        $definition = $this->createMock(DefinitionInterface::class);
+        $definition = $this->createMock(Definition::class);
 
         $definition->expects($this->once())
             ->method('getRelationships')

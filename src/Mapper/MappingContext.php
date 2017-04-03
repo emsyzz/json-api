@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper;
 
-use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 
 /**
  * Context of mapping
@@ -22,17 +22,17 @@ class MappingContext
     /**
      * Mapping definition
      *
-     * @var DefinitionInterface
+     * @var Definition
      */
     protected $definition;
 
     /**
      * MappingContext constructor.
      *
-     * @param ObjectMapper        $mapper
-     * @param DefinitionInterface $definition
+     * @param ObjectMapper $mapper
+     * @param Definition   $definition
      */
-    public function __construct(ObjectMapper $mapper, DefinitionInterface $definition)
+    public function __construct(ObjectMapper $mapper, Definition $definition)
     {
         $this->mapper     = $mapper;
         $this->definition = $definition;
@@ -51,9 +51,9 @@ class MappingContext
     /**
      * Get mapping configuration
      *
-     * @return DefinitionInterface
+     * @return Definition
      */
-    public function getDefinition(): DefinitionInterface
+    public function getDefinition(): Definition
     {
         return $this->definition;
     }

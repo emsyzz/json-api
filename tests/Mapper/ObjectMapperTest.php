@@ -3,7 +3,7 @@
 namespace Mikemirten\Component\JsonApi\Mapper;
 
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
-use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionProviderInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\HandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler\IdentifierHandlerInterface;
@@ -28,7 +28,7 @@ class ObjectMapperTest extends TestCase
         $definitionProvider->expects($this->once())
             ->method('getDefinition')
             ->with('stdClass')
-            ->willReturn($this->createMock(DefinitionInterface::class));
+            ->willReturn($this->createMock(Definition::class));
 
         $identifierHandler->expects($this->once())
             ->method('getIdentifier')
@@ -81,7 +81,7 @@ class ObjectMapperTest extends TestCase
         $definitionProvider->expects($this->once())
             ->method('getDefinition')
             ->with('stdClass')
-            ->willReturn($this->createMock(DefinitionInterface::class));
+            ->willReturn($this->createMock(Definition::class));
 
         $identifierHandler->expects($this->once())
             ->method('setIdentifier')

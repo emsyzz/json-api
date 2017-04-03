@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Mapper;
 
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
-use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionProviderInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\HandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler\IdentifierHandlerInterface;

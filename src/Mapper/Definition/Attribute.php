@@ -10,5 +10,30 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition;
  */
 class Attribute
 {
-    // TODO: Implement definition of attribute
+    /**
+     * Unique name
+     *
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Attribute constructor.
+     *
+     * @param string $name
+     */
+    public function __construct(string $name)
+    {
+        $this->name;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
