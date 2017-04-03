@@ -13,12 +13,12 @@ class Definition
     /**
      * @var Attribute[]
      */
-    protected $attributes;
+    protected $attributes = [];
 
     /**
      * @var Relationship[]
      */
-    protected $relationships;
+    protected $relationships = [];
 
     /**
      * Add attribute
