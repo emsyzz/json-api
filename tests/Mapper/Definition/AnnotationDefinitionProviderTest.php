@@ -5,7 +5,6 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Relationship as RelationshipAnnotation;
-use Mikemirten\Component\JsonApi\Mapper\Definition\Relationship;
 use PHPUnit\Framework\TestCase;
 
 include __DIR__ . '/Fixture.php';
