@@ -6,6 +6,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 use Mikemirten\Component\JsonApi\Document\LinkObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Link as LinkDefinition;
+use Mikemirten\Component\JsonApi\Mapper\Handler\LinkRepository\Link as LinkData;
 use Mikemirten\Component\JsonApi\Mapper\Handler\LinkRepository\RepositoryProvider as LinkRepositoryProvider;
 use Mikemirten\Component\JsonApi\Mapper\Handler\PropertyAccessor\PropertyAccessorInterface;
 use Mikemirten\Component\JsonApi\Mapper\MappingContext;
@@ -54,16 +55,29 @@ class LinkHandler implements HandlerInterface
                 ->getRepository($repoName)
                 ->getLink($linkName, $parameters);
 
-            $link = new LinkObject(
-                $linkData->getReference(),
-                array_replace(
-                    $linkData->getMetadata(),
-                    $linkDefinition->getMetadata()
-                )
-            );
+            $link = $this->createLink($linkDefinition, $linkData);
 
             $resource->setLink($linkDefinition->getName(), $link);
         }
+    }
+
+    /**
+     * Create link-object
+     *
+     * @param  LinkDefinition $definition
+     * @param  LinkData       $data
+     * @return LinkObject
+     */
+    protected function createLink(LinkDefinition $definition, LinkData $data): LinkObject
+    {
+        $reference = $data->getReference();
+
+        $metadata = array_replace(
+            $data->getMetadata(),
+            $definition->getMetadata()
+        );
+
+        return new LinkObject($reference, $metadata);
     }
 
     /**
