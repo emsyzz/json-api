@@ -2,7 +2,6 @@
 
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
-use Mikemirten\Component\JsonApi\Mapper\Definition\Relationship;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -54,5 +53,36 @@ class DefinitionTest extends TestCase
         $definition = new Definition();
         $definition->addRelationship($relationship);
         $definition->addRelationship($relationship);
+    }
+
+    public function testLinks()
+    {
+        $link = $this->createMock(Link::class);
+
+        $link->expects($this->once())
+            ->method('getName')
+            ->willReturn('test');
+
+        $definition = new Definition();
+        $definition->addLink($link);
+
+        $this->assertSame($link, $definition->getLinks()['test']);
+    }
+
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinksOverride()
+    {
+        $link = $this->createMock(Link::class);
+
+        $link->expects($this->exactly(2))
+            ->method('getName')
+            ->willReturn('test_link');
+
+        $definition = new Definition();
+        $definition->addLink($link);
+        $definition->addLink($link);
     }
 }

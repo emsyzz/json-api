@@ -11,7 +11,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 class Attribute
 {
     /**
-     * Unique name
+     * Unique name of attribute inside of attribute-object
      *
      * @var string
      */

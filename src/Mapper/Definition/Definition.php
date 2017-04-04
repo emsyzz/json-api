@@ -21,6 +21,11 @@ class Definition
     protected $relationships = [];
 
     /**
+     * @var Link[]
+     */
+    protected $links = [];
+
+    /**
      * Add attribute
      *
      * @param  Attribute $attribute
@@ -72,5 +77,31 @@ class Definition
     public function getRelationships(): array
     {
         return $this->relationships;
+    }
+
+    /**
+     * Add link
+     *
+     * @param Link $link
+     */
+    public function addLink(Link $link)
+    {
+        $name = $link->getName();
+
+        if (isset($this->links[$name])) {
+            throw new \LogicException(sprintf('Link "%s" already defined.', $name));
+        }
+
+        $this->links[$name] = $link;
+    }
+
+    /**
+     * Get links
+     *
+     * @return Link[]
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
     }
 }
