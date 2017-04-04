@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Mapper\Definition\Annotation;
 
 /**
- * Annotation defines a property as relationship of JsonAPI-resource.
+ * Annotation defines a property as a relationship of JsonAPI-resource.
  *
  * @Annotation
  * @Target({"PROPERTY"})
@@ -17,8 +17,17 @@ class Relationship
     const TYPE_MANY = 'many';
 
     /**
-     * Name of relation.
+     * Name of resource inside of relationships-object.
      * By default will be used name of property.
+     *
+     * {
+     *     "author": { <--- Name of relationship
+     *         "data": {
+     *             "id":   "12345",
+     *             "type": "Author"
+     *         }
+     *     }
+     * }
      *
      * @var string
      */

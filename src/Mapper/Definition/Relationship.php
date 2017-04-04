@@ -14,18 +14,29 @@ class Relationship
     const TYPE_X_TO_MANY = 2;
 
     /**
-     * Unique name
+     * Name of resource inside of relationships-object
+     *
+     * {
+     *     "author": { <--- Name of relationship
+     *         "data": {
+     *             "id":   "12345",
+     *             "type": "Author"
+     *         }
+     *     }
+     * }
      *
      * @var string
      */
     protected $name;
 
     /**
-     * Type
+     * Type or relationship: "x to one" or "x to many".
+     *
+     * @see for TYPE_* constants.
      *
      * @var int
      */
-    protected $relationType;
+    protected $type;
 
     /**
      * Collection of links
@@ -40,6 +51,14 @@ class Relationship
      * @var array
      */
     protected $metadata = [];
+
+    /**
+     * Name of property contains related object.
+     * Value is optional. Can be set only for real properties.
+     *
+     * @var string
+     */
+    protected $propertyName;
 
     /**
      * Getter-method to access related data
@@ -66,12 +85,12 @@ class Relationship
      * Relationship constructor.
      *
      * @param string $name
-     * @param int    $relationType
+     * @param int    $type
      */
-    public function __construct(string $name, int $relationType)
+    public function __construct(string $name, int $type)
     {
-        $this->name         = $name;
-        $this->relationType = $relationType;
+        $this->name = $name;
+        $this->type = $type;
     }
 
     /**
@@ -128,7 +147,37 @@ class Relationship
      */
     public function isCollection(): bool
     {
-        return $this->relationType === self::TYPE_X_TO_MANY;
+        return $this->type === self::TYPE_X_TO_MANY;
+    }
+
+    /**
+     * Set name of property contains related object
+     *
+     * @param string $name
+     */
+    public function setPropertyName(string $name)
+    {
+        $this->propertyName = $name;
+    }
+
+    /**
+     * Has name of property ?
+     *
+     * @return bool
+     */
+    public function hasPropertyName(): bool
+    {
+        return $this->propertyName !== null;
+    }
+
+    /**
+     * Get name of property contains related object
+     *
+     * @return string
+     */
+    public function getPropertyName(): string
+    {
+        return $this->propertyName;
     }
 
     /**

@@ -19,7 +19,7 @@ class AnnotationDefinitionProviderTest extends TestCase
     {
         $annotation = new RelationshipAnnotation();
 
-        $annotation->name         = 'test';
+        $annotation->name         = 'test_relation';
         $annotation->type         = 'many';
         $annotation->resourceType = 'Fixture';
         $annotation->getter       = 'getTest';
@@ -40,10 +40,10 @@ class AnnotationDefinitionProviderTest extends TestCase
 
         $this->assertInstanceOf(Definition::class, $definition);
 
-        $relationship = $definition->getRelationships()['test'];
+        $relationship = $definition->getRelationships()['test_relation'];
 
         $this->assertInstanceOf(Relationship::class, $relationship);
-        $this->assertSame('test', $relationship->getName());
+        $this->assertSame('test_relation', $relationship->getName());
         $this->assertTrue($relationship->isCollection());
         $this->assertSame('Fixture', $relationship->getResourceType());
         $this->assertTrue($relationship->hasResourceType());

@@ -71,6 +71,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         $type = $this->resoleType($annotation);
 
         $relationship = new Relationship($name, $type);
+        $relationship->setPropertyName($property->getName());
 
         if ($annotation->resourceType !== null) {
             $relationship->setResourceType($annotation->resourceType);
@@ -91,7 +92,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     protected function handleGetter(RelationshipAnnotation $annotation, Relationship $relationship)
     {
         if ($annotation->getter === null) {
-            $name   = $relationship->getName();
+            $name   = $relationship->getPropertyName();
             $getter = 'get' . ucfirst($name);
 
             $relationship->setGetter($getter);
