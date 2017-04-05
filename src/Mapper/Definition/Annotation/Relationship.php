@@ -9,7 +9,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition\Annotation;
  * @Annotation
  * @Target({"PROPERTY"})
  *
- * @package Mapper\Definition\Annotation
+ * @package Mikemirten\Component\JsonApi\Mapper\Definition\Annotation
  */
 class Relationship
 {
@@ -73,4 +73,11 @@ class Relationship
      * @var string
      */
     public $idGetter;
+
+    /**
+     * Links belongs to relationship
+     *
+     * @var array<Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link>
+     */
+    public $links = [];
 }
