@@ -29,7 +29,7 @@ class Link
      *
      * @var string
      */
-    protected $resourceName;
+    protected $linkName;
 
     /**
      * Parameters for link resolving

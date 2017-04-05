@@ -1,9 +1,11 @@
 <?php
+declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link as LinkAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Relationship as RelationshipAnnotation;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +17,74 @@ include __DIR__ . '/Fixture.php';
  */
 class AnnotationDefinitionProviderTest extends TestCase
 {
-    public function testDfinition()
+    public function testDefinition()
+    {
+        $reader = $this->createReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $this->assertInstanceOf(Definition::class, $definition);
+        $this->assertSame(Fixture::class, $definition->getClass());
+    }
+
+    public function testDefinitionLink()
+    {
+        $linkAnnotation = new LinkAnnotation();
+
+        $linkAnnotation->name       = 'definition_link';
+        $linkAnnotation->resource   = 'repository_name.link_name';
+        $linkAnnotation->parameters = ['param_name' => 'param_value'];
+        $linkAnnotation->metadata   = ['meta_name' => 'meta_value'];
+
+        $reader = $this->createReader([$linkAnnotation]);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $link = $definition->getLinks()['definition_link'];
+
+        $this->assertSame('definition_link', $link->getName());
+        $this->assertSame('repository_name', $link->getRepositoryName());
+        $this->assertSame('link_name', $link->getLinkName());
+        $this->assertSame(
+            ['param_name' => 'param_value'],
+            $link->getParameters()
+        );
+        $this->assertSame(
+            ['meta_name' => 'meta_value'],
+            $link->getMetadata()
+        );
+    }
+
+    /**
+     * Integration test with real doctrine's reader
+     *
+     * @depends testDefinitionLink
+     */
+    public function testIntegrationWithReaderDefinitionLink()
+    {
+        $reader = new AnnotationReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $link = $definition->getLinks()['definition_link'];
+
+        $this->assertSame('definition_link', $link->getName());
+        $this->assertSame('repository_name', $link->getRepositoryName());
+        $this->assertSame('link_name', $link->getLinkName());
+        $this->assertSame(
+            ['param_name' => 'param_value'],
+            $link->getParameters()
+        );
+        $this->assertSame(
+            ['meta_name' => 'meta_value'],
+            $link->getMetadata()
+        );
+    }
+
+    public function testRelation()
     {
         $annotation = new RelationshipAnnotation();
 
@@ -25,20 +94,10 @@ class AnnotationDefinitionProviderTest extends TestCase
         $annotation->getter       = 'getTest';
         $annotation->idProperty   = 'id';
 
-        $reader = $this->createMock(Reader::class);
-
-        $reader->expects($this->once())
-            ->method('getPropertyAnnotation')
-            ->with(
-                $this->isInstanceOf(\ReflectionProperty::class),
-                RelationshipAnnotation::class
-            )
-            ->willReturn($annotation);
+        $reader = $this->createReader([], $annotation);
 
         $provider   = new AnnotationDefinitionProvider($reader);
         $definition = $provider->getDefinition(Fixture::class);
-
-        $this->assertInstanceOf(Definition::class, $definition);
 
         $relationship = $definition->getRelationships()['test_relation'];
 
@@ -52,17 +111,51 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertSame('getId', $relationship->getIdentifierGetter());
     }
 
+    public function testRelationLink()
+    {
+        $linkAnnotation = new LinkAnnotation();
+
+        $linkAnnotation->name       = 'relation_link';
+        $linkAnnotation->resource   = 'repository_name.link_name';
+        $linkAnnotation->parameters = ['param_name' => 'param_value'];
+        $linkAnnotation->metadata   = ['meta_name' => 'meta_value'];
+
+        $annotation = new RelationshipAnnotation();
+
+        $annotation->name  = 'test_relation';
+        $annotation->links = [$linkAnnotation];
+
+        $reader = $this->createReader([], $annotation);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $link = $definition->getRelationships()['test_relation']->getLinks()['relation_link'];
+
+        $this->assertSame('relation_link', $link->getName());
+        $this->assertSame('repository_name', $link->getRepositoryName());
+        $this->assertSame('link_name', $link->getLinkName());
+        $this->assertSame(
+            ['param_name' => 'param_value'],
+            $link->getParameters()
+        );
+        $this->assertSame(
+            ['meta_name' => 'meta_value'],
+            $link->getMetadata()
+        );
+    }
+
     /**
      * Integration test with real doctrine's reader
+     *
+     * @depends testRelation
      */
-    public function testIntegrationWithReader()
+    public function testIntegrationWithReaderRelation()
     {
         $reader = new AnnotationReader();
 
         $provider   = new AnnotationDefinitionProvider($reader);
         $definition = $provider->getDefinition(Fixture::class);
-
-        $this->assertInstanceOf(Definition::class, $definition);
 
         $relationship = $definition->getRelationships()['test'];
 
@@ -74,5 +167,61 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertSame('getTest', $relationship->getGetter());
         $this->assertTrue($relationship->hasIdentifierGetter());
         $this->assertSame('getId', $relationship->getIdentifierGetter());
+    }
+
+    /**
+     * Integration test with real doctrine's reader
+     *
+     * @depends testRelationLink
+     */
+    public function testIntegrationWithReaderRelationLink()
+    {
+        $reader = new AnnotationReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $link = $definition->getRelationships()['test']->getLinks()['relation_link'];
+
+        $this->assertSame('relation_link', $link->getName());
+        $this->assertSame('repository_name', $link->getRepositoryName());
+        $this->assertSame('link_name', $link->getLinkName());
+        $this->assertSame(
+            ['param_name' => 'param_value'],
+            $link->getParameters()
+        );
+        $this->assertSame(
+            ['meta_name' => 'meta_value'],
+            $link->getMetadata()
+        );
+    }
+
+    /**
+     * Create mock of annotation reader
+     *
+     * @param  array                  $classAnnotations
+     * @param  RelationshipAnnotation $relationshipAnnotation
+     * @return Reader
+     */
+    protected function createReader(array $classAnnotations = [], RelationshipAnnotation $relationshipAnnotation = null): Reader
+    {
+        $reader = $this->createMock(Reader::class);
+
+        $reader->expects($this->once())
+            ->method('getClassAnnotations')
+            ->with($this->isInstanceOf('ReflectionClass'))
+            ->willReturn($classAnnotations);
+
+        if ($relationshipAnnotation !== null) {
+            $reader->expects($this->once())
+                ->method('getPropertyAnnotation')
+                ->with(
+                    $this->isInstanceOf('ReflectionProperty'),
+                    RelationshipAnnotation::class
+                )
+                ->willReturn($relationshipAnnotation);
+        }
+
+        return $reader;
     }
 }

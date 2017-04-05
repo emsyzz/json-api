@@ -3,21 +3,27 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
+use Mikemirten\Component\JsonApi\Mapper\Definition\Behaviour\LinksAwareInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Behaviour\LinksContainer;
+
+
 /**
  * Definition of relationship
  *
  * @package Mikemirten\Component\JsonApi\Mapper\Definition
  */
-class Relationship
+class Relationship implements LinksAwareInterface
 {
+    use LinksContainer;
+
     const TYPE_X_TO_ONE  = 1;
     const TYPE_X_TO_MANY = 2;
 
     /**
-     * Name of resource inside of relationships-object
+     * Name unique name of resource-object inside of relationships-object
      *
      * {
-     *     "author": { <--- Name of relationship
+     *     "author": { <--- Name of resource-object
      *         "data": {
      *             "id":   "12345",
      *             "type": "Author"
@@ -37,13 +43,6 @@ class Relationship
      * @var int
      */
     protected $type;
-
-    /**
-     * Collection of links
-     *
-     * @var array
-     */
-    protected $links = [];
 
     /**
      * Extra metadata
@@ -101,32 +100,6 @@ class Relationship
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * Set link
-     *
-     * @param string        $name
-     * @param LinkInterface $link
-     */
-    public function setLink(string $name, LinkInterface $link)
-    {
-        if (isset($this->links[$name])) {
-            throw new \LogicException(sprintf('A link name by "%s" is already exists for the relationship'));
-        }
-
-        $this->links[$name] = $link;
-    }
-
-    /**
-     * Get links
-     * [name => link-object]
-     *
-     * @return LinkInterface[]
-     */
-    public function getLinks(): array
-    {
-        $this->links;
     }
 
     /**
@@ -188,6 +161,16 @@ class Relationship
     public function setGetter(string $method)
     {
         $this->getter = $method;
+    }
+
+    /**
+     * Contains name of a getter-method to access related data ?
+     *
+     * @return bool
+     */
+    public function hasGetter(): bool
+    {
+        return $this->getter !== null;
     }
 
     /**
