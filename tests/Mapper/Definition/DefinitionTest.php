@@ -10,16 +10,23 @@ use PHPUnit\Framework\TestCase;
  */
 class DefinitionTest extends TestCase
 {
+    public function testClass()
+    {
+        $definition = new Definition('stdClass');
+
+        $this->assertSame('stdClass', $definition->getClass());
+    }
+
     public function testEmptyAttributes()
     {
-        $definition = new Definition();
+        $definition = new Definition('stdClass');
 
         $this->assertSame([], $definition->getAttributes());
     }
 
     public function testEmptyRelationships()
     {
-        $definition = new Definition();
+        $definition = new Definition('stdClass');
 
         $this->assertSame([], $definition->getRelationships());
     }
@@ -32,7 +39,7 @@ class DefinitionTest extends TestCase
             ->method('getName')
             ->willReturn('Test');
 
-        $definition = new Definition();
+        $definition = new Definition('stdClass');
         $definition->addRelationship($relationship);
 
         $this->assertSame(['Test' => $relationship], $definition->getRelationships());
@@ -50,7 +57,7 @@ class DefinitionTest extends TestCase
             ->method('getName')
             ->willReturn('Test');
 
-        $definition = new Definition();
+        $definition = new Definition('stdClass');
         $definition->addRelationship($relationship);
         $definition->addRelationship($relationship);
     }
@@ -63,7 +70,7 @@ class DefinitionTest extends TestCase
             ->method('getName')
             ->willReturn('test');
 
-        $definition = new Definition();
+        $definition = new Definition('stdClass');
         $definition->addLink($link);
 
         $this->assertSame($link, $definition->getLinks()['test']);
@@ -81,7 +88,7 @@ class DefinitionTest extends TestCase
             ->method('getName')
             ->willReturn('test_link');
 
-        $definition = new Definition();
+        $definition = new Definition('stdClass');
         $definition->addLink($link);
         $definition->addLink($link);
     }

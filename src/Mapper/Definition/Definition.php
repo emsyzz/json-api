@@ -3,27 +3,58 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
+use Mikemirten\Component\JsonApi\Mapper\Definition\Behaviour\LinksAwareInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Behaviour\LinksContainer;
+
 /**
  * Mapping Definition
  *
  * @package Mikemirten\Component\JsonApi\Mapper\Definition
  */
-class Definition
+class Definition implements LinksAwareInterface
 {
+    use LinksContainer;
+
     /**
+     * Class covered by definition
+     *
+     * @var string
+     */
+    protected $class;
+
+    /**
+     * Attributes
+     *
      * @var Attribute[]
      */
     protected $attributes = [];
 
     /**
+     * Relationships
+     *
      * @var Relationship[]
      */
     protected $relationships = [];
 
     /**
-     * @var Link[]
+     * Definition constructor.
+     *
+     * @param string $class
      */
-    protected $links = [];
+    public function __construct(string $class)
+    {
+        $this->class = $class;
+    }
+
+    /**
+     * Get class covered by definition
+     *
+     * @return string
+     */
+    public function getClass(): string
+    {
+        return $this->class;
+    }
 
     /**
      * Add attribute
@@ -77,31 +108,5 @@ class Definition
     public function getRelationships(): array
     {
         return $this->relationships;
-    }
-
-    /**
-     * Add link
-     *
-     * @param Link $link
-     */
-    public function addLink(Link $link)
-    {
-        $name = $link->getName();
-
-        if (isset($this->links[$name])) {
-            throw new \LogicException(sprintf('Link "%s" already defined.', $name));
-        }
-
-        $this->links[$name] = $link;
-    }
-
-    /**
-     * Get links
-     *
-     * @return Link[]
-     */
-    public function getLinks(): array
-    {
-        return $this->links;
     }
 }
