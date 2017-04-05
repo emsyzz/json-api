@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikemirten\Component\JsonApi\Mapper\Handler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\LinkHandler;
 
 use Mikemirten\Component\JsonApi\Document\LinkObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;

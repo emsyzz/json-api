@@ -1,17 +1,25 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\Component\JsonApi\Mapper\Handler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\LinkHandler;
 
 use Mikemirten\Component\JsonApi\Document\LinkObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Link as LinkDefinition;
+use Mikemirten\Component\JsonApi\Mapper\Handler\HandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\LinkRepository\Link as LinkData;
 use Mikemirten\Component\JsonApi\Mapper\Handler\LinkRepository\RepositoryProvider as LinkRepositoryProvider;
 use Mikemirten\Component\JsonApi\Mapper\Handler\PropertyAccessor\PropertyAccessorInterface;
 use Mikemirten\Component\JsonApi\Mapper\MappingContext;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Behaviour\LinksAwareInterface as LinksAwareDefinitionInterface;
+use Mikemirten\Component\JsonApi\Document\Behaviour\LinksAwareInterface as LinksAwareDocumentInterface;
 
-class LinkHandler implements HandlerInterface
+/**
+ * An implementation of links handler based on repositories of links.
+ *
+ * @package Mikemirten\Component\JsonApi\Mapper\Handler\LinkHandler
+ */
+class LinkHandler implements HandlerInterface, LinkHandlerInterface
 {
     /**
      * Provider of links' repositories
@@ -44,7 +52,18 @@ class LinkHandler implements HandlerInterface
      */
     public function toResource($object, ResourceObject $resource, MappingContext $context)
     {
-        foreach ($context->getDefinition()->getLinks() as $linkDefinition)
+        $this->handleLinks($object, $context->getDefinition(), $resource);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function handleLinks(
+        $object,
+        LinksAwareDefinitionInterface $definition,
+        LinksAwareDocumentInterface   $document
+    ) {
+        foreach ($definition->getLinks() as $linkDefinition)
         {
             $repoName = $linkDefinition->getRepositoryName();
             $linkName = $linkDefinition->getLinkName();
@@ -57,7 +76,7 @@ class LinkHandler implements HandlerInterface
 
             $link = $this->createLink($linkDefinition, $linkData);
 
-            $resource->setLink($linkDefinition->getName(), $link);
+            $document->setLink($linkDefinition->getName(), $link);
         }
     }
 

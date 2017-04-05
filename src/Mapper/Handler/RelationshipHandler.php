@@ -8,6 +8,7 @@ use Mikemirten\Component\JsonApi\Document\ResourceIdentifierObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Document\SingleIdentifierRelationship;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Relationship as RelationshipDefinition;
+use Mikemirten\Component\JsonApi\Mapper\Handler\LinkHandler\LinkHandlerInterface;
 use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 
 /**
@@ -17,6 +18,23 @@ use Mikemirten\Component\JsonApi\Mapper\MappingContext;
  */
 class RelationshipHandler implements HandlerInterface
 {
+    /**
+     * Links' handler
+     *
+     * @var LinkHandlerInterface
+     */
+    protected $linkHandler;
+
+    /**
+     * RelationshipHandler constructor.
+     *
+     * @param LinkHandlerInterface $linkHandler
+     */
+    public function __construct(LinkHandlerInterface $linkHandler)
+    {
+        $this->linkHandler = $linkHandler;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -56,9 +74,12 @@ class RelationshipHandler implements HandlerInterface
         $identifier   = $this->resolveIdentifier($relatedObject, $definition, $context);
         $resourceType = $this->resolveType($relatedObject, $definition, $context);
 
-        $resource = new ResourceIdentifierObject($identifier, $resourceType);
+        $resource     = new ResourceIdentifierObject($identifier, $resourceType);
+        $relationship = new SingleIdentifierRelationship($resource);
 
-        return new SingleIdentifierRelationship($resource);
+        $this->linkHandler->handleLinks($object, $definition, $relationship);
+
+        return $relationship;
     }
 
     /**
@@ -81,6 +102,8 @@ class RelationshipHandler implements HandlerInterface
 
             $relationship->addIdentifier($resource);
         }
+
+        $this->linkHandler->handleLinks($object, $definition, $relationship);
 
         return $relationship;
     }
