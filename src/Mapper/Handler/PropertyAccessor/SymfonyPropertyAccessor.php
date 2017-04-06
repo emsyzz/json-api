@@ -6,7 +6,9 @@ namespace Mikemirten\Component\JsonApi\Mapper\Handler\PropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface as SymfonyPropertyAccessorInterface;
 
 /**
- * Symfony component based property accessor
+ * A property-accessor implementation based on the Symfony PropertyAccess component.
+ *
+ * @see http://symfony.com/doc/current/components/property_access.html
  *
  * @package Mikemirten\Component\JsonApi\Mapper\Handler\PropertyAccessor
  */
