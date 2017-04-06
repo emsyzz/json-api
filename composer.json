@@ -15,7 +15,8 @@
         "phpunit/phpunit": "^6.0",
         "guzzlehttp/guzzle": "^6.0",
         "jms/serializer": "^1.4",
-        "symfony/property-access": "^3.0"
+        "symfony/property-access": "^3.0",
+        "symfony/routing": "^3.0"
 
     },
 
