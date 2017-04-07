@@ -38,3 +38,16 @@ $document = new SingleResourceDocument($resource);
 
 echo json_encode($document->toArray());
 ```
+Response body:
+```javascript
+{
+    "data": {
+        "id": "1",
+        "type": "Post",
+        "attributes": {
+            "title": "Lorem Ipsum",
+            "body": "Lorem ipsum dolor sit amet, lobortis urna sed imperdiet..."
+        }
+    }
+}
+```
