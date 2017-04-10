@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @package Mikemirten\Component\JsonApi\HttpClient\Decorator
  */
-class SymfonyEventDispatcherDecorator implements  HttpClientInterface
+class SymfonyEventDispatcherDecorator implements HttpClientInterface
 {
     const EVENT_REQUEST  = 'mrtn_json_api.http_client.request';
     const EVENT_RESPONSE = 'mrtn_json_api.http_client.response';
