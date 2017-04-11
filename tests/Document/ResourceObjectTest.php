@@ -32,6 +32,20 @@ class ResourceObjectTest extends TestCase
         $this->assertSame(['test' => 42], $resource->getAttributes());
     }
 
+    /**
+     * @depends testAttributes
+     */
+    public function testRemoveAttribute()
+    {
+        $resource = new ResourceObject('42', 'test', [
+            'test' => 42
+        ]);
+
+        $resource->removeAttribute('test');
+
+        $this->assertFalse($resource->hasAttribute('test'));
+    }
+
     public function testMetadata()
     {
         $resource = new ResourceObject('42', 'test', [], [
@@ -143,5 +157,41 @@ class ResourceObjectTest extends TestCase
             ['test_link' => 'http://qwerty.com'],
             $resource->toArray()['links']
         );
+    }
+
+    public function testToString()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $this->assertRegExp('~42~', (string) $resource);
+        $this->assertRegExp('~test~', (string) $resource);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\AttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~42~
+     * @expectedExceptionMessageRegExp ~test~
+     * @expectedExceptionMessageRegExp ~qwerty~
+     */
+    public function testAttributeNotFound()
+    {
+        $resource = new ResourceObject('42', 'test');
+        $resource->getAttribute('qwerty');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\AttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~42~
+     * @expectedExceptionMessageRegExp ~test~
+     * @expectedExceptionMessageRegExp ~qwerty~
+     */
+    public function testAttributeOverride()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $resource->setAttribute('qwerty', 1);
+        $resource->setAttribute('qwerty', 2);
     }
 }

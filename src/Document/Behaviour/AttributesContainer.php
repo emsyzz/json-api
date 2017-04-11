@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
+use Mikemirten\Component\JsonApi\Exception\AttributeNotFoundException;
+use Mikemirten\Component\JsonApi\Exception\AttributeOverrideException;
+
 /**
  * Attributes-container behaviour
  *
@@ -22,11 +25,16 @@ trait AttributesContainer
     /**
      * Set attribute
      *
-     * @param string $name
-     * @param mixed  $value
+     * @param  string $name
+     * @param  mixed  $value
+     * @throws AttributeOverrideException
      */
     public function setAttribute(string $name, $value)
     {
+        if (isset($this->attributes[$name])) {
+            throw new AttributeOverrideException($this, $name);
+        }
+
         $this->attributes[$name] = $value;
     }
 
@@ -46,10 +54,15 @@ trait AttributesContainer
      *
      * @param  string $name
      * @return mixed
+     * @throws AttributeNotFoundException
      */
     public function getAttribute(string $name)
     {
-        return $this->attributes[$name];
+        if (isset($this->attributes[$name])) {
+            return $this->attributes[$name];
+        }
+
+        throw new AttributeNotFoundException($this, $name);
     }
 
     /**
@@ -60,6 +73,16 @@ trait AttributesContainer
     public function hasAttributes(): bool
     {
         return count($this->attributes) > 0;
+    }
+
+    /**
+     * Remove attribute
+     *
+     * @param string $name
+     */
+    public function removeAttribute(string $name)
+    {
+        unset($this->attributes[$name]);
     }
 
     /**

@@ -62,4 +62,18 @@ class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, Rel
             array_filter($data, 'count')
         );
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf(
+            'Resource-object of type "%s" identified by "%s"',
+            $this->type,
+            $this->id
+        );
+    }
 }
