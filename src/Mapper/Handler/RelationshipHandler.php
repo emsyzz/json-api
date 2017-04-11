@@ -3,7 +3,9 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 
+use Mikemirten\Component\JsonApi\Document\AbstractRelationship;
 use Mikemirten\Component\JsonApi\Document\IdentifierCollectionRelationship;
+use Mikemirten\Component\JsonApi\Document\NoDataRelationship;
 use Mikemirten\Component\JsonApi\Document\ResourceIdentifierObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Document\SingleIdentifierRelationship;
@@ -48,6 +50,8 @@ class RelationshipHandler implements HandlerInterface
                 ? $this->createIdentifierCollectionRelationship($object, $definition, $context)
                 : $this->createSingleIdentifierRelationship($object, $definition, $context);
 
+            $this->linkHandler->handleLinks($object, $definition, $relationship);
+
             $resource->setRelationship($definition->getName(), $relationship);
         }
     }
@@ -65,21 +69,22 @@ class RelationshipHandler implements HandlerInterface
      *
      * @param  mixed                  $object
      * @param  RelationshipDefinition $definition
-     * @return SingleIdentifierRelationship
+     * @return AbstractRelationship ( NoDataRelationship | NoDataRelationship )
      */
-    protected function createSingleIdentifierRelationship($object, RelationshipDefinition $definition, MappingContext $context): SingleIdentifierRelationship
+    protected function createSingleIdentifierRelationship($object, RelationshipDefinition $definition, MappingContext $context): AbstractRelationship
     {
         $relatedObject = $object->{$definition->getGetter()}();
+
+        if ($relatedObject === null) {
+            return new NoDataRelationship();
+        }
 
         $identifier   = $this->resolveIdentifier($relatedObject, $definition, $context);
         $resourceType = $this->resolveType($relatedObject, $definition, $context);
 
-        $resource     = new ResourceIdentifierObject($identifier, $resourceType);
-        $relationship = new SingleIdentifierRelationship($resource);
+        $resource = new ResourceIdentifierObject($identifier, $resourceType);
 
-        $this->linkHandler->handleLinks($object, $definition, $relationship);
-
-        return $relationship;
+        return new SingleIdentifierRelationship($resource);
     }
 
     /**
@@ -102,8 +107,6 @@ class RelationshipHandler implements HandlerInterface
 
             $relationship->addIdentifier($resource);
         }
-
-        $this->linkHandler->handleLinks($object, $definition, $relationship);
 
         return $relationship;
     }

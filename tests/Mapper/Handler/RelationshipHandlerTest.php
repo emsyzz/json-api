@@ -3,6 +3,7 @@
 namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 
 use Mikemirten\Component\JsonApi\Document\IdentifierCollectionRelationship;
+use Mikemirten\Component\JsonApi\Document\NoDataRelationship;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Document\SingleIdentifierRelationship;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
@@ -47,6 +48,30 @@ class RelationshipHandlerTest extends TestCase
                 $this->assertSame('12345', $identifier->getId());
                 $this->assertSame('stdClass', $identifier->getType());
             });
+
+        $linkHandler = $this->createMock(LinkHandlerInterface::class);
+
+        $handler = new RelationshipHandler($linkHandler);
+        $context = $this->createContext();
+
+        $handler->toResource($object, $resource, $context);
+    }
+
+    public function testToResourceNullableRelation()
+    {
+        $object = new class
+        {
+            public function getRelationship() {}
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('setRelationship')
+            ->with(
+                'qwerty',
+                $this->isInstanceOf(NoDataRelationship::class)
+            );
 
         $linkHandler = $this->createMock(LinkHandlerInterface::class);
 
