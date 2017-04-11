@@ -90,6 +90,21 @@ class ResourceObjectTest extends TestCase
         $this->assertSame(['test' => $relationship], $resource->getRelationships());
     }
 
+    /**
+     * @depends testRelationships
+     */
+    public function testRemoveRelationship()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $relationship = $this->createMock(AbstractRelationship::class);
+        $resource->setRelationship('test', $relationship);
+
+        $resource->removeRelationship('test');
+
+        $this->assertFalse($resource->hasRelationship('test'));
+    }
+
     public function testToArrayBasics()
     {
         $resource = new ResourceObject('42', 'test');
@@ -170,6 +185,7 @@ class ResourceObjectTest extends TestCase
     /**
      * @expectedException \Mikemirten\Component\JsonApi\Exception\AttributeNotFoundException
      *
+     * @expectedExceptionMessageRegExp ~Attribute~
      * @expectedExceptionMessageRegExp ~42~
      * @expectedExceptionMessageRegExp ~test~
      * @expectedExceptionMessageRegExp ~qwerty~
@@ -183,6 +199,7 @@ class ResourceObjectTest extends TestCase
     /**
      * @expectedException \Mikemirten\Component\JsonApi\Exception\AttributeOverrideException
      *
+     * @expectedExceptionMessageRegExp ~Attribute~
      * @expectedExceptionMessageRegExp ~42~
      * @expectedExceptionMessageRegExp ~test~
      * @expectedExceptionMessageRegExp ~qwerty~
@@ -193,5 +210,37 @@ class ResourceObjectTest extends TestCase
 
         $resource->setAttribute('qwerty', 1);
         $resource->setAttribute('qwerty', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\RelationshipNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~42~
+     * @expectedExceptionMessageRegExp ~test~
+     * @expectedExceptionMessageRegExp ~qwerty~
+     */
+    public function testRelationshipNotFound()
+    {
+        $resource = new ResourceObject('42', 'test');
+        $resource->getRelationship('qwerty');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Exception\RelationshipOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~42~
+     * @expectedExceptionMessageRegExp ~test~
+     * @expectedExceptionMessageRegExp ~qwerty~
+     */
+    public function testRelationshipOverride()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $relationship = $this->createMock(AbstractRelationship::class);
+
+        $resource->setRelationship('qwerty', $relationship);
+        $resource->setRelationship('qwerty', $relationship);
     }
 }

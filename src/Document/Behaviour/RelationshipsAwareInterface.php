@@ -44,4 +44,11 @@ interface RelationshipsAwareInterface
      * @return AbstractRelationship[]
      */
     public function getRelationships(): array;
+
+    /**
+     * Remove relationship
+     *
+     * @param string $name
+     */
+    public function removeRelationship(string $name);
 }

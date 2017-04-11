@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
 use Mikemirten\Component\JsonApi\Document\AbstractRelationship;
+use Mikemirten\Component\JsonApi\Exception\RelationshipNotFoundException;
+use Mikemirten\Component\JsonApi\Exception\RelationshipOverrideException;
 
 /**
  * Relationships-container behaviour
@@ -29,6 +31,10 @@ trait RelationshipsContainer
      */
     public function setRelationship(string $name, AbstractRelationship $relationship)
     {
+        if (isset($this->relationships[$name])) {
+            throw new RelationshipOverrideException($this, $name);
+        }
+
         $this->relationships[$name] = $relationship;
     }
 
@@ -51,7 +57,11 @@ trait RelationshipsContainer
      */
     public function getRelationship(string $name): AbstractRelationship
     {
-        return $this->relationships[$name];
+        if (isset($this->relationships[$name])) {
+            return $this->relationships[$name];
+        }
+
+        throw new RelationshipNotFoundException($this, $name);
     }
 
     /**
@@ -72,6 +82,16 @@ trait RelationshipsContainer
     public function getRelationships(): array
     {
         return $this->relationships;
+    }
+
+    /**
+     * Remove relationship
+     *
+     * @param string $name
+     */
+    public function removeRelationship(string $name)
+    {
+        unset($this->relationships[$name]);
     }
 
     /**
