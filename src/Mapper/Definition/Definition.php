@@ -23,6 +23,13 @@ class Definition implements LinksAwareInterface
     protected $class;
 
     /**
+     * Resource type
+     *
+     * @var string
+     */
+    protected $type;
+
+    /**
      * Attributes
      *
      * @var Attribute[]
@@ -54,6 +61,36 @@ class Definition implements LinksAwareInterface
     public function getClass(): string
     {
         return $this->class;
+    }
+
+    /**
+     * Set type of resource
+     *
+     * @param string $type
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * Has type of resource defined ?
+     *
+     * @return bool
+     */
+    public function hasType(): bool
+    {
+        return $this->type !== null;
+    }
+
+    /**
+     * Get type of resource
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     /**

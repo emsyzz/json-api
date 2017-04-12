@@ -5,6 +5,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\ResourceIdentifier as ResourceIdentifierAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Relationship as RelationshipAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link as LinkAnnotation;
 
@@ -135,7 +136,25 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
                 $link = $this->createLink($annotation);
 
                 $definition->addLink($link);
+                continue;
             }
+
+            if ($annotation instanceof ResourceIdentifierAnnotation) {
+                $this->handlerResourceIdentifier($annotation, $definition);
+            }
+        }
+    }
+
+    /**
+     * Handler resource identifier
+     *
+     * @param ResourceIdentifierAnnotation $annotation
+     * @param Definition                   $definition
+     */
+    protected function handlerResourceIdentifier(ResourceIdentifierAnnotation $annotation, Definition $definition)
+    {
+        if ($annotation->type !== null) {
+            $definition->setType($annotation->type);
         }
     }
 

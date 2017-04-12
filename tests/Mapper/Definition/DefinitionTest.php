@@ -92,4 +92,16 @@ class DefinitionTest extends TestCase
         $definition->addLink($link);
         $definition->addLink($link);
     }
+
+    public function testType()
+    {
+        $definition = new Definition('stdClass');
+
+        $this->assertFalse($definition->hasType());
+
+        $definition->setType('qwerty');
+
+        $this->assertTrue($definition->hasType());
+        $this->assertSame('qwerty', $definition->getType());
+    }
 }

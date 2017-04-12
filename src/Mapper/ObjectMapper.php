@@ -91,7 +91,7 @@ class ObjectMapper
         $context = $this->createContext(get_class($object));
 
         $id   = $this->identifierHandler->getIdentifier($object, $context);
-        $type = $this->typeHandler->getType($object, $context);
+        $type = $this->resolveType($object, $context);
 
         $resource = new ResourceObject($id, $type);
 
@@ -119,6 +119,24 @@ class ObjectMapper
         {
             $handler->fromResource($object, $resource, $context);
         }
+    }
+
+    /**
+     * Resolve type of resource
+     *
+     * @param  $object
+     * @param  MappingContext $context
+     * @return string
+     */
+    protected function resolveType($object, MappingContext $context): string
+    {
+        $definition = $context->getDefinition();
+
+        if ($definition->hasType()) {
+            return $definition->getType();
+        }
+
+        return $this->typeHandler->getType($object, $context);
     }
 
     /**

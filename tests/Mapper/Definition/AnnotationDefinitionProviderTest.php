@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link as LinkAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Relationship as RelationshipAnnotation;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\ResourceIdentifier;
 use PHPUnit\Framework\TestCase;
 
 include __DIR__ . '/Fixture.php';
@@ -26,6 +27,36 @@ class AnnotationDefinitionProviderTest extends TestCase
 
         $this->assertInstanceOf(Definition::class, $definition);
         $this->assertSame(Fixture::class, $definition->getClass());
+    }
+
+    public function testResourceType()
+    {
+        $resourceAnnotation = new ResourceIdentifier();
+        $resourceAnnotation->type = 'qwerty';
+
+        $reader = $this->createReader([$resourceAnnotation]);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $this->assertTrue($definition->hasType());
+        $this->assertSame('qwerty', $definition->getType());
+    }
+
+    /**
+     * Integration test with real doctrine's reader
+     *
+     * @depends testResourceType
+     */
+    public function testIntegrationWithReaderResourceType()
+    {
+        $reader = new AnnotationReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $this->assertTrue($definition->hasType());
+        $this->assertSame('resource_type', $definition->getType());
     }
 
     public function testDefinitionLink()
@@ -215,6 +246,11 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertSame(1000, $relationship->getDataLimit());
     }
 
+    /**
+     * Integration test with real doctrine's reader
+     *
+     * @depends testDataControl
+     */
     public function testIntegrationWithReaderDataControl()
     {
         $reader = new AnnotationReader();

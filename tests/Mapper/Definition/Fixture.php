@@ -7,6 +7,8 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation as JsonApi;
 /**
  * @package Mikemirten\Component\JsonApi\Mapper\Definition
  *
+ * @JsonApi\ResourceIdentifier(type="resource_type")
+ *
  * @JsonApi\Link(
  *     name="definition_link",
  *     resource="repository_name.link_name",
