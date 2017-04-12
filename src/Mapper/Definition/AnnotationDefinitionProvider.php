@@ -176,12 +176,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         $relationship = new Relationship($name, $type);
         $relationship->setPropertyName($property->getName());
 
-        if ($annotation->resourceType !== null) {
-            $relationship->setResourceType($annotation->resourceType);
-        }
-
         $this->handleGetter($annotation, $relationship);
-        $this->handleIdentifier($annotation, $relationship);
         $this->handleLinks($annotation, $relationship);
         $this->handleDataControl($annotation, $relationship);
 
@@ -205,27 +200,6 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         }
 
         $relationship->setGetter($annotation->getter);
-    }
-
-    /**
-     * Handle identifier
-     *
-     * @param RelationshipAnnotation $annotation
-     * @param Relationship           $relationship
-     */
-    protected function handleIdentifier(RelationshipAnnotation $annotation, Relationship $relationship)
-    {
-        if ($annotation->idGetter !== null) {
-            $relationship->setIdentifierGetter($annotation->idGetter);
-            return;
-        }
-
-        if ($annotation->idProperty !== null) {
-            $getter = 'get' . ucfirst($annotation->idProperty);
-
-            $relationship->setIdentifierGetter($getter);
-            return;
-        }
     }
 
     /**

@@ -121,9 +121,7 @@ class AnnotationDefinitionProviderTest extends TestCase
 
         $annotation->name         = 'test_relation';
         $annotation->type         = 'many';
-        $annotation->resourceType = 'Fixture';
         $annotation->getter       = 'getTest';
-        $annotation->idProperty   = 'id';
 
         $reader = $this->createReader([], $annotation);
 
@@ -135,11 +133,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertInstanceOf(Relationship::class, $relationship);
         $this->assertSame('test_relation', $relationship->getName());
         $this->assertTrue($relationship->isCollection());
-        $this->assertSame('Fixture', $relationship->getResourceType());
-        $this->assertTrue($relationship->hasResourceType());
         $this->assertSame('getTest', $relationship->getGetter());
-        $this->assertTrue($relationship->hasIdentifierGetter());
-        $this->assertSame('getId', $relationship->getIdentifierGetter());
     }
 
     public function testRelationLink()
@@ -193,11 +187,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertInstanceOf(Relationship::class, $relationship);
         $this->assertSame('test', $relationship->getName());
         $this->assertTrue($relationship->isCollection());
-        $this->assertSame('Fixture', $relationship->getResourceType());
-        $this->assertTrue($relationship->hasResourceType());
         $this->assertSame('getTest', $relationship->getGetter());
-        $this->assertTrue($relationship->hasIdentifierGetter());
-        $this->assertSame('getId', $relationship->getIdentifierGetter());
     }
 
     /**

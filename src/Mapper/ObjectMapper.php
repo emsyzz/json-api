@@ -166,6 +166,6 @@ class ObjectMapper
     {
         $definition = $this->definitionProvider->getDefinition($class);
 
-        return new MappingContext($this, $definition, $this->identifierHandler, $this->typeHandler);
+        return new MappingContext($this, $definition);
     }
 }

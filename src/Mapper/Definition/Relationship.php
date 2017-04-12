@@ -67,20 +67,6 @@ class Relationship implements LinksAwareInterface
     protected $getter;
 
     /**
-     * Getter-method to access an identifier of related object
-     *
-     * @var string
-     */
-    protected $identifierGetter;
-
-    /**
-     * Type of related resource
-     *
-     * @var string
-     */
-    protected $resourceType;
-
-    /**
      * Include data with resource-identifier(s)
      *
      * @var bool
@@ -196,66 +182,6 @@ class Relationship implements LinksAwareInterface
     public function getGetter(): string
     {
         return $this->getter;
-    }
-
-    /**
-     * Set getter-method to access an identifier of related object
-     *
-     * @param string $method
-     */
-    public function setIdentifierGetter(string $method)
-    {
-        $this->identifierGetter = $method;
-    }
-
-    /**
-     * Has identifier type defined ?
-     *
-     * @return bool
-     */
-    public function hasIdentifierGetter(): bool
-    {
-        return $this->identifierGetter !== null;
-    }
-
-    /**
-     * Get getter-method to access an identifier of related object
-     *
-     * @return string
-     */
-    public function getIdentifierGetter(): string
-    {
-        return $this->identifierGetter;
-    }
-
-    /**
-     * Set type of resource
-     *
-     * @param string $type
-     */
-    public function setResourceType(string $type)
-    {
-        $this->resourceType = $type;
-    }
-
-    /**
-     * Has resource type defined ?
-     *
-     * @return bool
-     */
-    public function hasResourceType(): bool
-    {
-        return $this->resourceType !== null;
-    }
-
-    /**
-     * Get type of resource
-     *
-     * @return string
-     */
-    public function getResourceType(): string
-    {
-        return $this->resourceType;
     }
 
     /**

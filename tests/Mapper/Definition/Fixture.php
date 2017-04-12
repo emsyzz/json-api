@@ -19,7 +19,7 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation as JsonApi;
 class Fixture
 {
     /**
-     * @JsonApi\Relationship(type="many", resourceType="Fixture", idProperty="id", links={
+     * @JsonApi\Relationship(type="many", links={
      *     @JsonApi\Link(
      *         name="relation_link",
      *         resource="repository_name.link_name",

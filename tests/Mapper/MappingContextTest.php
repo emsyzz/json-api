@@ -15,16 +15,12 @@ class MappingContextTest extends TestCase
 {
     public function testContextData()
     {
-        $mapper      = $this->createMock(ObjectMapper::class);
-        $definition  = $this->createMock(Definition::class);
-        $idHandler   = $this->createMock(IdentifierHandlerInterface::class);
-        $typeHandler = $this->createMock(TypeHandlerInterface::class);
+        $mapper     = $this->createMock(ObjectMapper::class);
+        $definition = $this->createMock(Definition::class);
 
-        $context = new MappingContext($mapper, $definition, $idHandler, $typeHandler);
+        $context = new MappingContext($mapper, $definition);
 
         $this->assertSame($mapper, $context->getMapper());
         $this->assertSame($definition, $context->getDefinition());
-        $this->assertSame($idHandler, $context->getIdentifierHandler());
-        $this->assertSame($typeHandler, $context->getTypeHandler());
     }
 }

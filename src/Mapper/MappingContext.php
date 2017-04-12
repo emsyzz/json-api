@@ -4,8 +4,6 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Mapper;
 
 use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
-use Mikemirten\Component\JsonApi\Mapper\Handler\IdentifierHandler\IdentifierHandlerInterface;
-use Mikemirten\Component\JsonApi\Mapper\Handler\TypeHandler\TypeHandlerInterface;
 
 /**
  * Context of mapping
@@ -29,37 +27,14 @@ class MappingContext
     protected $definition;
 
     /**
-     * Identifier handler
-     *
-     * @var IdentifierHandlerInterface
-     */
-    protected $identifierHandler;
-
-    /**
-     * Type handler
-     *
-     * @var TypeHandlerInterface
-     */
-    protected $typeHandler;
-
-    /**
      * MappingContext constructor.
      *
-     * @param ObjectMapper               $mapper
-     * @param Definition                 $definition
-     * @param IdentifierHandlerInterface $identifierHandler,
-     * @param TypeHandlerInterface       $typeHandler
+     * @param ObjectMapper $mapper
+     * @param Definition   $definition
      */
-    public function __construct(
-        ObjectMapper               $mapper,
-        Definition                 $definition,
-        IdentifierHandlerInterface $identifierHandler,
-        TypeHandlerInterface       $typeHandler
-    ) {
-        $this->mapper            = $mapper;
-        $this->definition        = $definition;
-        $this->identifierHandler = $identifierHandler;
-        $this->typeHandler       = $typeHandler;
+    public function __construct(ObjectMapper $mapper, Definition $definition) {
+        $this->mapper     = $mapper;
+        $this->definition = $definition;
     }
 
     /**
@@ -80,25 +55,5 @@ class MappingContext
     public function getDefinition(): Definition
     {
         return $this->definition;
-    }
-
-    /**
-     * Get identifier handler
-     *
-     * @return IdentifierHandlerInterface
-     */
-    public function getIdentifierHandler(): IdentifierHandlerInterface
-    {
-        return $this->identifierHandler;
-    }
-
-    /**
-     * Get type handler
-     *
-     * @return TypeHandlerInterface
-     */
-    public function getTypeHandler(): TypeHandlerInterface
-    {
-        return $this->typeHandler;
     }
 }

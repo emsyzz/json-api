@@ -42,30 +42,6 @@ class RelationshipTest extends TestCase
         $this->assertSame('qwerty', $relationship->getGetter());
     }
 
-    public function testIdGetter()
-    {
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
-
-        $this->assertFalse($relationship->hasIdentifierGetter());
-
-        $relationship->setIdentifierGetter('qwerty');
-
-        $this->assertTrue($relationship->hasIdentifierGetter());
-        $this->assertSame('qwerty', $relationship->getIdentifierGetter());
-    }
-
-    public function testResourceType()
-    {
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
-
-        $this->assertFalse($relationship->hasResourceType());
-
-        $relationship->setResourceType('qwerty');
-
-        $this->assertTrue($relationship->hasResourceType());
-        $this->assertSame('qwerty', $relationship->getResourceType());
-    }
-
     public function testDataIncluded()
     {
         $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
