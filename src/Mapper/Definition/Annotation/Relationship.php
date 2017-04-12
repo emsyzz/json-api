@@ -80,4 +80,19 @@ class Relationship
      * @var array<Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link>
      */
     public $links = [];
+
+    /**
+     * Data-section with resource-identifier(s) allowed
+     *
+     * @var boolean
+     */
+    public $dataAllowed = false;
+
+    /**
+     * Limit of amount of resource-identifiers in data-section
+     * Has a sense only with "x-to-may" type of relationship with allowed data
+     *
+     * @var int
+     */
+    public $dataLimit = 0;
 }

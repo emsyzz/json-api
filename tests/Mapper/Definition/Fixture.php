@@ -24,7 +24,7 @@ class Fixture
      *         parameters={"param_name" = "param_value"},
      *         metadata={"meta_name" = "meta_value"}
      *     )
-     * })
+     * }, dataAllowed=true, dataLimit=1000)
      */
     protected $test;
 }

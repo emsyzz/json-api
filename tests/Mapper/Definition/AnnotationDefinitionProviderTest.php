@@ -196,6 +196,38 @@ class AnnotationDefinitionProviderTest extends TestCase
         );
     }
 
+    public function testDataControl()
+    {
+        $annotation = new RelationshipAnnotation();
+
+        $annotation->name        = 'test_relation';
+        $annotation->dataAllowed = true;
+        $annotation->dataLimit   = 1000;
+
+        $reader = $this->createReader([], $annotation);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $relationship = $definition->getRelationships()['test_relation'];
+
+        $this->assertTrue($relationship->isDataIncluded());
+        $this->assertSame(1000, $relationship->getDataLimit());
+    }
+
+    public function testIntegrationWithReaderDataControl()
+    {
+        $reader = new AnnotationReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $relationship = $definition->getRelationships()['test'];
+
+        $this->assertTrue($relationship->isDataIncluded());
+        $this->assertSame(1000, $relationship->getDataLimit());
+    }
+
     /**
      * Create mock of annotation reader
      *

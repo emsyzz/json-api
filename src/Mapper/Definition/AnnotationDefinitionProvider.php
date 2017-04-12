@@ -164,6 +164,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         $this->handleGetter($annotation, $relationship);
         $this->handleIdentifier($annotation, $relationship);
         $this->handleLinks($annotation, $relationship);
+        $this->handleDataControl($annotation, $relationship);
 
         return $relationship;
     }
@@ -246,6 +247,18 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         $link->setMetadata($annotation->metadata);
 
         return $link;
+    }
+
+    /**
+     * Handle control of data-section
+     *
+     * @param RelationshipAnnotation $annotation
+     * @param Relationship           $relationship
+     */
+    protected function handleDataControl(RelationshipAnnotation $annotation, Relationship $relationship)
+    {
+        $relationship->setIncludeData($annotation->dataAllowed);
+        $relationship->setDataLimit($annotation->dataLimit);
     }
 
     /**
