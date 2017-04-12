@@ -46,10 +46,7 @@ class RelationshipHandler implements HandlerInterface
 
         foreach ($definitions as $definition)
         {
-            $relationship = $definition->isCollection()
-                ? $this->createIdentifierCollectionRelationship($object, $definition, $context)
-                : $this->createSingleIdentifierRelationship($object, $definition, $context);
-
+            $relationship = $this->createRelationship($object, $definition, $context);
             $this->linkHandler->handleLinks($object, $definition, $relationship);
 
             $resource->setRelationship($definition->getName(), $relationship);
@@ -69,6 +66,26 @@ class RelationshipHandler implements HandlerInterface
      *
      * @param  mixed                  $object
      * @param  RelationshipDefinition $definition
+     * @param  MappingContext         $context
+     * @return AbstractRelationship
+     */
+    protected function createRelationship($object, RelationshipDefinition $definition, MappingContext $context): AbstractRelationship
+    {
+        if (! $definition->isDataIncluded()) {
+            return new NoDataRelationship();
+        }
+
+        return $definition->isCollection()
+            ? $this->createIdentifierCollectionRelationship($object, $definition, $context)
+            : $this->createSingleIdentifierRelationship($object, $definition, $context);
+    }
+
+    /**
+     * Create relationship contains a single resource-identifier
+     *
+     * @param  mixed                  $object
+     * @param  RelationshipDefinition $definition
+     * @param  MappingContext         $context
      * @return AbstractRelationship ( NoDataRelationship | NoDataRelationship )
      */
     protected function createSingleIdentifierRelationship($object, RelationshipDefinition $definition, MappingContext $context): AbstractRelationship
@@ -92,12 +109,18 @@ class RelationshipHandler implements HandlerInterface
      *
      * @param  mixed                  $object
      * @param  RelationshipDefinition $definition
+     * @param  MappingContext         $context
      * @return IdentifierCollectionRelationship
      */
     protected function createIdentifierCollectionRelationship($object, RelationshipDefinition $definition, MappingContext $context): IdentifierCollectionRelationship
     {
         $relationship = new IdentifierCollectionRelationship();
         $collection   = $object->{$definition->getGetter()}();
+        $dataLimit    = $definition->getDataLimit();
+
+        if ($dataLimit > 0) {
+            $collection = new \LimitIterator($collection, 0, $dataLimit);
+        }
 
         foreach ($collection as $relatedObject)
         {

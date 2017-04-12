@@ -52,6 +52,30 @@ class RelationshipHandlerTest extends TestCase
         $linkHandler = $this->createMock(LinkHandlerInterface::class);
 
         $handler = new RelationshipHandler($linkHandler);
+        $context = $this->createContext(false, true);
+
+        $handler->toResource($object, $resource, $context);
+    }
+
+    public function testToResourceNoDataIncluded()
+    {
+        $object = new class
+        {
+            public function getRelationship() {}
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('setRelationship')
+            ->with(
+                'qwerty',
+                $this->isInstanceOf(NoDataRelationship::class)
+            );
+
+        $linkHandler = $this->createMock(LinkHandlerInterface::class);
+
+        $handler = new RelationshipHandler($linkHandler);
         $context = $this->createContext();
 
         $handler->toResource($object, $resource, $context);
@@ -76,7 +100,7 @@ class RelationshipHandlerTest extends TestCase
         $linkHandler = $this->createMock(LinkHandlerInterface::class);
 
         $handler = new RelationshipHandler($linkHandler);
-        $context = $this->createContext();
+        $context = $this->createContext(false, true);
 
         $handler->toResource($object, $resource, $context);
     }
@@ -87,13 +111,13 @@ class RelationshipHandlerTest extends TestCase
         {
             public function getRelationship()
             {
-                return [new class
+                return new \ArrayIterator([new class
                 {
                     public function getId()
                     {
                         return '12345';
                     }
-                }];
+                }]);
             }
         };
 
@@ -115,12 +139,72 @@ class RelationshipHandlerTest extends TestCase
         $linkHandler = $this->createMock(LinkHandlerInterface::class);
 
         $handler = new RelationshipHandler($linkHandler);
-        $context = $this->createContext(true);
+        $context = $this->createContext(true, true);
 
         $handler->toResource($object, $resource, $context);
     }
 
-    protected function createContext($toMany = false): MappingContext
+    public function testCollectionToResourceWithLimit()
+    {
+        $object = new class
+        {
+            public function getRelationship()
+            {
+                return new \ArrayIterator([
+                    new class
+                    {
+                        public function getId()
+                        {
+                            return '12345';
+                        }
+                    },
+                    new class
+                    {
+                        public function getId()
+                        {
+                            return '67890';
+                        }
+                    }
+                ]);
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('setRelationship')
+            ->with(
+                'qwerty',
+                $this->isInstanceOf(IdentifierCollectionRelationship::class)
+            )
+            ->willReturnCallback(function(string $name, IdentifierCollectionRelationship $relationship) {
+                $identifiers = $relationship->getIdentifiers();
+
+                $this->assertCount(1, $identifiers);
+
+                $identifier = $relationship->getIdentifiers()[0];
+
+                $this->assertSame('12345', $identifier->getId());
+                $this->assertSame('stdClass', $identifier->getType());
+            });
+
+        $linkHandler = $this->createMock(LinkHandlerInterface::class);
+
+        $handler = new RelationshipHandler($linkHandler);
+        $context = $this->createContext(true, true, 1);
+
+        $handler->toResource($object, $resource, $context);
+    }
+
+    /**
+     * Create mock of mapping context including definition
+     *
+     * @param  bool $toMany
+     * @param  bool $dataIncluded
+     * @param  int  $limit
+     * @return MappingContext
+     */
+    protected function createContext(bool $toMany = false, bool $dataIncluded = false, int $limit = 0): MappingContext
     {
         $relationship = $this->createMock(Relationship::class);
 
@@ -144,6 +228,12 @@ class RelationshipHandlerTest extends TestCase
 
         $relationship->method('isCollection')
             ->willReturn($toMany);
+
+        $relationship->method('isDataIncluded')
+            ->willReturn($dataIncluded);
+
+        $relationship->method('getDataLimit')
+            ->willReturn($limit);
 
         $definition = $this->createMock(Definition::class);
 
