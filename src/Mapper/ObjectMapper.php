@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper;
 
+use Mikemirten\Component\JsonApi\Document\ResourceIdentifierObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionProviderInterface;
 use Mikemirten\Component\JsonApi\Mapper\Handler\HandlerInterface;
@@ -101,6 +102,22 @@ class ObjectMapper
         }
 
         return $resource;
+    }
+
+    /**
+     * Map object's identification to resource-identifier
+     *
+     * @param  $object
+     * @return ResourceIdentifierObject
+     */
+    public function toResourceIdentifier($object): ResourceIdentifierObject
+    {
+        $context = $this->createContext(get_class($object));
+
+        $id   = $this->identifierHandler->getIdentifier($object, $context);
+        $type = $this->resolveType($object, $context);
+
+        return new ResourceIdentifierObject($id, $type);
     }
 
     /**

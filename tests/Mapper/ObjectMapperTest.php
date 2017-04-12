@@ -2,6 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\Mapper;
 
+use Mikemirten\Component\JsonApi\Document\ResourceIdentifierObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
 use Mikemirten\Component\JsonApi\Mapper\Definition\DefinitionProviderInterface;
@@ -60,6 +61,44 @@ class ObjectMapperTest extends TestCase
         $resource = $mapper->toResource($object);
 
         $this->assertInstanceOf(ResourceObject::class, $resource);
+        $this->assertSame('123', $resource->getId());
+        $this->assertSame('stdClass', $resource->getType());
+    }
+
+    public function testToResourceIdentifier()
+    {
+        $object = new \stdClass();
+
+        $identifierHandler  = $this->createMock(IdentifierHandlerInterface::class);
+        $typeHandler        = $this->createMock(TypeHandlerInterface::class);
+        $definitionProvider = $this->createMock(DefinitionProviderInterface::class);
+
+        $definitionProvider->expects($this->once())
+            ->method('getDefinition')
+            ->with('stdClass')
+            ->willReturn($this->createMock(Definition::class));
+
+        $identifierHandler->expects($this->once())
+            ->method('getIdentifier')
+            ->with(
+                $object,
+                $this->isInstanceOf(MappingContext::class)
+            )
+            ->willReturn('123');
+
+        $typeHandler->expects($this->once())
+            ->method('getType')
+            ->with(
+                $object,
+                $this->isInstanceOf(MappingContext::class)
+            )
+            ->willReturn('stdClass');
+
+        $mapper = new ObjectMapper($definitionProvider, $identifierHandler, $typeHandler);
+
+        $resource = $mapper->toResourceIdentifier($object);
+
+        $this->assertInstanceOf(ResourceIdentifierObject::class, $resource);
         $this->assertSame('123', $resource->getId());
         $this->assertSame('stdClass', $resource->getType());
     }

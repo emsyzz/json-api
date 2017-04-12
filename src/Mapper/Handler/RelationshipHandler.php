@@ -96,10 +96,7 @@ class RelationshipHandler implements HandlerInterface
             return new NoDataRelationship();
         }
 
-        $identifier   = $this->resolveIdentifier($relatedObject, $definition, $context);
-        $resourceType = $this->resolveType($relatedObject, $definition, $context);
-
-        $resource = new ResourceIdentifierObject($identifier, $resourceType);
+        $resource = $context->getMapper()->toResourceIdentifier($relatedObject);
 
         return new SingleIdentifierRelationship($resource);
     }
@@ -122,51 +119,15 @@ class RelationshipHandler implements HandlerInterface
             $collection = new \LimitIterator($collection, 0, $dataLimit);
         }
 
+        $mapper = $context->getMapper();
+
         foreach ($collection as $relatedObject)
         {
-            $identifier   = $this->resolveIdentifier($relatedObject, $definition, $context);
-            $resourceType = $this->resolveType($relatedObject, $definition, $context);
-            $resource     = new ResourceIdentifierObject($identifier, $resourceType);
+            $resource = $mapper->toResourceIdentifier($relatedObject);
 
             $relationship->addIdentifier($resource);
         }
 
         return $relationship;
-    }
-
-    /**
-     * Resolve ID of resource
-     *
-     * @param  mixed                  $object
-     * @param  RelationshipDefinition $definition
-     * @param  MappingContext         $context
-     * @return string
-     */
-    protected function resolveIdentifier($object, RelationshipDefinition $definition, MappingContext $context): string
-    {
-        if ($definition->hasIdentifierGetter()) {
-            $method = $definition->getIdentifierGetter();
-
-            return (string) $object->$method();
-        }
-
-        return $context->getIdentifierHandler()->getIdentifier($object, $context);
-    }
-
-    /**
-     * Resolve type of resource
-     *
-     * @param  mixed                  $object
-     * @param  RelationshipDefinition $definition
-     * @param  MappingContext         $context
-     * @return string
-     */
-    protected function resolveType($object, RelationshipDefinition $definition, MappingContext $context): string
-    {
-        if ($definition->hasResourceType()) {
-            return $definition->getResourceType();
-        }
-
-        return $context->getTypeHandler()->getType($object, $context);
     }
 }
