@@ -81,6 +81,21 @@ class Relationship implements LinksAwareInterface
     protected $resourceType;
 
     /**
+     * Include data with resource-identifier(s)
+     *
+     * @var bool
+     */
+    protected $includeData = false;
+
+    /**
+     * Limit amount of resource identifiers of collection
+     * Works only with "x-to-many" type of relation.
+     *
+     * @var int
+     */
+    protected $dataLimit = 0;
+
+    /**
      * Relationship constructor.
      *
      * @param string $name
@@ -241,5 +256,47 @@ class Relationship implements LinksAwareInterface
     public function getResourceType(): string
     {
         return $this->resourceType;
+    }
+
+    /**
+     * Set include-data option
+     *
+     * @param bool $include
+     */
+    public function setIncludeData(bool $include = true)
+    {
+        $this->includeData = $include;
+    }
+
+    /**
+     * Is data-section with resource-identifier(s) have to be included ?
+     *
+     * @return bool
+     */
+    public function isDataIncluded(): bool
+    {
+        return $this->includeData;
+    }
+
+    /**
+     * Set limit of amount of resource-objects in data-section
+     * Works only for "x-to-many" type of relationship with included data allowed
+     *
+     * @param int $limit
+     */
+    public function setDataLimit(int $limit)
+    {
+        $this->dataLimit = $limit;
+    }
+
+    /**
+     * Get limit of amount of resource-objects in data-section
+     * Has a sense only for "x-to-many" type of relationship with included data allowed
+     *
+     * @return int
+     */
+    public function getDataLimit(): int
+    {
+        return $this->dataLimit;
     }
 }
