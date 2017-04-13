@@ -126,4 +126,32 @@ class ErrorObjectTest extends TestCase
             $this->error->toArray()['links']
         );
     }
+
+    public function testToString()
+    {
+        $this->assertRegExp('~Error\-object~', (string) $this->error);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Error\-object~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $this->error->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Error\-object~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $this->error->setMetadataAttribute('test_attribute', 1);
+        $this->error->setMetadataAttribute('test_attribute', 2);
+    }
 }

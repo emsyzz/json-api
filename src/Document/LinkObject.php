@@ -52,6 +52,6 @@ class LinkObject implements MetadataAwareInterface
      */
     public function __toString(): string
     {
-        return $this->reference;
+        return sprintf('Link referenced to "%s"', $this->reference);
     }
 }

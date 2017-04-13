@@ -73,4 +73,14 @@ class JsonApiObject implements MetadataAwareInterface
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('JsonAPI-object of version "%s"', $this->version);
+    }
 }

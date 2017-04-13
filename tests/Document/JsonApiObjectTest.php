@@ -36,4 +36,38 @@ class JsonApiObjectTest extends TestCase
         $this->assertSame(42, $document->getMetadataAttribute('test'));
         $this->assertSame(['test' => 42], $document->getMetadata());
     }
+
+    public function testToString()
+    {
+        $object = new JsonApiObject('1.0');
+
+        $this->assertRegExp('~JsonAPI\-object~', (string) $object);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~JsonAPI\-object~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $object = new JsonApiObject('1.0');
+
+        $object->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~JsonAPI\-object~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $object = new JsonApiObject('1.0');
+
+        $object->setMetadataAttribute('test_attribute', 1);
+        $object->setMetadataAttribute('test_attribute', 2);
+    }
 }

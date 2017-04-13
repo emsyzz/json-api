@@ -208,4 +208,41 @@ class SingleIdentifierDocumentTest extends TestCase
             $document->toArray()
         );
     }
+
+    public function testToString()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+        $document = new SingleIdentifierDocument($resource);
+
+        $this->assertRegExp('~Document~', (string) $document);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+        $document = new SingleIdentifierDocument($resource);
+
+        $document->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+        $document = new SingleIdentifierDocument($resource);
+
+        $document->setMetadataAttribute('test_attribute', 1);
+        $document->setMetadataAttribute('test_attribute', 2);
+    }
 }

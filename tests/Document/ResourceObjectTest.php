@@ -178,6 +178,7 @@ class ResourceObjectTest extends TestCase
     {
         $resource = new ResourceObject('42', 'test');
 
+        $this->assertRegExp('~Resource~', (string) $resource);
         $this->assertRegExp('~42~', (string) $resource);
         $this->assertRegExp('~test~', (string) $resource);
     }
@@ -242,5 +243,32 @@ class ResourceObjectTest extends TestCase
 
         $resource->setRelationship('qwerty', $relationship);
         $resource->setRelationship('qwerty', $relationship);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Resource~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $resource->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Resource~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $resource = new ResourceObject('42', 'test');
+
+        $resource->setMetadataAttribute('test_attribute', 1);
+        $resource->setMetadataAttribute('test_attribute', 2);
     }
 }

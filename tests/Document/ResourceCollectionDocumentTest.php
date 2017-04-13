@@ -226,4 +226,38 @@ class ResourceCollectionDocumentTest extends TestCase
 
         return $link;
     }
+
+    public function testToString()
+    {
+        $document = new ResourceCollectionDocument();
+
+        $this->assertRegExp('~Document~', (string) $document);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $document = new ResourceCollectionDocument();
+
+        $document->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $document = new ResourceCollectionDocument();
+
+        $document->setMetadataAttribute('test_attribute', 1);
+        $document->setMetadataAttribute('test_attribute', 2);
+    }
 }

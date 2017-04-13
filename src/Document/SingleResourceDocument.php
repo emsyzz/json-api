@@ -42,8 +42,8 @@ class SingleResourceDocument extends AbstractDocument
     }
 
     /**
- * {@inheritdoc}
- */
+     * {@inheritdoc}
+     */
     public function toArray(): array
     {
         $data = parent::toArray();
@@ -51,5 +51,15 @@ class SingleResourceDocument extends AbstractDocument
         $data['data'] = $this->getResource()->toArray();
 
         return $data;
+    }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('Document contains [%s]', $this->resource);
     }
 }

@@ -242,4 +242,18 @@ class ErrorObject implements LinksAwareInterface, MetadataAwareInterface
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'Error-object with ' . (
+            $this->id === null
+                ? 'no ID'
+                : sprintf('ID: "%s"', $this->id)
+        );
+    }
 }

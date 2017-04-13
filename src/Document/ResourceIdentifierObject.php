@@ -48,4 +48,14 @@ class ResourceIdentifierObject implements MetadataAwareInterface
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('Identifier of resource with ID: "%s" and type: "%s"', $this->id, $this->type);
+    }
 }

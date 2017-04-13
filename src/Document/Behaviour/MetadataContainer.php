@@ -2,6 +2,8 @@
 declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document\Behaviour;
+use Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException;
+use Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException;
 
 /**
  * Metadata-container behaviour
@@ -27,6 +29,10 @@ trait MetadataContainer
      */
     public function setMetadataAttribute(string $name, $value)
     {
+        if (array_key_exists($name, $this->metadata)) {
+            throw new MetadataAttributeOverrideException($this, $name);
+        }
+
         $this->metadata[$name] = $value;
     }
 
@@ -49,7 +55,11 @@ trait MetadataContainer
      */
     public function getMetadataAttribute(string $name)
     {
-        return $this->metadata[$name];
+        if (array_key_exists($name, $this->metadata)) {
+            return $this->metadata[$name];
+        }
+
+        throw new MetadataAttributeNotFoundException($this, $name);
     }
 
     /**
@@ -70,5 +80,15 @@ trait MetadataContainer
     public function getMetadata(): array
     {
         return $this->metadata;
+    }
+
+    /**
+     * Remove attribute of metadata
+     *
+     * @param string $name
+     */
+    public function removeMetadataAttribute(string $name)
+    {
+        unset($this->metadata[$name]);
     }
 }

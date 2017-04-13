@@ -40,4 +40,11 @@ interface MetadataAwareInterface
      * @return array
      */
     public function getMetadata(): array;
+
+    /**
+     * Remove attribute of metadata
+     *
+     * @param string $name
+     */
+    public function removeMetadataAttribute(string $name);
 }

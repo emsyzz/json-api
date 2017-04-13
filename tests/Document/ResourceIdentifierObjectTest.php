@@ -55,4 +55,40 @@ class ResourceIdentifierObjectTest extends TestCase
             $resource->toArray()['meta']
         );
     }
+
+    public function testToString()
+    {
+        $resource = new ResourceIdentifierObject('42', 'test');
+
+        $this->assertRegExp('~Identifier~', (string) $resource);
+        $this->assertRegExp('~42~', (string) $resource);
+        $this->assertRegExp('~test~', (string) $resource);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Identifier~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $resource = new ResourceIdentifierObject('42', 'test');
+
+        $resource->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Identifier~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $resource = new ResourceIdentifierObject('42', 'test');
+
+        $resource->setMetadataAttribute('test_attribute', 1);
+        $resource->setMetadataAttribute('test_attribute', 2);
+    }
 }

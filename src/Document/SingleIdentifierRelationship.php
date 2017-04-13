@@ -52,4 +52,14 @@ class SingleIdentifierRelationship extends AbstractRelationship
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('Relationship contains [%s]', $this->identifier);
+    }
 }

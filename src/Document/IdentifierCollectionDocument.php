@@ -38,4 +38,14 @@ class IdentifierCollectionDocument extends AbstractDocument implements Identifie
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'Document contains a collection of resource-identifiers';
+    }
 }

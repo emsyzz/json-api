@@ -119,6 +119,40 @@ class IdentifierCollectionRelationshipTest extends TestCase
         );
     }
 
+    public function testToString()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $this->assertRegExp('~Relationship~', (string) $relationship);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $relationship->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $relationship->setMetadataAttribute('test_attribute', 1);
+        $relationship->setMetadataAttribute('test_attribute', 2);
+    }
+
     public function createLink(string $reference, array $metadata = []): LinkObject
     {
         $link = $this->createMock(LinkObject::class);

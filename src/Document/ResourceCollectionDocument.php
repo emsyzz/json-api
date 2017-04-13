@@ -87,4 +87,14 @@ class ResourceCollectionDocument extends AbstractDocument implements \IteratorAg
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'Document with collection of resources';
+    }
 }

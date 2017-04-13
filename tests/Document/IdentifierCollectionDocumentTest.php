@@ -211,6 +211,40 @@ class IdentifierCollectionDocumentTest extends TestCase
         );
     }
 
+    public function testToString()
+    {
+        $document = new IdentifierCollectionDocument();
+
+        $this->assertRegExp('~Document~', (string) $document);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $document = new IdentifierCollectionDocument();
+
+        $document->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $document = new IdentifierCollectionDocument();
+
+        $document->setMetadataAttribute('test_attribute', 1);
+        $document->setMetadataAttribute('test_attribute', 2);
+    }
+
     public function createLink(string $reference, array $metadata = []): LinkObject
     {
         $link = $this->createMock(LinkObject::class);

@@ -38,4 +38,14 @@ class IdentifierCollectionRelationship extends AbstractRelationship implements I
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'Relationship contains a collection of resource-identifiers';
+    }
 }

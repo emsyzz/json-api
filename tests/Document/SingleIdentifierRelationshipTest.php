@@ -101,4 +101,41 @@ class SingleIdentifierRelationshipTest extends TestCase
             $relationship->toArray()
         );
     }
+
+    public function testToString()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $this->assertRegExp('~Relationship~', (string) $relationship);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataNotFound()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $relationship->getMetadataAttribute('test_attribute');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\MetadataAttributeOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_attribute~
+     */
+    public function testMetadataOverride()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $relationship->setMetadataAttribute('test_attribute', 1);
+        $relationship->setMetadataAttribute('test_attribute', 2);
+    }
 }

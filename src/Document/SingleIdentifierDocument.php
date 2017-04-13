@@ -52,4 +52,14 @@ class SingleIdentifierDocument extends AbstractDocument
 
         return $data;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return sprintf('Document contains [%s]', $this->identifier);
+    }
 }

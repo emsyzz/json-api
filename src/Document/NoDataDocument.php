@@ -21,4 +21,14 @@ class NoDataDocument extends AbstractDocument
     {
         $this->metadata = $metadata;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'Document with no data';
+    }
 }

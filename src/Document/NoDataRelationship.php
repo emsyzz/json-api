@@ -21,4 +21,14 @@ class NoDataRelationship extends AbstractRelationship
     {
         $this->metadata = $metadata;
     }
+
+    /**
+     * Cast to a string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return 'Relationship with no data';
+    }
 }
