@@ -68,6 +68,20 @@ class ErrorObjectTest extends TestCase
         $this->assertSame(['test' => 42], $this->error->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $this->error->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($this->error->hasMetadataAttribute('test'));
+
+        $this->error->removeMetadataAttribute('test');
+
+        $this->assertFalse($this->error->hasMetadataAttribute('test'));
+    }
+
     public function testLinks()
     {
         $this->assertInstanceOf(LinksAwareInterface::class, $this->error);

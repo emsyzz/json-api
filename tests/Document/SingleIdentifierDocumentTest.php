@@ -33,6 +33,22 @@ class SingleIdentifierDocumentTest extends TestCase
         $this->assertSame(['test' => 42], $document->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $identifier = $this->createMock(ResourceIdentifierObject::class);
+        $document   = new SingleIdentifierDocument($identifier);
+        $document->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($document->hasMetadataAttribute('test'));
+
+        $document->removeMetadataAttribute('test');
+
+        $this->assertFalse($document->hasMetadataAttribute('test'));
+    }
+
     public function testLinks()
     {
         $identifier = $this->createMock(ResourceIdentifierObject::class);

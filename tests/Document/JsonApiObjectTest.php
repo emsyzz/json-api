@@ -37,6 +37,21 @@ class JsonApiObjectTest extends TestCase
         $this->assertSame(['test' => 42], $document->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $object = new JsonApiObject();
+        $object->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($object->hasMetadataAttribute('test'));
+
+        $object->removeMetadataAttribute('test');
+
+        $this->assertFalse($object->hasMetadataAttribute('test'));
+    }
+
     public function testToString()
     {
         $object = new JsonApiObject('1.0');

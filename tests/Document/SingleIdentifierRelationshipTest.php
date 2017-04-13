@@ -32,6 +32,22 @@ class SingleIdentifierRelationshipTest extends TestCase
         $this->assertSame(['test' => 42], $relationship->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+        $relationship->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($relationship->hasMetadataAttribute('test'));
+
+        $relationship->removeMetadataAttribute('test');
+
+        $this->assertFalse($relationship->hasMetadataAttribute('test'));
+    }
+
     public function testLinks()
     {
         $identifier   = $this->createMock(ResourceIdentifierObject::class);

@@ -14,37 +14,52 @@ class IdentifierCollectionDocumentTest extends TestCase
 {
     public function testIdentifiers()
     {
-        $relationship = new IdentifierCollectionDocument();
+        $document = new IdentifierCollectionDocument();
 
-        $this->assertEmpty($relationship->getIdentifiers());
+        $this->assertEmpty($document->getIdentifiers());
 
         $identifier = $this->createMock(ResourceIdentifierObject::class);
-        $relationship->addIdentifier($identifier);
+        $document->addIdentifier($identifier);
 
-        $this->assertSame($identifier, $relationship->getFirstIdentifier());
-        $this->assertSame([$identifier], $relationship->getIdentifiers());
+        $this->assertSame($identifier, $document->getFirstIdentifier());
+        $this->assertSame([$identifier], $document->getIdentifiers());
     }
 
     public function testIterator()
     {
         $identifier = $this->createMock(ResourceIdentifierObject::class);
 
-        $relationship = new IdentifierCollectionDocument();
-        $relationship->addIdentifier($identifier);
+        $document = new IdentifierCollectionDocument();
+        $document->addIdentifier($identifier);
 
-        $this->assertSame([$identifier], iterator_to_array($relationship));
+        $this->assertSame([$identifier], iterator_to_array($document));
     }
 
     public function testMetadata()
     {
-        $relationship = new IdentifierCollectionDocument(['test' => 42]);
+        $document = new IdentifierCollectionDocument(['test' => 42]);
 
-        $this->assertInstanceOf(MetadataAwareInterface::class, $relationship);
+        $this->assertInstanceOf(MetadataAwareInterface::class, $document);
 
-        $this->assertFalse($relationship->hasMetadataAttribute('qwerty'));
-        $this->assertTrue($relationship->hasMetadataAttribute('test'));
-        $this->assertSame(42, $relationship->getMetadataAttribute('test'));
-        $this->assertSame(['test' => 42], $relationship->getMetadata());
+        $this->assertFalse($document->hasMetadataAttribute('qwerty'));
+        $this->assertTrue($document->hasMetadataAttribute('test'));
+        $this->assertSame(42, $document->getMetadataAttribute('test'));
+        $this->assertSame(['test' => 42], $document->getMetadata());
+    }
+
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $document = new IdentifierCollectionDocument();
+        $document->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($document->hasMetadataAttribute('test'));
+
+        $document->removeMetadataAttribute('test');
+
+        $this->assertFalse($document->hasMetadataAttribute('test'));
     }
 
     public function testErrors()

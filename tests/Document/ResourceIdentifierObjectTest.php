@@ -32,6 +32,21 @@ class ResourceIdentifierObjectTest extends TestCase
         $this->assertSame(['test' => 42], $resource->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $resource = new ResourceIdentifierObject('1', 'test');
+        $resource->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($resource->hasMetadataAttribute('test'));
+
+        $resource->removeMetadataAttribute('test');
+
+        $this->assertFalse($resource->hasMetadataAttribute('test'));
+    }
+
     public function testToArrayBasics()
     {
         $resource = new ResourceIdentifierObject('42', 'test');

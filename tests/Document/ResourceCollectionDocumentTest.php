@@ -46,6 +46,21 @@ class ResourceCollectionDocumentTest extends TestCase
         $this->assertSame(['test' => 42], $document->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $document = new ResourceCollectionDocument();
+        $document->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($document->hasMetadataAttribute('test'));
+
+        $document->removeMetadataAttribute('test');
+
+        $this->assertFalse($document->hasMetadataAttribute('test'));
+    }
+
     public function testLinks()
     {
         $document = new ResourceCollectionDocument();

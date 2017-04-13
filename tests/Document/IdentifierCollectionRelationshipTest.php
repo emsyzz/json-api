@@ -46,6 +46,21 @@ class IdentifierCollectionRelationshipTest extends TestCase
         $this->assertSame(['test' => 42], $relationship->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+        $relationship->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($relationship->hasMetadataAttribute('test'));
+
+        $relationship->removeMetadataAttribute('test');
+
+        $this->assertFalse($relationship->hasMetadataAttribute('test'));
+    }
+
     public function testLinks()
     {
         $relationship = new IdentifierCollectionRelationship();

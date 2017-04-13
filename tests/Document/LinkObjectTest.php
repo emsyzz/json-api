@@ -31,6 +31,21 @@ class LinkObjectTest extends TestCase
         $this->assertSame(['test' => 42], $link->getMetadata());
     }
 
+    /**
+     * @depends testMetadata
+     */
+    public function testMetadataRemove()
+    {
+        $link = new LinkObject('http://test.com');
+        $link->setMetadataAttribute('test', 42);
+
+        $this->assertTrue($link->hasMetadataAttribute('test'));
+
+        $link->removeMetadataAttribute('test');
+
+        $this->assertFalse($link->hasMetadataAttribute('test'));
+    }
+
     public function testToString()
     {
         $link = new LinkObject('http://test.com');
