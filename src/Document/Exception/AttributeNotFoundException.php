@@ -1,19 +1,19 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\Component\JsonApi\Exception;
+namespace Mikemirten\Component\JsonApi\Document\Exception;
 
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 
 /**
- * AttributeOverrideException
+ * AttributeNotFoundException
  *
  * @package Mikemirten\Component\JsonApi\Exception
  */
-class AttributeOverrideException extends JsonApiException
+class AttributeNotFoundException extends DocumentException
 {
     /**
-     * AttributeOverrideException constructor.
+     * AttributeNotFoundException constructor.
      *
      * @param ResourceObject  $resource
      * @param string          $name
@@ -21,7 +21,7 @@ class AttributeOverrideException extends JsonApiException
      */
     public function __construct(ResourceObject $resource, string $name, \Exception $previous = null)
     {
-        $message = sprintf('Attribute "%s" already exists inside of [%s]. To set new one, the old one must be removed.', $name, $resource);
+        $message = sprintf('Attribute "%s" not found inside of [%s].', $name, $resource);
 
         parent::__construct($message, 0, $previous);
     }

@@ -4,8 +4,8 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
 use Mikemirten\Component\JsonApi\Document\AbstractRelationship;
-use Mikemirten\Component\JsonApi\Exception\RelationshipNotFoundException;
-use Mikemirten\Component\JsonApi\Exception\RelationshipOverrideException;
+use Mikemirten\Component\JsonApi\Document\Exception\RelationshipNotFoundException;
+use Mikemirten\Component\JsonApi\Document\Exception\RelationshipOverrideException;
 
 /**
  * Relationships-container behaviour

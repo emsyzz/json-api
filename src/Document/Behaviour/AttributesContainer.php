@@ -3,8 +3,8 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
-use Mikemirten\Component\JsonApi\Exception\AttributeNotFoundException;
-use Mikemirten\Component\JsonApi\Exception\AttributeOverrideException;
+use Mikemirten\Component\JsonApi\Document\Exception\AttributeNotFoundException;
+use Mikemirten\Component\JsonApi\Document\Exception\AttributeOverrideException;
 
 /**
  * Attributes-container behaviour

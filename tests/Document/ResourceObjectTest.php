@@ -183,7 +183,7 @@ class ResourceObjectTest extends TestCase
     }
 
     /**
-     * @expectedException \Mikemirten\Component\JsonApi\Exception\AttributeNotFoundException
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\AttributeNotFoundException
      *
      * @expectedExceptionMessageRegExp ~Attribute~
      * @expectedExceptionMessageRegExp ~42~
@@ -197,7 +197,7 @@ class ResourceObjectTest extends TestCase
     }
 
     /**
-     * @expectedException \Mikemirten\Component\JsonApi\Exception\AttributeOverrideException
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\AttributeOverrideException
      *
      * @expectedExceptionMessageRegExp ~Attribute~
      * @expectedExceptionMessageRegExp ~42~
@@ -213,7 +213,7 @@ class ResourceObjectTest extends TestCase
     }
 
     /**
-     * @expectedException \Mikemirten\Component\JsonApi\Exception\RelationshipNotFoundException
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\RelationshipNotFoundException
      *
      * @expectedExceptionMessageRegExp ~Relationship~
      * @expectedExceptionMessageRegExp ~42~
@@ -227,7 +227,7 @@ class ResourceObjectTest extends TestCase
     }
 
     /**
-     * @expectedException \Mikemirten\Component\JsonApi\Exception\RelationshipOverrideException
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\RelationshipOverrideException
      *
      * @expectedExceptionMessageRegExp ~Relationship~
      * @expectedExceptionMessageRegExp ~42~

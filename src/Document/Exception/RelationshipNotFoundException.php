@@ -1,19 +1,19 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\Component\JsonApi\Exception;
+namespace Mikemirten\Component\JsonApi\Document\Exception;
 
 use Mikemirten\Component\JsonApi\Document\Behaviour\RelationshipsAwareInterface;
 
 /**
- * Class RelationshipOverrideException
+ * Class RelationshipNotFoundException
  *
  * @package Mikemirten\Component\JsonApi\Exception
  */
-class RelationshipOverrideException extends JsonApiException
+class RelationshipNotFoundException extends DocumentException
 {
     /**
-     * RelationshipOverrideException constructor.
+     * RelationshipNotFoundException constructor.
      *
      * @param RelationshipsAwareInterface $container
      * @param string                      $name
@@ -21,7 +21,7 @@ class RelationshipOverrideException extends JsonApiException
      */
     public function __construct(RelationshipsAwareInterface $container, string $name, \Exception $previous = null)
     {
-        $message = sprintf('Relationship "%s" already exists inside of [%s]. To set new one, the old one must be removed.', $name, $container);
+        $message = sprintf('Relationship "%s" not found inside of [%s].', $name, $container);
 
         parent::__construct($message, 0, $previous);
     }
