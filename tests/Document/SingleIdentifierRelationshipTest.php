@@ -64,6 +64,21 @@ class SingleIdentifierRelationshipTest extends TestCase
         $this->assertSame(['test' => $link], $relationship->getLinks());
     }
 
+    public function testLinkRemove()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $link = $this->createMock(LinkObject::class);
+        $relationship->setLink('test', $link);
+
+        $this->assertTrue($relationship->hasLink('test'));
+
+        $relationship->removeLink('test');
+
+        $this->assertFalse($relationship->hasLink('test'));
+    }
+
     public function testToArrayIdentifier()
     {
         $identifier = $this->createMock(ResourceIdentifierObject::class);
@@ -153,5 +168,36 @@ class SingleIdentifierRelationshipTest extends TestCase
 
         $relationship->setMetadataAttribute('test_attribute', 1);
         $relationship->setMetadataAttribute('test_attribute', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkNotFound()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $relationship->getLink('test_link');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkOverride()
+    {
+        $identifier   = $this->createMock(ResourceIdentifierObject::class);
+        $relationship = new SingleIdentifierRelationship($identifier);
+
+        $link = $this->createMock(LinkObject::class);
+
+        $relationship->setLink('test_link', $link);
+        $relationship->setLink('test_link', $link);
     }
 }

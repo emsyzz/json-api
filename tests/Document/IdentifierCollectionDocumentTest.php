@@ -95,17 +95,31 @@ class IdentifierCollectionDocumentTest extends TestCase
 
     public function testLinks()
     {
-        $relationship = new IdentifierCollectionDocument();
+        $document = new IdentifierCollectionDocument();
 
-        $this->assertInstanceOf(LinksAwareInterface::class, $relationship);
+        $this->assertInstanceOf(LinksAwareInterface::class, $document);
 
         $link = $this->createMock(LinkObject::class);
-        $relationship->setLink('test', $link);
+        $document->setLink('test', $link);
 
-        $this->assertFalse($relationship->hasLink('qwerty'));
-        $this->assertTrue($relationship->hasLink('test'));
-        $this->assertSame($link, $relationship->getLink('test'));
-        $this->assertSame(['test' => $link], $relationship->getLinks());
+        $this->assertFalse($document->hasLink('qwerty'));
+        $this->assertTrue($document->hasLink('test'));
+        $this->assertSame($link, $document->getLink('test'));
+        $this->assertSame(['test' => $link], $document->getLinks());
+    }
+
+    public function testLinkRemove()
+    {
+        $document = new IdentifierCollectionDocument();
+
+        $link = $this->createMock(LinkObject::class);
+        $document->setLink('test', $link);
+
+        $this->assertTrue($document->hasLink('test'));
+
+        $document->removeLink('test');
+
+        $this->assertFalse($document->hasLink('test'));
     }
 
     public function testToArrayResources()
@@ -258,6 +272,35 @@ class IdentifierCollectionDocumentTest extends TestCase
 
         $document->setMetadataAttribute('test_attribute', 1);
         $document->setMetadataAttribute('test_attribute', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkNotFound()
+    {
+        $document = new IdentifierCollectionDocument();
+
+        $document->getLink('test_link');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkOverride()
+    {
+        $document = new IdentifierCollectionDocument();
+
+        $link = $this->createMock(LinkObject::class);
+
+        $document->setLink('test_link', $link);
+        $document->setLink('test_link', $link);
     }
 
     public function createLink(string $reference, array $metadata = []): LinkObject

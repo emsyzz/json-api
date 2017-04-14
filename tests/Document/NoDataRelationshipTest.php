@@ -53,6 +53,20 @@ class NoDataRelationshipTest extends TestCase
         $this->assertSame(['test' => $link], $relationship->getLinks());
     }
 
+    public function testLinkRemove()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $link = $this->createMock(LinkObject::class);
+        $relationship->setLink('test', $link);
+
+        $this->assertTrue($relationship->hasLink('test'));
+
+        $relationship->removeLink('test');
+
+        $this->assertFalse($relationship->hasLink('test'));
+    }
+
     public function testToArrayMetadata()
     {
         $relationship = new NoDataRelationship();

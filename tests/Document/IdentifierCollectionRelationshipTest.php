@@ -76,6 +76,20 @@ class IdentifierCollectionRelationshipTest extends TestCase
         $this->assertSame(['test' => $link], $relationship->getLinks());
     }
 
+    public function testLinkRemove()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $link = $this->createMock(LinkObject::class);
+        $relationship->setLink('test', $link);
+
+        $this->assertTrue($relationship->hasLink('test'));
+
+        $relationship->removeLink('test');
+
+        $this->assertFalse($relationship->hasLink('test'));
+    }
+
     public function testToArrayResources()
     {
         $resource = $this->createMock(ResourceIdentifierObject::class);
@@ -166,6 +180,35 @@ class IdentifierCollectionRelationshipTest extends TestCase
 
         $relationship->setMetadataAttribute('test_attribute', 1);
         $relationship->setMetadataAttribute('test_attribute', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkNotFound()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $relationship->getLink('test_link');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Relationship~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkOverride()
+    {
+        $relationship = new IdentifierCollectionRelationship();
+
+        $link = $this->createMock(LinkObject::class);
+
+        $relationship->setLink('test_link', $link);
+        $relationship->setLink('test_link', $link);
     }
 
     public function createLink(string $reference, array $metadata = []): LinkObject

@@ -95,6 +95,18 @@ class ErrorObjectTest extends TestCase
         $this->assertSame(['test' => $link], $this->error->getLinks());
     }
 
+    public function testLinkRemove()
+    {
+        $link = $this->createMock(LinkObject::class);
+        $this->error->setLink('test', $link);
+
+        $this->assertTrue($this->error->hasLink('test'));
+
+        $this->error->removeLink('test');
+
+        $this->assertFalse($this->error->hasLink('test'));
+    }
+
     public function testToArrayBasics()
     {
         $this->error->setId('123');
@@ -167,5 +179,30 @@ class ErrorObjectTest extends TestCase
     {
         $this->error->setMetadataAttribute('test_attribute', 1);
         $this->error->setMetadataAttribute('test_attribute', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Error\-object~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkNotFound()
+    {
+        $this->error->getLink('test_link');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Error\-object~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkOverride()
+    {
+        $link = $this->createMock(LinkObject::class);
+
+        $this->error->setLink('test_link', $link);
+        $this->error->setLink('test_link', $link);
     }
 }

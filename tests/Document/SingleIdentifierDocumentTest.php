@@ -65,6 +65,21 @@ class SingleIdentifierDocumentTest extends TestCase
         $this->assertSame(['test' => $link], $document->getLinks());
     }
 
+    public function testLinkRemove()
+    {
+        $identifier = $this->createMock(ResourceIdentifierObject::class);
+        $document   = new SingleIdentifierDocument($identifier);
+
+        $link = $this->createMock(LinkObject::class);
+        $document->setLink('test', $link);
+
+        $this->assertTrue($document->hasLink('test'));
+
+        $document->removeLink('test');
+
+        $this->assertFalse($document->hasLink('test'));
+    }
+
     public function testToArrayIdentifier()
     {
         $identifier = $this->createMock(ResourceIdentifierObject::class);
@@ -260,5 +275,36 @@ class SingleIdentifierDocumentTest extends TestCase
 
         $document->setMetadataAttribute('test_attribute', 1);
         $document->setMetadataAttribute('test_attribute', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkNotFound()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+        $document = new SingleIdentifierDocument($resource);
+
+        $document->getLink('test_link');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkOverride()
+    {
+        $resource = $this->createMock(ResourceIdentifierObject::class);
+        $document = new SingleIdentifierDocument($resource);
+
+        $link = $this->createMock(LinkObject::class);
+
+        $document->setLink('test_link', $link);
+        $document->setLink('test_link', $link);
     }
 }

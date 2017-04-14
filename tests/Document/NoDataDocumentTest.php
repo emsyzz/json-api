@@ -54,6 +54,20 @@ class NoDataDocumentTest extends TestCase
         $this->assertSame(['test' => $link], $document->getLinks());
     }
 
+    public function testLinkRemove()
+    {
+        $document = new NoDataDocument();
+
+        $link = $this->createMock(LinkObject::class);
+        $document->setLink('test', $link);
+
+        $this->assertTrue($document->hasLink('test'));
+
+        $document->removeLink('test');
+
+        $this->assertFalse($document->hasLink('test'));
+    }
+
     public function testErrors()
     {
         $document = new NoDataDocument();
@@ -212,6 +226,35 @@ class NoDataDocumentTest extends TestCase
 
         $document->setMetadataAttribute('test_attribute', 1);
         $document->setMetadataAttribute('test_attribute', 2);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkNotFound()
+    {
+        $document = new NoDataDocument();
+
+        $document->getLink('test_link');
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException
+     *
+     * @expectedExceptionMessageRegExp ~Document~
+     * @expectedExceptionMessageRegExp ~test_link~
+     */
+    public function testLinkOverride()
+    {
+        $document = new NoDataDocument();
+
+        $link = $this->createMock(LinkObject::class);
+
+        $document->setLink('test_link', $link);
+        $document->setLink('test_link', $link);
     }
 
     public function createLink(string $reference, array $metadata = []): LinkObject

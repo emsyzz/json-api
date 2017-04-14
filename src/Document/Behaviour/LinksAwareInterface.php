@@ -42,4 +42,12 @@ interface LinksAwareInterface
      * @return LinkObject[]
      */
     public function getLinks(): array;
+
+    /**
+     * Remove link
+     *
+     * @param  string $name
+     * @return mixed
+     */
+    public function removeLink(string $name);
 }

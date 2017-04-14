@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Document\Behaviour;
 
+use Mikemirten\Component\JsonApi\Document\Exception\LinkNotFoundException;
+use Mikemirten\Component\JsonApi\Document\Exception\LinkOverrideException;
 use Mikemirten\Component\JsonApi\Document\LinkObject;
 
 /**
@@ -26,9 +28,14 @@ trait LinksContainer
      *
      * @param string     $name
      * @param LinkObject $link
+     * @param LinkOverrideException
      */
     public function setLink(string $name, LinkObject $link)
     {
+        if (isset($this->links[$name])) {
+            throw new LinkOverrideException($this, $name);
+        }
+
         $this->links[$name] = $link;
     }
 
@@ -48,10 +55,15 @@ trait LinksContainer
      *
      * @param  string $name
      * @return LinkObject
+     * @throws LinkNotFoundException
      */
     public function getLink(string $name): LinkObject
     {
-        return $this->links[$name];
+        if (isset($this->links[$name])) {
+            return $this->links[$name];
+        }
+
+        throw new LinkNotFoundException($this, $name);
     }
 
     /**
@@ -97,5 +109,16 @@ trait LinksContainer
         }
 
         return $links;
+    }
+
+    /**
+     * Remove link
+     *
+     * @param  string $name
+     * @return mixed
+     */
+    public function removeLink(string $name)
+    {
+        unset($this->links[$name]);
     }
 }
