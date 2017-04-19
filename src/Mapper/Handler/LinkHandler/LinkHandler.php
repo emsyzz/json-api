@@ -61,14 +61,15 @@ class LinkHandler implements HandlerInterface, LinkHandlerInterface
     public function handleLinks(
         $object,
         LinksAwareDefinitionInterface $definition,
-        LinksAwareDocumentInterface   $document
+        LinksAwareDocumentInterface   $document,
+        array $scope = []
     ) {
         foreach ($definition->getLinks() as $linkDefinition)
         {
             $repoName = $linkDefinition->getRepositoryName();
             $linkName = $linkDefinition->getLinkName();
 
-            $parameters = $this->resolveParameters($object, $linkDefinition);
+            $parameters = $this->resolveParameters($object, $linkDefinition, $scope);
 
             $linkData = $this->provider
                 ->getRepository($repoName)
@@ -104,20 +105,33 @@ class LinkHandler implements HandlerInterface, LinkHandlerInterface
      *
      * @param  mixed          $object
      * @param  LinkDefinition $definition
+     * @param  array          $scope
      * @return array
      */
-    protected function resolveParameters($object, LinkDefinition $definition): array
+    protected function resolveParameters($object, LinkDefinition $definition, array $scope): array
     {
         $resolved = [];
 
         foreach ($definition->getParameters() as $name => $value)
         {
-            if (strpos($value, '@') === 0) {
-                $resolved[$name] = $this->accessor->getValue($object, substr($value, 1));
+            if (! preg_match('~@(?:(?<namespace>[a-z0-9_\.]+)\:)?(?<name>[a-z0-9_\.]+)~i', $value, $matches)) {
+                $resolved[$name] = $value;
                 continue;
             }
 
-            $resolved[$name] = $value;
+            if (empty($matches['namespace'])) {
+                $resolved[$name] = $this->accessor->getValue($object, $matches['name']);
+                continue;
+            }
+
+            if (! isset($scope[$matches['namespace']])) {
+                throw new \LogicException(sprintf('Object "%s" not found in the scope.', $matches['namespace']));
+            }
+
+            $resolved[$name] = $this->accessor->getValue(
+                $scope[$matches['namespace']],
+                $matches['name']
+            );
         }
 
         return $resolved;

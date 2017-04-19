@@ -19,10 +19,12 @@ interface LinkHandlerInterface
      * @param mixed                         $object
      * @param LinksAwareDefinitionInterface $definition
      * @param LinksAwareDocumentInterface   $document
+     * @param array                         $scope
      */
     public function handleLinks(
         $object,
         LinksAwareDefinitionInterface $definition,
-        LinksAwareDocumentInterface   $document
+        LinksAwareDocumentInterface   $document,
+        array                         $scope = []
     );
 }

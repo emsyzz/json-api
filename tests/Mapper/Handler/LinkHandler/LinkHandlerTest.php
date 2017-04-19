@@ -19,6 +19,80 @@ use PHPUnit\Framework\TestCase;
  */
 class LinkHandlerTest extends TestCase
 {
+    public function testHandleLinks()
+    {
+        $object      = new \stdClass();
+        $scopeObject = new \ArrayIterator([]);
+
+        $provider   = $this->createMock(RepositoryProvider::class);
+        $accessor   = $this->createMock(PropertyAccessorInterface::class);
+        $resource   = $this->createMock(ResourceObject::class);
+        $repository = $this->createMock(RepositoryInterface::class);
+        $linkData   = $this->createMock(LinkData::class);
+
+        $linkData->expects($this->once())
+            ->method('getReference')
+            ->willReturn('http://test.com');
+
+        $repository->expects($this->once())
+            ->method('getLink')
+            ->with(
+                'test_link',
+                [
+                    'test_parameter1' => 'qwerty',
+                    'test_parameter2' => 'test_value',
+                    'test_parameter3' => 'test_value2'
+                ]
+            )
+            ->willReturn($linkData);
+
+        $provider->expects($this->once())
+            ->method('getRepository')
+            ->with('test_repository')
+            ->willReturn($repository);
+
+        $accessor->expects($this->at(0))
+            ->method('getValue')
+            ->with($object, 'test_property')
+            ->willReturn('test_value');
+
+        $accessor->expects($this->at(1))
+            ->method('getValue')
+            ->with($scopeObject, 'test_property2')
+            ->willReturn('test_value2');
+
+        $resource->expects($this->once())
+            ->method('setLink')
+            ->with(
+                'test',
+                $this->isInstanceOf(LinkObject::class)
+            )
+            ->willReturnCallback(function(string $name, LinkObject $link) {
+                $this->assertSame('http://test.com', $link->getReference());
+            });
+
+        $link = $this->createLinkDefinition([
+            'test_parameter1' => 'qwerty',
+            'test_parameter2' => '@test_property',
+            'test_parameter3' => '@test_object:test_property2',
+        ]);
+
+        $definition = $this->createMock(Definition::class);
+
+        $definition->expects($this->once())
+            ->method('getLinks')
+            ->willReturn([$link]);
+
+        $handler = new LinkHandler($provider, $accessor);
+
+        $handler->handleLinks($object, $definition, $resource, [
+            'test_object' => $scopeObject
+        ]);
+    }
+
+    /**
+     * @depends testHandleLinks
+     */
     public function testToResource()
     {
         $object = new \stdClass();
@@ -38,10 +112,7 @@ class LinkHandlerTest extends TestCase
             ->method('getLink')
             ->with(
                 'test_link',
-                [
-                    'test_parameter1' => 'test_value',
-                    'test_parameter2' => 'qwerty'
-                ]
+                ['test_parameter' => 'qwerty']
             )
             ->willReturn($linkData);
 
@@ -49,11 +120,6 @@ class LinkHandlerTest extends TestCase
             ->method('getRepository')
             ->with('test_repository')
             ->willReturn($repository);
-
-        $accessor->expects($this->once())
-            ->method('getValue')
-            ->with($object, 'test_property')
-            ->willReturn('test_value');
 
         $resource->expects($this->once())
             ->method('setLink')
@@ -65,7 +131,9 @@ class LinkHandlerTest extends TestCase
                 $this->assertSame('http://test.com', $link->getReference());
             });
 
-        $link = $this->createLinkDefinition();
+        $link = $this->createLinkDefinition([
+            'test_parameter' => 'qwerty'
+        ]);
 
         $definition = $this->createMock(Definition::class);
 
@@ -81,7 +149,7 @@ class LinkHandlerTest extends TestCase
         $handler->toResource($object, $resource, $context);
     }
 
-    protected function createLinkDefinition(): LinkDefinition
+    protected function createLinkDefinition(array $parameters): LinkDefinition
     {
         $link = $this->createMock(LinkDefinition::class);
 
@@ -99,10 +167,7 @@ class LinkHandlerTest extends TestCase
 
         $link->expects($this->once())
             ->method('getParameters')
-            ->willReturn([
-                'test_parameter1' => '@test_property',
-                'test_parameter2' => 'qwerty'
-            ]);
+            ->willReturn($parameters);
 
         return $link;
     }
