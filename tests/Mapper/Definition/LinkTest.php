@@ -35,25 +35,6 @@ class LinkTest extends TestCase
         $this->assertSame(['test' => '123'], $link->getMetadata());
     }
 
-    public function testMergeBasics()
-    {
-        $extraLink = $this->createMock(Link::class);
-
-        $extraLink->expects($this->once())
-            ->method('getLinkName')
-            ->willReturn('link2');
-
-        $extraLink->expects($this->once())
-            ->method('getRepositoryName')
-            ->willReturn('repository2');
-
-        $link = new Link('name', 'repository', 'link');
-        $link->merge($extraLink);
-
-        $this->assertSame('link2', $link->getLinkName());
-        $this->assertSame('repository2', $link->getRepositoryName());
-    }
-
     public function testMergeParameters()
     {
         $extraLink = $this->createMock(Link::class);
@@ -70,7 +51,7 @@ class LinkTest extends TestCase
         $link->merge($extraLink);
 
         $this->assertSame([
-            'parameter'  => 'asdfgh',
+            'parameter'  => 'qwerty',
             'parameter2' => 'zxcvbn'
         ], $link->getParameters());
     }
@@ -91,7 +72,7 @@ class LinkTest extends TestCase
         $link->merge($extraLink);
 
         $this->assertSame([
-            'meta'  => 'asdfgh',
+            'meta'  => 'qwerty',
             'meta2' => 'zxcvbn'
         ], $link->getMetadata());
     }

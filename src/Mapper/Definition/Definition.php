@@ -151,13 +151,12 @@ class Definition implements LinksAwareInterface
 
     /**
      * Merge a definition into this one
-     * Named data of given definition will override existing one in the case of names conflict
      *
      * @param self $definition
      */
     public function merge(self $definition)
     {
-        if ($definition->hasType()) {
+        if ($this->type === null && $definition->hasType()) {
             $this->type = $definition->getType();
         }
 

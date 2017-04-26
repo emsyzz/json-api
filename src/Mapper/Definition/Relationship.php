@@ -239,14 +239,11 @@ class Relationship implements LinksAwareInterface
 
     /**
      * Merge a relationship into this one
-     * Named data of given relationship will override existing one in the case of names conflict
      *
      * @param self $relationship
      */
     public function merge(self $relationship)
     {
-        $this->type = $relationship->getType();
-
         $this->mergeLinks($relationship);
     }
 }

@@ -131,23 +131,19 @@ class Link
 
     /**
      * Merge a link into this one
-     * Named data of given link will override existing one in the case of names conflict
      *
      * @param Link $link
      */
     public function merge(self $link)
     {
-        $this->repositoryName = $link->getRepositoryName();
-        $this->linkName       = $link->getLinkName();
-
         $this->parameters = array_replace(
-            $this->parameters,
-            $link->getParameters()
+            $link->getParameters(),
+            $this->parameters
         );
 
         $this->metadata = array_replace(
-            $this->metadata,
-            $link->getMetadata()
+            $link->getMetadata(),
+            $this->metadata
         );
     }
 }

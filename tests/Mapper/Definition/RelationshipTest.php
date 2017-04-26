@@ -64,20 +64,6 @@ class RelationshipTest extends TestCase
         $this->assertSame(1000, $relationship->getDataLimit());
     }
 
-    public function testTypeMerge()
-    {
-        $extraRelationship = $this->createMock(Relationship::class);
-
-        $extraRelationship->expects($this->once())
-            ->method('getType')
-            ->willReturn(Relationship::TYPE_X_TO_MANY);
-
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
-        $relationship->merge($extraRelationship);
-
-        $this->assertSame(Relationship::TYPE_X_TO_MANY, $relationship->getType());
-    }
-
     public function testMergeLinks()
     {
         $extraLink1 = $this->createMock(Link::class);

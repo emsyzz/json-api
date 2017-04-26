@@ -114,14 +114,12 @@ class DefinitionTest extends TestCase
 
         $extraDefinition->expects($this->once())
             ->method('getType')
-            ->willReturn('TestType2');
+            ->willReturn('TestType');
 
         $definition = new Definition('stdClass');
-        $definition->setType('TestType');
-
         $definition->merge($extraDefinition);
 
-        $this->assertSame('TestType2', $definition->getType());
+        $this->assertSame('TestType', $definition->getType());
     }
 
     /**
