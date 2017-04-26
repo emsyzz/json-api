@@ -11,6 +11,7 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\ResourceIdentifier
 use PHPUnit\Framework\TestCase;
 
 include __DIR__ . '/Fixture.php';
+include __DIR__ . '/Fixture2.php';
 
 /**
  * @group   mapper
@@ -252,6 +253,38 @@ class AnnotationDefinitionProviderTest extends TestCase
 
         $this->assertTrue($relationship->isDataIncluded());
         $this->assertSame(1000, $relationship->getDataLimit());
+    }
+
+    public function testInheritance()
+    {
+        $reader = $this->createMock(Reader::class);
+
+        $reader->expects($this->exactly(2))
+            ->method('getClassAnnotations')
+            ->with($this->isInstanceOf('ReflectionClass'))
+            ->willReturn([]);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture2::class);
+
+        $this->assertInstanceOf(Definition::class, $definition);
+        $this->assertSame(Fixture2::class, $definition->getClass());
+    }
+
+    /**
+     * Integration test with real doctrine's reader
+     *
+     * @depends testResourceType
+     */
+    public function testIntegrationWithReaderInheritance()
+    {
+        $reader = new AnnotationReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture::class);
+
+        $this->assertTrue($definition->hasType());
+        $this->assertSame('resource_type', $definition->getType());
     }
 
     /**

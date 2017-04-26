@@ -74,7 +74,9 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     public function getDefinition(string $class): Definition
     {
         if (! isset($this->definitionCache[$class])) {
-            $this->definitionCache[$class] = $this->createDefinition($class);
+            $reflection = new \ReflectionClass($class);
+
+            $this->definitionCache[$class] = $this->createDefinition($reflection);
         }
 
         return $this->definitionCache[$class];
@@ -83,16 +85,21 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     /**
      * Create definition for given class
      *
-     * @param  string $class
+     * @param  \ReflectionClass $reflection
      * @return Definition
      */
-    public function createDefinition(string $class): Definition
+    protected function createDefinition(\ReflectionClass $reflection): Definition
     {
-        $definition = new Definition($class);
-        $reflection = new \ReflectionClass($class);
+        $definition = new Definition($reflection->getName());
 
         $this->processProperties($reflection, $definition);
         $this->processClassAnnotations($reflection, $definition);
+
+        $parent = $reflection->getParentClass();
+
+        if ($parent !== false) {
+            $definition->merge($this->createDefinition($parent));
+        }
 
         return $definition;
     }
