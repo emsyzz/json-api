@@ -45,4 +45,22 @@ trait LinksContainer
     {
         return $this->links;
     }
+
+    /**
+     * Merge links
+     *
+     * @param LinksAwareInterface $container
+     */
+    protected function mergeLinks(LinksAwareInterface $container)
+    {
+        foreach ($container->getLinks() as $name => $link)
+        {
+            if (isset($this->links[$name])) {
+                $this->links[$name]->merge($link);
+                continue;
+            }
+
+            $this->links[$name] = $link;
+        }
+    }
 }

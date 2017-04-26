@@ -125,6 +125,17 @@ class Relationship implements LinksAwareInterface
     }
 
     /**
+     * Get type of relationship
+     * @see TYPE_X_TO_* constants
+     *
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    /**
      * Set name of property contains related object
      *
      * @param string $name
@@ -224,5 +235,18 @@ class Relationship implements LinksAwareInterface
     public function getDataLimit(): int
     {
         return $this->dataLimit;
+    }
+
+    /**
+     * Merge a relationship into this one
+     * Named data of given relationship will override existing one in the case of names conflict
+     *
+     * @param self $relationship
+     */
+    public function merge(self $relationship)
+    {
+        $this->type = $relationship->getType();
+
+        $this->mergeLinks($relationship);
     }
 }

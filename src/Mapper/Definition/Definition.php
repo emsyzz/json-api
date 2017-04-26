@@ -112,6 +112,7 @@ class Definition implements LinksAwareInterface
 
     /**
      * Get attributes
+     * [name => attribute]
      *
      * @return Attribute[]
      */
@@ -139,11 +140,65 @@ class Definition implements LinksAwareInterface
 
     /**
      * Get relationships
+     * [name => relationship]
      *
      * @return Relationship[]
      */
     public function getRelationships(): array
     {
         return $this->relationships;
+    }
+
+    /**
+     * Merge a definition into this one
+     * Named data of given definition will override existing one in the case of names conflict
+     *
+     * @param self $definition
+     */
+    public function merge(self $definition)
+    {
+        if ($definition->hasType()) {
+            $this->type = $definition->getType();
+        }
+
+        $this->mergeLinks($definition);
+        $this->mergeAttributes($definition);
+        $this->mergeRelationships($definition);
+    }
+
+    /**
+     * Merge attributes
+     *
+     * @param Definition $definition
+     */
+    protected function mergeAttributes(self $definition)
+    {
+        foreach ($definition->getAttributes() as $name => $attribute)
+        {
+            if (isset($this->attributes[$name])) {
+                $this->attributes[$name]->merge($attribute);
+                continue;
+            }
+
+            $this->attributes[$name] = $attribute;
+        }
+    }
+
+    /**
+     * Merge relationships
+     *
+     * @param Definition $definition
+     */
+    protected function mergeRelationships(self $definition)
+    {
+        foreach ($definition->getRelationships() as $name => $relationship)
+        {
+            if (isset($this->relationships[$name])) {
+                $this->relationships[$name]->merge($relationship);
+                continue;
+            }
+
+            $this->relationships[$name] = $relationship;
+        }
     }
 }

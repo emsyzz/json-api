@@ -36,4 +36,15 @@ class Attribute
     {
         return $this->name;
     }
+
+    /**
+     * Merge a attribute into this one
+     * Named data of given attribute will override existing one in the case of names conflict
+     *
+     * @param self $attribute
+     */
+    public function merge(self $attribute)
+    {
+
+    }
 }
