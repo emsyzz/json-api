@@ -86,11 +86,13 @@ class Relationship implements LinksAwareInterface
      *
      * @param string $name
      * @param int    $type
+     * @param string $getter
      */
-    public function __construct(string $name, int $type)
+    public function __construct(string $name, int $type, string $getter)
     {
-        $this->name = $name;
-        $this->type = $type;
+        $this->name   = $name;
+        $this->type   = $type;
+        $this->getter = $getter;
     }
 
     /**
@@ -163,26 +165,6 @@ class Relationship implements LinksAwareInterface
     public function getPropertyName(): string
     {
         return $this->propertyName;
-    }
-
-    /**
-     * Set name of a getter-method to access related data
-     *
-     * @param string $method
-     */
-    public function setGetter(string $method)
-    {
-        $this->getter = $method;
-    }
-
-    /**
-     * Contains name of a getter-method to access related data ?
-     *
-     * @return bool
-     */
-    public function hasGetter(): bool
-    {
-        return $this->getter !== null;
     }
 
     /**

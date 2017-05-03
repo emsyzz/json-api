@@ -29,4 +29,12 @@ class Fixture
      * }, dataAllowed=true, dataLimit=1000)
      */
     protected $test;
+
+    /**
+     * Get test
+     */
+    public function getTest()
+    {
+
+    }
 }

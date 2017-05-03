@@ -7,6 +7,7 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\Reader;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\ResourceIdentifier as ResourceIdentifierAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Relationship as RelationshipAnnotation;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Attribute as AttributeAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link as LinkAnnotation;
 
 /**
@@ -17,9 +18,14 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link as LinkAnnota
 class AnnotationDefinitionProvider implements DefinitionProviderInterface
 {
     /**
-     * Pattern of "resource" parameter
+     * Pattern of "resource" parameter of link annotation
      */
     const RESOURCE_PATTERN = '~^(?<repository>[a-z_][a-z0-9_]*)\.(?<link>[a-z_][a-z0-9_]*)$~i';
+
+    /**
+     * Pattern of "type" parameter of attribute annotation
+     */
+    const DATATYPE_PATTERN = '~^(?<type>[a-z_][a-z0-9_]*)\s*(?:\((?<params>[^\)]*)\))?$~i';
 
     /**
      * Annotation classes ha been registered.
@@ -43,6 +49,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     {
         if (self::$annotationsRegistered === false) {
             AnnotationRegistry::registerFile(__DIR__ . '/Annotation/Relationship.php');
+            AnnotationRegistry::registerFile(__DIR__ . '/Annotation/Attribute.php');
             AnnotationRegistry::registerFile(__DIR__ . '/Annotation/Link.php');
 
             self::$annotationsRegistered = true;
@@ -114,15 +121,22 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     {
         foreach ($reflection->getProperties() as $property)
         {
-            $relationshipAnnotation = $this->reader->getPropertyAnnotation(
-                $property,
-                RelationshipAnnotation::class
-            );
+            $annotations = $this->reader->getPropertyAnnotations($property);
 
-            if ($relationshipAnnotation !== null) {
-                $relationship = $this->createRelationship($relationshipAnnotation, $property);
+            foreach ($annotations as $annotation)
+            {
+                if ($annotation instanceof AttributeAnnotation) {
+                    $attribute = $this->createAttribute($annotation, $property);
 
-                $definition->addRelationship($relationship);
+                    $definition->addAttribute($attribute);
+                    continue;
+                }
+
+                if ($annotation instanceof RelationshipAnnotation) {
+                    $relationship = $this->createRelationship($annotation, $property);
+
+                    $definition->addRelationship($relationship);
+                }
             }
         }
     }
@@ -166,6 +180,57 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     }
 
     /**
+     * Create attribute
+     *
+     * @param  AttributeAnnotation $annotation
+     * @param  \ReflectionProperty $property
+     * @return Attribute
+     */
+    protected function createAttribute(AttributeAnnotation $annotation, \ReflectionProperty $property)
+    {
+        $name = ($annotation->name === null)
+            ? $property->getName()
+            : $annotation->name;
+
+        $getter = ($annotation->getter === null)
+            ? $this->resolveGetter($property)
+            : $annotation->getter;
+
+        $attribute = new Attribute($name, $getter);
+        $attribute->setPropertyName($property->getName());
+
+        if ($annotation->type !== null) {
+            $this->processDataType($annotation->type, $attribute);
+        }
+
+        return $attribute;
+    }
+
+    /**
+     * Process data-type
+     *
+     * @param string    $definition
+     * @param Attribute $attribute
+     */
+    protected function processDataType(string $definition, Attribute $attribute)
+    {
+        if (! preg_match(self::DATATYPE_PATTERN, $definition, $matches)) {
+            throw new \LogicException(sprintf('Data-type definition "%s" is invalid.', $definition));
+        }
+
+        $attribute->setType($matches['type']);
+
+        if (empty($matches['params'])) {
+            return;
+        }
+
+        $parameters = explode(',', $matches['params']);
+        $parameters = array_map('trim', $parameters);
+
+        $attribute->setTypeParameters($parameters);
+    }
+
+    /**
      * Process relationship
      *
      * @param  RelationshipAnnotation $annotation
@@ -180,10 +245,13 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
 
         $type = $this->resolveType($annotation);
 
-        $relationship = new Relationship($name, $type);
+        $getter = ($annotation->getter === null)
+            ? $this->resolveGetter($property)
+            : $annotation->getter;
+
+        $relationship = new Relationship($name, $type, $getter);
         $relationship->setPropertyName($property->getName());
 
-        $this->handleGetter($annotation, $relationship);
         $this->handleLinks($annotation, $relationship);
         $this->handleDataControl($annotation, $relationship);
 
@@ -191,22 +259,30 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     }
 
     /**
-     * Handler getter of related object
+     * Resolve getter of related object
      *
-     * @param RelationshipAnnotation $annotation
-     * @param Relationship           $relationship
+     * @param  \ReflectionProperty $property
+     * @return string
      */
-    protected function handleGetter(RelationshipAnnotation $annotation, Relationship $relationship)
+    protected function resolveGetter(\ReflectionProperty $property): string
     {
-        if ($annotation->getter === null) {
-            $name   = $relationship->getPropertyName();
-            $getter = 'get' . ucfirst($name);
+        $name  = $property->getName();
+        $class = $property->getDeclaringClass();
 
-            $relationship->setGetter($getter);
-            return;
+        foreach (['get', 'is'] as $prefix)
+        {
+            $getter = $prefix . ucfirst($name);
+
+            if ($class->hasMethod($getter) && $class->getMethod($getter)->isPublic()) {
+                return $getter;
+            }
         }
 
-        $relationship->setGetter($annotation->getter);
+        throw new \LogicException(sprintf(
+            'Getter-method for the property "%s" cannot be resolved automatically. ' .
+            'Probably there is no get%2$s() or is%2$s() method or it is not public.',
+            $name, ucfirst($name)
+        ));
     }
 
     /**

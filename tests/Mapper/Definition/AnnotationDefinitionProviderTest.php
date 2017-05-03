@@ -6,12 +6,14 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Link as LinkAnnotation;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Attribute as AttributeAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\Relationship as RelationshipAnnotation;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation\ResourceIdentifier;
 use PHPUnit\Framework\TestCase;
 
 include __DIR__ . '/Fixture.php';
 include __DIR__ . '/Fixture2.php';
+include __DIR__ . '/Fixture3.php';
 
 /**
  * @group   mapper
@@ -116,25 +118,58 @@ class AnnotationDefinitionProviderTest extends TestCase
         );
     }
 
+    public function testAttribute()
+    {
+        $annotation = new AttributeAnnotation();
+        $annotation->type = 'datetime(Y-m-d, 123)';
+
+        $reader = $this->createReader([], [$annotation]);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture3::class);
+
+        $attribute = $definition->getAttributes()['test'];
+
+        $this->assertInstanceOf(Attribute::class, $attribute);
+        $this->assertSame('test', $attribute->getName());
+        $this->assertSame('datetime', $attribute->getType());
+        $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
+        $this->assertSame('test', $attribute->getPropertyName());
+    }
+
+    public function testAttributeIntegrationWithReader()
+    {
+        $reader = new AnnotationReader();
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture3::class);
+
+        $attribute = $definition->getAttributes()['test'];
+
+        $this->assertInstanceOf(Attribute::class, $attribute);
+        $this->assertSame('test', $attribute->getName());
+        $this->assertSame('datetime', $attribute->getType());
+        $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
+        $this->assertSame('test', $attribute->getPropertyName());
+    }
+
     public function testRelation()
     {
         $annotation = new RelationshipAnnotation();
+        $annotation->type = 'many';
 
-        $annotation->name         = 'test_relation';
-        $annotation->type         = 'many';
-        $annotation->getter       = 'getTest';
-
-        $reader = $this->createReader([], $annotation);
+        $reader = $this->createReader([], [$annotation]);
 
         $provider   = new AnnotationDefinitionProvider($reader);
         $definition = $provider->getDefinition(Fixture::class);
 
-        $relationship = $definition->getRelationships()['test_relation'];
+        $relationship = $definition->getRelationships()['test'];
 
         $this->assertInstanceOf(Relationship::class, $relationship);
-        $this->assertSame('test_relation', $relationship->getName());
+        $this->assertSame('test', $relationship->getName());
         $this->assertTrue($relationship->isCollection());
         $this->assertSame('getTest', $relationship->getGetter());
+        $this->assertSame('test', $relationship->getPropertyName());
     }
 
     public function testRelationLink()
@@ -151,7 +186,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $annotation->name  = 'test_relation';
         $annotation->links = [$linkAnnotation];
 
-        $reader = $this->createReader([], $annotation);
+        $reader = $this->createReader([], [$annotation]);
 
         $provider   = new AnnotationDefinitionProvider($reader);
         $definition = $provider->getDefinition(Fixture::class);
@@ -226,7 +261,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $annotation->dataAllowed = true;
         $annotation->dataLimit   = 1000;
 
-        $reader = $this->createReader([], $annotation);
+        $reader = $this->createReader([], [$annotation]);
 
         $provider   = new AnnotationDefinitionProvider($reader);
         $definition = $provider->getDefinition(Fixture::class);
@@ -264,6 +299,10 @@ class AnnotationDefinitionProviderTest extends TestCase
             ->with($this->isInstanceOf('ReflectionClass'))
             ->willReturn([]);
 
+        $reader->method('getPropertyAnnotations')
+            ->with($this->isInstanceOf('ReflectionProperty'))
+            ->willReturn([]);
+
         $provider   = new AnnotationDefinitionProvider($reader);
         $definition = $provider->getDefinition(Fixture2::class);
 
@@ -290,11 +329,11 @@ class AnnotationDefinitionProviderTest extends TestCase
     /**
      * Create mock of annotation reader
      *
-     * @param  array                  $classAnnotations
-     * @param  RelationshipAnnotation $relationshipAnnotation
+     * @param  array $classAnnotations
+     * @param  array $relationshipAnnotations
      * @return Reader
      */
-    protected function createReader(array $classAnnotations = [], RelationshipAnnotation $relationshipAnnotation = null): Reader
+    protected function createReader(array $classAnnotations = [], array $relationshipAnnotations = []): Reader
     {
         $reader = $this->createMock(Reader::class);
 
@@ -303,15 +342,18 @@ class AnnotationDefinitionProviderTest extends TestCase
             ->with($this->isInstanceOf('ReflectionClass'))
             ->willReturn($classAnnotations);
 
-        if ($relationshipAnnotation !== null) {
-            $reader->expects($this->once())
-                ->method('getPropertyAnnotation')
-                ->with(
-                    $this->isInstanceOf('ReflectionProperty'),
-                    RelationshipAnnotation::class
-                )
-                ->willReturn($relationshipAnnotation);
+        if (empty($relationshipAnnotations)) {
+            $reader->method('getPropertyAnnotations')
+                ->with($this->isInstanceOf('ReflectionProperty'))
+                ->willReturn([]);
+
+            return $reader;
         }
+
+        $reader->expects($this->once())
+            ->method('getPropertyAnnotations')
+            ->with($this->isInstanceOf('ReflectionProperty'))
+            ->willReturn($relationshipAnnotations);
 
         return $reader;
     }

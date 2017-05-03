@@ -12,15 +12,16 @@ class RelationshipTest extends TestCase
 {
     public function testBasics()
     {
-        $relationship = new Relationship('rel_name', Relationship::TYPE_X_TO_MANY);
+        $relationship = new Relationship('rel_name', Relationship::TYPE_X_TO_MANY, 'getter');
 
         $this->assertSame('rel_name', $relationship->getName());
         $this->assertTrue($relationship->isCollection());
+        $this->assertSame('getter', $relationship->getGetter());
     }
 
     public function testPropertyName()
     {
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
+        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE, 'getter');
 
         $this->assertFalse($relationship->hasPropertyName());
 
@@ -30,21 +31,9 @@ class RelationshipTest extends TestCase
         $this->assertSame('qwerty', $relationship->getPropertyName());
     }
 
-    public function testGetter()
-    {
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
-
-        $this->assertFalse($relationship->hasGetter());
-
-        $relationship->setGetter('qwerty');
-
-        $this->assertTrue($relationship->hasGetter());
-        $this->assertSame('qwerty', $relationship->getGetter());
-    }
-
     public function testDataIncluded()
     {
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
+        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE, 'getter');
 
         $this->assertFalse($relationship->isDataIncluded());
 
@@ -55,7 +44,7 @@ class RelationshipTest extends TestCase
 
     public function testDataLimit()
     {
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
+        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE, 'getter');
 
         $this->assertSame(0, $relationship->getDataLimit());
 
@@ -87,7 +76,7 @@ class RelationshipTest extends TestCase
             ->method('merge')
             ->with($extraLink1);
 
-        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE);
+        $relationship = new Relationship('test', Relationship::TYPE_X_TO_ONE, 'getter');
         $relationship->addLink($link);
         $relationship->merge($extraRelationship);
 
