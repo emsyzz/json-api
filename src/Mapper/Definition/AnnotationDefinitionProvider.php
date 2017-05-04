@@ -109,6 +109,11 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
             $definition->merge($this->createDefinition($parent));
         }
 
+        foreach ($reflection->getTraits() as $trait)
+        {
+            $definition->merge($this->createDefinition($trait));
+        }
+
         return $definition;
     }
 

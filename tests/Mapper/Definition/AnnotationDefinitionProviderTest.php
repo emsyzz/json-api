@@ -15,6 +15,7 @@ include __DIR__ . '/Fixture.php';
 include __DIR__ . '/Fixture2.php';
 include __DIR__ . '/Fixture3.php';
 include __DIR__ . '/Fixture4.php';
+include __DIR__ . '/Fixture5.php';
 
 /**
  * @group   mapper
@@ -363,6 +364,30 @@ class AnnotationDefinitionProviderTest extends TestCase
 
         $this->assertInstanceOf(Definition::class, $definition);
         $this->assertSame(Fixture2::class, $definition->getClass());
+    }
+
+    public function testTrait()
+    {
+        $reader = $this->createMock(Reader::class);
+
+        $reader->expects($this->exactly(2))
+            ->method('getClassAnnotations')
+            ->with($this->isInstanceOf('ReflectionClass'))
+            ->willReturn([]);
+
+        $reader->method('getPropertyAnnotations')
+            ->with($this->isInstanceOf('ReflectionProperty'))
+            ->willReturn([]);
+
+        $reader->method('getMethodAnnotations')
+            ->with($this->isInstanceOf('ReflectionMethod'))
+            ->willReturn([]);
+
+        $provider   = new AnnotationDefinitionProvider($reader);
+        $definition = $provider->getDefinition(Fixture5::class);
+
+        $this->assertInstanceOf(Definition::class, $definition);
+        $this->assertSame(Fixture5::class, $definition->getClass());
     }
 
     /**
