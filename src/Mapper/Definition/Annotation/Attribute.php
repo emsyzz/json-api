@@ -7,7 +7,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition\Annotation;
  * Annotation defines a property as an attribute of JsonAPI-resource.
  *
  * @Annotation
- * @Target({"PROPERTY"})
+ * @Target({"PROPERTY", "METHOD"})
  *
  * @package Mikemirten\Component\JsonApi\Mapper\Definition\Annotation
  */

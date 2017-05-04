@@ -99,8 +99,9 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     {
         $definition = new Definition($reflection->getName());
 
-        $this->processProperties($reflection, $definition);
         $this->processClassAnnotations($reflection, $definition);
+        $this->processProperties($reflection, $definition);
+        $this->processMethods($reflection, $definition);
 
         $parent = $reflection->getParentClass();
 
@@ -121,22 +122,71 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     {
         foreach ($reflection->getProperties() as $property)
         {
-            $annotations = $this->reader->getPropertyAnnotations($property);
+            $this->processProperty($property, $definition);
+        }
+    }
 
-            foreach ($annotations as $annotation)
-            {
-                if ($annotation instanceof AttributeAnnotation) {
-                    $attribute = $this->createAttribute($annotation, $property);
+    /**
+     * Process property of class
+     *
+     * @param \ReflectionProperty $property
+     * @param Definition          $definition
+     */
+    protected function processProperty(\ReflectionProperty $property, Definition $definition)
+    {
+        $annotations = $this->reader->getPropertyAnnotations($property);
 
-                    $definition->addAttribute($attribute);
-                    continue;
-                }
+        foreach ($annotations as $annotation)
+        {
+            if ($annotation instanceof AttributeAnnotation) {
+                $attribute = $this->createAttributeByProperty($annotation, $property);
 
-                if ($annotation instanceof RelationshipAnnotation) {
-                    $relationship = $this->createRelationship($annotation, $property);
+                $definition->addAttribute($attribute);
+                continue;
+            }
 
-                    $definition->addRelationship($relationship);
-                }
+            if ($annotation instanceof RelationshipAnnotation) {
+                $relationship = $this->createRelationship($annotation, $property);
+
+                $definition->addRelationship($relationship);
+            }
+        }
+    }
+
+    /**
+     * Process methods of class
+     *
+     * @param \ReflectionClass $reflection
+     * @param Definition       $definition
+     */
+    protected function processMethods(\ReflectionClass $reflection, Definition $definition)
+    {
+        foreach ($reflection->getMethods() as $method)
+        {
+            if (! $method->isPublic()) {
+                throw new \LogicException('Attribute annotation can be applied only to public method.');
+            }
+
+            $this->processMethod($method, $definition);
+        }
+    }
+
+    /**
+     * Process method of class
+     *
+     * @param \ReflectionMethod $method
+     * @param Definition        $definition
+     */
+    protected function processMethod(\ReflectionMethod $method, Definition $definition)
+    {
+        $annotations = $this->reader->getMethodAnnotations($method);
+
+        foreach ($annotations as $annotation)
+        {
+            if ($annotation instanceof AttributeAnnotation) {
+                $attribute = $this->createAttributeByMethod($annotation, $method);
+
+                $definition->addAttribute($attribute);
             }
         }
     }
@@ -180,13 +230,13 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     }
 
     /**
-     * Create attribute
+     * Create attribute by annotation of property
      *
      * @param  AttributeAnnotation $annotation
      * @param  \ReflectionProperty $property
      * @return Attribute
      */
-    protected function createAttribute(AttributeAnnotation $annotation, \ReflectionProperty $property)
+    protected function createAttributeByProperty(AttributeAnnotation $annotation, \ReflectionProperty $property): Attribute
     {
         $name = ($annotation->name === null)
             ? $property->getName()
@@ -204,6 +254,49 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         }
 
         return $attribute;
+    }
+
+    /**
+     * Create attribute by annotation of method
+     *
+     * @param  AttributeAnnotation $annotation
+     * @param  \ReflectionMethod   $method
+     * @return Attribute
+     */
+    protected function createAttributeByMethod(AttributeAnnotation $annotation, \ReflectionMethod $method): Attribute
+    {
+        if ($annotation->getter !== null) {
+            throw new \LogicException('"getter" property of Attribute annotation applied to a method is useless.');
+        }
+
+        $name = ($annotation->name === null)
+            ? $this->resolveNameByMethod($method)
+            : $annotation->name;
+
+        $attribute = new Attribute($name, $method->getName());
+
+        if ($annotation->type !== null) {
+            $this->processDataType($annotation->type, $attribute);
+        }
+
+        return $attribute;
+    }
+
+    /**
+     * Resolve name of attribute by method
+     *
+     * @param  \ReflectionMethod $method
+     * @return string
+     */
+    protected function resolveNameByMethod(\ReflectionMethod $method): string
+    {
+        $name = $method->getName();
+
+        if (preg_match('~^(?:get|is)(?<name>[a-z0-9_]+)~i', $name, $matches)) {
+            return lcfirst($matches['name']);
+        }
+
+        return $name;
     }
 
     /**
