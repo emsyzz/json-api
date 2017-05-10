@@ -13,11 +13,7 @@ Through composer:
 
 ## How to use
 
-The component contains a number of modules, feel free to read documentation:
-- [Document](https://github.com/mikemirten/JsonApi/wiki/Json-API-Document)
-- [Hydrator](https://github.com/mikemirten/JsonApi/wiki/Document-Hydrator)
-- [HTTP-Client](https://github.com/mikemirten/JsonApi/wiki/HTTP-Client)
-- [Object mapper](https://github.com/mikemirten/JsonApi/wiki/Object-Mapper)
+Feel free to read the [documentation](https://github.com/mikemirten/JsonApi/wiki).
 
 ## A quick start
 
