@@ -13,9 +13,14 @@ Through composer:
 
 ## How to use
 
-Feel free to read the [documentation](https://github.com/mikemirten/JsonApi/wiki).
+- [Document](https://github.com/mikemirten/JsonApi/wiki/Json-API-Document)
+- [Hydrator](https://github.com/mikemirten/JsonApi/wiki/Document-Hydrator)
+- [HTTP-Client](https://github.com/mikemirten/JsonApi/wiki/HTTP-Client)
+- [Object Mapper](https://github.com/mikemirten/JsonApi/wiki/Object-Mapper)
+  - [Mapping Definition](https://github.com/mikemirten/JsonApi/wiki/Mapping-Definition)
+  - [Mapping Handlers](https://github.com/mikemirten/JsonApi/wiki/Mapping-Handlers) 
 
-## A quick start
+## Overview
 
 ```php
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
