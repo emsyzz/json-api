@@ -168,10 +168,6 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     {
         foreach ($reflection->getMethods() as $method)
         {
-            if (! $method->isPublic()) {
-                throw new \LogicException('Attribute annotation can be applied only to public method.');
-            }
-
             $this->processMethod($method, $definition);
         }
     }
@@ -189,10 +185,35 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         foreach ($annotations as $annotation)
         {
             if ($annotation instanceof AttributeAnnotation) {
-                $attribute = $this->createAttributeByMethod($annotation, $method);
+                $this->validateMethodAttribute($annotation, $method);
 
+                $attribute = $this->createAttributeByMethod($annotation, $method);
                 $definition->addAttribute($attribute);
             }
+        }
+    }
+
+    /**
+     * Validate method with attribute definition
+     *
+     * @param  AttributeAnnotation $annotation
+     * @param  \ReflectionMethod   $method
+     * @throws \LogicException
+     */
+    protected function validateMethodAttribute(AttributeAnnotation $annotation, \ReflectionMethod $method)
+    {
+        if (! $method->isPublic()) {
+            throw new \LogicException(sprintf(
+                'Attribute annotation can be applied only to non public method "%s".',
+                $method->getName()
+            ));
+        }
+
+        if ($annotation->getter !== null) {
+            throw new \LogicException(sprintf(
+                'The "getter" property of Attribute annotation applied to method "%s" is useless.',
+                $method->getName()
+            ));
         }
     }
 
@@ -270,10 +291,6 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
      */
     protected function createAttributeByMethod(AttributeAnnotation $annotation, \ReflectionMethod $method): Attribute
     {
-        if ($annotation->getter !== null) {
-            throw new \LogicException('"getter" property of Attribute annotation applied to a method is useless.');
-        }
-
         $name = ($annotation->name === null)
             ? $this->resolveNameByMethod($method)
             : $annotation->name;
