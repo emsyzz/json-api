@@ -21,7 +21,11 @@ class MetadataAttributeOverrideException extends DocumentException
      */
     public function __construct(MetadataAwareInterface $container, string $name, \Exception $previous = null)
     {
-        $message = sprintf('Attribute "%s" of metadata already exists inside of [%s]. To set new one, the old one must be removed.', $name, $container);
+        $info = method_exists($container, '__toString')
+            ? (string) $container
+            : get_class($container);
+
+        $message = sprintf('Attribute "%s" of metadata already exists inside of [%s]. To set new one, the old one must be removed.', $name, $info);
 
         parent::__construct($message, 0, $previous);
     }

@@ -13,6 +13,20 @@ use Mikemirten\Component\JsonApi\Document\ResourceObject;
 class AttributeNotFoundException extends DocumentException
 {
     /**
+     * Name of not found attribute
+     *
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Resource inside of which an attribute has not been found
+     *
+     * @var ResourceObject
+     */
+    protected $resource;
+
+    /**
      * AttributeNotFoundException constructor.
      *
      * @param ResourceObject  $resource
@@ -21,8 +35,31 @@ class AttributeNotFoundException extends DocumentException
      */
     public function __construct(ResourceObject $resource, string $name, \Exception $previous = null)
     {
+        $this->name     = $name;
+        $this->resource = $resource;
+
         $message = sprintf('Attribute "%s" not found inside of [%s].', $name, $resource);
 
         parent::__construct($message, 0, $previous);
+    }
+
+    /**
+     * Get name of not found attribute
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get resource inside of which an attribute has not been found
+     *
+     * @return ResourceObject
+     */
+    public function getResource(): ResourceObject
+    {
+        return $this->resource;
     }
 }

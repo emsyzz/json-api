@@ -21,7 +21,11 @@ class LinkOverrideException extends DocumentException
      */
     public function __construct(LinksAwareInterface $container, string $name, \Exception $previous = null)
     {
-        $message = sprintf('Link "%s" already exists inside of [%s]. To set new one, the old one must be removed.', $name, $container);
+        $info = method_exists($container, '__toString')
+            ? (string) $container
+            : get_class($container);
+
+        $message = sprintf('Link "%s" already exists inside of [%s]. To set new one, the old one must be removed.', $name, $info);
 
         parent::__construct($message, 0, $previous);
     }
