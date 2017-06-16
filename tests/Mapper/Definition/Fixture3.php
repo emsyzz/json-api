@@ -21,4 +21,12 @@ class Fixture3
     {
 
     }
+
+    /**
+     * Set test
+     */
+    public function setTest()
+    {
+
+    }
 }

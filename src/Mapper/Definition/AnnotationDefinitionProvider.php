@@ -272,8 +272,16 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
             ? $this->resolveGetter($property)
             : $annotation->getter;
 
+        $setter = ($annotation->setter === null)
+            ? $this->resolveSetter($property)
+            : $annotation->setter;
+
         $attribute = new Attribute($name, $getter);
         $attribute->setPropertyName($property->getName());
+
+        if ($setter !== null) {
+            $attribute->setSetter($setter);
+        }
 
         if ($annotation->type !== null) {
             $this->processDataType($annotation->type, $attribute);
@@ -379,7 +387,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
      * @param  \ReflectionProperty $property
      * @return string
      */
-    protected function resolveGetter(\ReflectionProperty $property): string
+    protected function resolveGetter(\ReflectionProperty $property)
     {
         $name  = $property->getName();
         $class = $property->getDeclaringClass();
@@ -398,6 +406,24 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
             'Probably there is no get%2$s() or is%2$s() method or it is not public.',
             $name, ucfirst($name)
         ));
+    }
+
+    /**
+     * Resolve getter of related object
+     *
+     * @param  \ReflectionProperty $property
+     * @return string | null
+     */
+    protected function resolveSetter(\ReflectionProperty $property)
+    {
+        $name  = $property->getName();
+        $class = $property->getDeclaringClass();
+
+        $setter = 'set' . ucfirst($name);
+
+        if ($class->hasMethod($setter) && $class->getMethod($setter)->isPublic()) {
+            return $setter;
+        }
     }
 
     /**

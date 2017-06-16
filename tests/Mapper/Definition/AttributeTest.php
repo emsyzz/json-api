@@ -18,6 +18,18 @@ class AttributeTest extends TestCase
         $this->assertSame('getAttr', $attribute->getGetter());
     }
 
+    public function testSetter()
+    {
+        $attribute = new Attribute('test_attr', 'getAttr');
+
+        $this->assertFalse($attribute->hasSetter());
+
+        $attribute->setSetter('setAttr');
+
+        $this->assertTrue($attribute->hasSetter());
+        $this->assertSame('setAttr', $attribute->getSetter());
+    }
+
     public function testType()
     {
         $attribute = new Attribute('test_attr', 'getAttr');

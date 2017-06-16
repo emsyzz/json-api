@@ -37,4 +37,11 @@ class Attribute
      * @var string
      */
     public $getter;
+
+    /**
+     * Setter-method to access attribute's value
+     *
+     * @var string
+     */
+    public $setter;
 }

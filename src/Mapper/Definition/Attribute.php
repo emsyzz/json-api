@@ -47,9 +47,17 @@ class Attribute
     protected $getter;
 
     /**
+     * Setter-method to access value
+     *
+     * @var string
+     */
+    protected $setter;
+
+    /**
      * Attribute constructor.
      *
      * @param string $name
+     * @param string $getter
      */
     public function __construct(string $name, string $getter)
     {
@@ -75,6 +83,36 @@ class Attribute
     public function getGetter(): string
     {
         return $this->getter;
+    }
+
+    /**
+     * Set name of setter-method to access value of attribute
+     *
+     * @param string $name
+     */
+    public function setSetter(string $name)
+    {
+        $this->setter = $name;
+    }
+
+    /**
+     * Has setter-method defined ?
+     *
+     * @return bool
+     */
+    public function hasSetter(): bool
+    {
+        return $this->setter !== null;
+    }
+
+    /**
+     * Get name of setter-method to access value of attribute
+     *
+     * @return string
+     */
+    public function getSetter(): string
+    {
+        return $this->setter;
     }
 
     /**

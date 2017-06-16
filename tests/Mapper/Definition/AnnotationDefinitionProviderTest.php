@@ -141,6 +141,8 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertInstanceOf(Attribute::class, $attribute);
         $this->assertSame('test', $attribute->getName());
         $this->assertSame('getTest', $attribute->getGetter());
+        $this->assertTrue($attribute->hasSetter());
+        $this->assertSame('setTest', $attribute->getSetter());
         $this->assertSame('datetime', $attribute->getType());
         $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
         $this->assertSame('test', $attribute->getPropertyName());
@@ -159,6 +161,8 @@ class AnnotationDefinitionProviderTest extends TestCase
 
         $this->assertInstanceOf(Attribute::class, $attribute);
         $this->assertSame('test', $attribute->getName());
+        $this->assertTrue($attribute->hasSetter());
+        $this->assertSame('setTest', $attribute->getSetter());
         $this->assertSame('datetime', $attribute->getType());
         $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
         $this->assertSame('test', $attribute->getPropertyName());
