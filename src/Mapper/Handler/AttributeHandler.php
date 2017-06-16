@@ -70,7 +70,7 @@ class AttributeHandler implements HandlerInterface
         $value = $object->$getter();
         
         if ($definition->hasType()) {
-            $value = $this->processType($definition, $value);
+            $value = $this->processTypeToResource($definition, $value);
         }
 
         $resource->setAttribute($name, $value);
@@ -83,7 +83,7 @@ class AttributeHandler implements HandlerInterface
      * @param  mixed     $value
      * @return mixed
      */
-    protected function processType(Attribute $definition, $value)
+    protected function processTypeToResource(Attribute $definition, $value)
     {
         $type = $definition->getType();
 
@@ -91,6 +91,30 @@ class AttributeHandler implements HandlerInterface
             $parameters = $definition->getTypeParameters();
 
             return $this->registeredTypes[$type]->toResource($value, $parameters);
+        }
+
+        if (in_array($type, $this->genericTypes)) {
+            return $this->processGenericType($type, $value);
+        }
+
+        throw new \LogicException(sprintf('Unable to handle unknown type "%s" of attribute "%s"', $type, $definition->getName()));
+    }
+
+    /**
+     * Process data-type
+     *
+     * @param  Attribute $definition
+     * @param  mixed     $value
+     * @return mixed
+     */
+    protected function processResourceToType(Attribute $definition, $value)
+    {
+        $type = $definition->getType();
+
+        if (isset($this->registeredTypes[$type])) {
+            $parameters = $definition->getTypeParameters();
+
+            return $this->registeredTypes[$type]->fromResource($value, $parameters);
         }
 
         if (in_array($type, $this->genericTypes)) {
@@ -129,6 +153,40 @@ class AttributeHandler implements HandlerInterface
      */
     public function fromResource($object, ResourceObject $resource, MappingContext $context)
     {
-        // TODO: Implement fromResource() method.
+        $definitions = $context->getDefinition()->getAttributes();
+
+        foreach ($definitions as $definition)
+        {
+            if (! $definition->hasSetter()) {
+                continue;
+            }
+
+            $this->processResourceToAttribute($object, $resource, $definition);
+        }
+    }
+
+    /**
+     * Process resource to attribute mapping
+     *
+     * @param mixed          $object
+     * @param ResourceObject $resource
+     * @param Attribute      $definition
+     */
+    protected function processResourceToAttribute($object, ResourceObject $resource, Attribute $definition)
+    {
+        $name = $definition->getName();
+
+        if (! $resource->hasAttribute($name)) {
+            return;
+        }
+
+        $value  = $resource->getAttribute($name);
+        $setter = $definition->getSetter();
+
+        if ($definition->hasType()) {
+            $value = $this->processResourceToType($definition, $value);
+        }
+
+        $object->$setter($value);
     }
 }

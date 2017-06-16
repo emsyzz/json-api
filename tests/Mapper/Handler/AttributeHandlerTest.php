@@ -41,6 +41,42 @@ class AttributeHandlerTest extends TestCase
         $handler->toResource($object, $resource, $context);
     }
 
+    public function testFromResource()
+    {
+        $object = new class
+        {
+            public $value;
+
+            public function setTest($value)
+            {
+                $this->value = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn(12345);
+
+        $definition = $this->createDefinition([
+            $this->createAttributeSetContext('test', 'setTest')
+        ]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertSame(12345, $object->value);
+    }
+
     public function testToResourceGenericDataType()
     {
         $object = new class
@@ -65,6 +101,42 @@ class AttributeHandlerTest extends TestCase
         $handler = new AttributeHandler();
 
         $handler->toResource($object, $resource, $context);
+    }
+
+    public function testFromResourceGenericDataType()
+    {
+        $object = new class
+        {
+            public $value;
+
+            public function setTest($value)
+            {
+                $this->value = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn(12345);
+
+        $definition = $this->createDefinition([
+            $this->createAttributeSetContext('test', 'setTest', 'string')
+        ]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertSame('12345', $object->value);
     }
 
     public function testToResourceDataTypeHandler()
@@ -104,6 +176,56 @@ class AttributeHandlerTest extends TestCase
         $handler->registerDataTypeHandler($typeHandler);
 
         $handler->toResource($object, $resource, $context);
+    }
+
+    public function testFromResourceDataTypeHandler()
+    {
+        $object = new class
+        {
+            public $value;
+
+            public function setTest($value)
+            {
+                $this->value = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn('1996-06-04');
+
+        $definition = $this->createDefinition([
+            $this->createAttributeSetContext('test', 'setTest', 'datetime', ['Y-m-d'])
+        ]);
+
+        $context = $this->createMappingContext($definition);
+        $value   = new \DateTimeImmutable();
+
+        $typeHandler = $this->createMock(DataTypeHandlerInterface::class);
+
+        $typeHandler->expects($this->once())
+            ->method('supports')
+            ->willReturn(['datetime']);
+
+        $typeHandler->expects($this->once())
+            ->method('fromResource')
+            ->with('1996-06-04', ['Y-m-d'])
+            ->willReturn($value);
+
+        $handler = new AttributeHandler();
+        $handler->registerDataTypeHandler($typeHandler);
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertSame($value, $object->value);
     }
 
     /**
@@ -187,6 +309,50 @@ class AttributeHandlerTest extends TestCase
         $attribute->expects($this->once())
             ->method('getGetter')
             ->willReturn($getter);
+
+        if ($type !== null) {
+            $attribute->expects($this->atLeastOnce())
+                ->method('hasType')
+                ->willReturn(true);
+
+            $attribute->expects($this->once())
+                ->method('getType')
+                ->willReturn($type);
+        }
+
+        if ($typeParams !== null) {
+            $attribute->expects($this->once())
+                ->method('getTypeParameters')
+                ->willReturn($typeParams);
+        }
+
+        return $attribute;
+    }
+
+    /**
+     * Create mock of attribute's definition
+     *
+     * @param  string $name
+     * @param  string $setter
+     * @param  string $type
+     * @param  array  $typeParams
+     * @return Attribute
+     */
+    protected function createAttributeSetContext(string $name, string $setter, string $type = null, array $typeParams = null): Attribute
+    {
+        $attribute = $this->createMock(Attribute::class);
+
+        $attribute->expects($this->atLeastOnce())
+            ->method('getName')
+            ->willReturn($name);
+
+        $attribute->expects($this->once())
+            ->method('hasSetter')
+            ->willReturn(true);
+
+        $attribute->expects($this->once())
+            ->method('getSetter')
+            ->willReturn($setter);
 
         if ($type !== null) {
             $attribute->expects($this->atLeastOnce())
