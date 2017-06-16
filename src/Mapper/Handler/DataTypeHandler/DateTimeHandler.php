@@ -17,6 +17,10 @@ class DateTimeHandler implements DataTypeHandlerInterface
      */
     public function toResource($value, array $parameters)
     {
+        if ($value === null) {
+            return;
+        }
+
         if (! $value instanceof \DateTimeInterface) {
             $value = new \DateTimeImmutable((string) $value);
         }
@@ -31,8 +35,12 @@ class DateTimeHandler implements DataTypeHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function fromResource($value)
+    public function fromResource($value, array $parameters)
     {
+        if ($value === null) {
+            return;
+        }
+
         if ($value instanceof \DateTimeInterface) {
             return $value;
         }

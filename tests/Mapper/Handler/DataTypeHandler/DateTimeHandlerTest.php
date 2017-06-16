@@ -34,7 +34,7 @@ class DateTimeHandlerTest extends TestCase
         $object = new \DateTimeImmutable();
 
         $handler = new DateTimeHandler();
-        $result  = $handler->fromResource($object);
+        $result  = $handler->fromResource($object, ['Y-d-m']);
 
         $this->assertInstanceOf('DateTimeInterface', $result);
         $this->assertSame($object, $result);
@@ -43,7 +43,7 @@ class DateTimeHandlerTest extends TestCase
     public function testFromResourceString()
     {
         $handler = new DateTimeHandler();
-        $result  = $handler->fromResource('2010-01-02');
+        $result  = $handler->fromResource('2010-01-02', ['Y-d-m']);
 
         $this->assertInstanceOf('DateTimeInterface', $result);
         $this->assertSame('2010-01-02', $result->format('Y-m-d'));
