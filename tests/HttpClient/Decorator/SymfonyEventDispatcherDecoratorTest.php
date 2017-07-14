@@ -2,6 +2,7 @@
 
 namespace Mikemirten\Component\JsonApi\HttpClient\Decorator;
 
+use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\ExceptionEvent;
 use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\RequestEvent;
 use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\ResponseEvent;
 use Mikemirten\Component\JsonApi\HttpClient\HttpClientInterface;
@@ -33,7 +34,7 @@ class SymfonyEventDispatcherDecoratorTest extends TestCase
         $dispatcher->expects($this->at(0))
             ->method('dispatch')
             ->with(
-                SymfonyEventDispatcherDecorator::EVENT_REQUEST,
+                'event.request',
                 $this->isInstanceOf(RequestEvent::class)
             )
             ->willReturnCallback(
@@ -46,7 +47,7 @@ class SymfonyEventDispatcherDecoratorTest extends TestCase
         $dispatcher->expects($this->at(1))
             ->method('dispatch')
             ->with(
-                SymfonyEventDispatcherDecorator::EVENT_RESPONSE,
+                'event.response',
                 $this->isInstanceOf(ResponseEvent::class)
             )
             ->willReturnCallback(
@@ -56,9 +57,58 @@ class SymfonyEventDispatcherDecoratorTest extends TestCase
                 }
             );
 
-        $decorator = new SymfonyEventDispatcherDecorator($client, $dispatcher);
-        $result    = $decorator->request($request);
+        $decorator = new SymfonyEventDispatcherDecorator(
+            $client,
+            $dispatcher,
+            'event.request',
+            'event.response',
+            'event.exception'
+        );
 
+        $result = $decorator->request($request);
+        $this->assertSame($response, $result);
+    }
+
+    public function testDispatchingException()
+    {
+        $request   = $this->createMock(RequestInterface::class);
+        $response  = $this->createMock(ResponseInterface::class);
+        $exception = $this->createMock(\Exception::class);
+
+        $client = $this->createMock(HttpClientInterface::class);
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with($request)
+            ->willThrowException($exception);
+
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $dispatcher->expects($this->at(1))
+            ->method('dispatch')
+            ->with(
+                'event.exception',
+                $this->isInstanceOf(ExceptionEvent::class)
+            )
+            ->willReturnCallback(
+                function(string $name, ExceptionEvent $event) use($request, $response, $exception)
+                {
+                    $this->assertSame($request, $event->getRequest());
+                    $this->assertSame($exception, $event->getException());
+
+                    $event->setResponse($response);
+                }
+            );
+
+        $decorator = new SymfonyEventDispatcherDecorator(
+            $client,
+            $dispatcher,
+            'event.request',
+            'event.response',
+            'event.exception'
+        );
+
+        $result = $decorator->request($request);
         $this->assertSame($response, $result);
     }
 }

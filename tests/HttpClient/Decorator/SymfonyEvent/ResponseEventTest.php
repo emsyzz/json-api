@@ -1,8 +1,7 @@
 <?php
 
-namespace Mikemirten\Component\JsonApi\HttpClient\Decorator;
+namespace Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent;
 
-use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\ResponseEvent;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
