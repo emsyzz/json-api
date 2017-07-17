@@ -77,11 +77,10 @@ class SymfonyEventDispatcherDecorator implements HttpClientInterface
      */
     public function request(RequestInterface $request): ResponseInterface
     {
-        $requestEvent = new RequestEvent($request);
-        $this->dispatcher->dispatch($this->requestEvent, $requestEvent);
+        $request = $this->dispatchOnRequest($request);
 
         try {
-            $response = $this->client->request($requestEvent->getRequest());
+            $response = $this->client->request($request);
         }
         catch (\Throwable $exception) {
             $exceptionEvent = new ExceptionEvent($request, $exception);
@@ -98,6 +97,31 @@ class SymfonyEventDispatcherDecorator implements HttpClientInterface
             }
         }
 
+        return $this->dispatchOnResponse($response);
+    }
+
+    /**
+     * Dispatch on-request event
+     *
+     * @param  RequestInterface $request
+     * @return RequestInterface
+     */
+    protected function dispatchOnRequest(RequestInterface $request): RequestInterface
+    {
+        $requestEvent = new RequestEvent($request);
+        $this->dispatcher->dispatch($this->requestEvent, $requestEvent);
+
+        return $requestEvent->getRequest();
+    }
+
+    /**
+     * Dispatch on-response event
+     *
+     * @param  ResponseInterface $response
+     * @return ResponseInterface
+     */
+    protected function dispatchOnResponse(ResponseInterface $response): ResponseInterface
+    {
         $responseEvent = new ResponseEvent($response);
         $this->dispatcher->dispatch($this->responseEvent, $responseEvent);
 
