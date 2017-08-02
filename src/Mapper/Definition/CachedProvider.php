@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
-use Psr\SimpleCache\CacheInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
- * Caching decorator for a definition provider using PSR-16 compatible cache.
+ * Caching decorator for a definition provider using PSR-6 cache.
  *
- * @see http://www.php-fig.org/psr/psr-16/
+ * @see http://www.php-fig.org/psr/psr-6/
  *
  * @package Mikemirten\Component\JsonApi\Mapper\Definition
  */
@@ -24,9 +24,9 @@ class CachedProvider implements DefinitionProviderInterface
     protected $provider;
 
     /**
-     * PSR-16 Compatible cache
+     * PSR-6 Compatible cache
      *
-     * @var CacheInterface
+     * @var CacheItemPoolInterface
      */
     protected $cache;
 
@@ -41,9 +41,9 @@ class CachedProvider implements DefinitionProviderInterface
      * CachedProvider constructor.
      *
      * @param DefinitionProviderInterface $provider
-     * @param CacheInterface              $cache
+     * @param CacheItemPoolInterface      $cache
      */
-    public function __construct(DefinitionProviderInterface $provider, CacheInterface $cache)
+    public function __construct(DefinitionProviderInterface $provider, CacheItemPoolInterface $cache)
     {
         $this->provider = $provider;
         $this->cache    = $cache;
@@ -70,15 +70,16 @@ class CachedProvider implements DefinitionProviderInterface
     public function provideDefinition(string $class): Definition
     {
         $key  = self::PREFIX . md5($class);
-        $data = $this->cache->get($key);
+        $item = $this->cache->getItem($key);
 
-        if ($data !== null) {
-            return $data;
+        if ($item->isHit()) {
+            return $item->get();
         }
 
         $definition = $this->provider->getDefinition($class);
 
-        $this->cache->set($key, $definition);
+        $item->set($definition);
+        $this->cache->save($item);
 
         return $definition;
     }

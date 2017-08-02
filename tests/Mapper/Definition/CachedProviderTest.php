@@ -3,7 +3,8 @@
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
 use PHPUnit\Framework\TestCase;
-use Psr\SimpleCache\CacheInterface;
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @group   mapper
@@ -15,19 +16,26 @@ class CachedProviderTest extends TestCase
     {
         $definition = $this->createMock(Definition::class);
         $provider   = $this->createMock(DefinitionProviderInterface::class);
-        $cache      = $this->createMock(CacheInterface::class);
+        $cache      = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItem  = $this->createMock(CacheItemInterface::class);
 
         $cache->expects($this->at(0))
-            ->method('get')
+            ->method('getItem')
             ->with(CachedProvider::PREFIX . md5('Test'))
-            ->willReturn(null);
+            ->willReturn($cacheItem);
 
         $cache->expects($this->at(1))
+            ->method('save')
+            ->with($cacheItem)
+            ->willReturn(true);
+
+        $cacheItem->expects($this->at(0))
+            ->method('isHit')
+            ->willReturn(false);
+
+        $cacheItem->expects($this->at(1))
             ->method('set')
-            ->with(
-                CachedProvider::PREFIX . md5('Test'),
-                $definition
-            );
+            ->with($definition);
 
         $provider->expects($this->once())
             ->method('getDefinition')
@@ -48,12 +56,26 @@ class CachedProviderTest extends TestCase
     {
         $definition = $this->createMock(Definition::class);
         $provider   = $this->createMock(DefinitionProviderInterface::class);
-        $cache      = $this->createMock(CacheInterface::class);
+        $cache      = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItem  = $this->createMock(CacheItemInterface::class);
 
         $cache->expects($this->once())
-            ->method('get')
+            ->method('getItem')
             ->with(CachedProvider::PREFIX . md5('Test'))
-            ->willReturn(null);
+            ->willReturn($cacheItem);
+
+        $cache->expects($this->once())
+            ->method('save')
+            ->with($cacheItem)
+            ->willReturn(true);
+
+        $cacheItem->expects($this->once())
+            ->method('isHit')
+            ->willReturn(false);
+
+        $cacheItem->expects($this->once())
+            ->method('set')
+            ->with($definition);
 
         $provider->expects($this->once())
             ->method('getDefinition')
@@ -70,15 +92,27 @@ class CachedProviderTest extends TestCase
     {
         $definition = $this->createMock(Definition::class);
         $provider   = $this->createMock(DefinitionProviderInterface::class);
-        $cache      = $this->createMock(CacheInterface::class);
+        $cache      = $this->createMock(CacheItemPoolInterface::class);
+        $cacheItem  = $this->createMock(CacheItemInterface::class);
 
         $cache->expects($this->once())
-            ->method('get')
+            ->method('getItem')
             ->with(CachedProvider::PREFIX . md5('Test'))
-            ->willReturn($definition);
+            ->willReturn($cacheItem);
 
         $cache->expects($this->never())
+            ->method('save');
+
+        $cacheItem->expects($this->never())
             ->method('set');
+
+        $cacheItem->expects($this->once())
+            ->method('isHit')
+            ->willReturn(true);
+
+        $cacheItem->expects($this->once())
+            ->method('get')
+            ->willReturn($definition);
 
         $provider->expects($this->never())
             ->method('getDefinition');
