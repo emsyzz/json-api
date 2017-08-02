@@ -26,7 +26,7 @@ class CachedProviderTest extends TestCase
             ->method('set')
             ->with(
                 CachedProvider::PREFIX . md5('Test'),
-                $this->isType('string')
+                $definition
             );
 
         $provider->expects($this->once())
@@ -75,7 +75,7 @@ class CachedProviderTest extends TestCase
         $cache->expects($this->once())
             ->method('get')
             ->with(CachedProvider::PREFIX . md5('Test'))
-            ->willReturn(serialize($definition));
+            ->willReturn($definition);
 
         $cache->expects($this->never())
             ->method('set');

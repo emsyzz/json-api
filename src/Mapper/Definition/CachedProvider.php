@@ -73,12 +73,12 @@ class CachedProvider implements DefinitionProviderInterface
         $data = $this->cache->get($key);
 
         if ($data !== null) {
-            return unserialize($data);
+            return $data;
         }
 
         $definition = $this->provider->getDefinition($class);
 
-        $this->cache->set($key, serialize($definition));
+        $this->cache->set($key, $definition);
 
         return $definition;
     }
