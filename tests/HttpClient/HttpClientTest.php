@@ -3,6 +3,7 @@
 namespace Mikemirten\Component\JsonApi\HttpClient;
 
 use Mikemirten\Component\JsonApi\Document\AbstractDocument;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\ResponseException;
 use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -14,6 +15,31 @@ use Psr\Http\Message\StreamInterface;
  */
 class HttpClientTest extends TestCase
 {
+    public function testOptions()
+    {
+        $hydrator = $this->createMock(DocumentHydrator::class);
+        $adapter  = $this->createMock(HttpClientInterface::class);
+
+        $client = new HttpClient($adapter, $hydrator, [
+            'returnBadResponse' => true
+        ]);
+
+        $this->assertTrue($client->isReturnBadResponse());
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\HttpClient\Exception\InvalidOptionException
+     */
+    public function testInvalidOption()
+    {
+        $hydrator = $this->createMock(DocumentHydrator::class);
+        $adapter  = $this->createMock(HttpClientInterface::class);
+
+        new HttpClient($adapter, $hydrator, [
+            'invalidOption' => 123
+        ]);
+    }
+
     public function testRegularRequest()
     {
         $request        = $this->createMock(RequestInterface::class);
@@ -90,6 +116,50 @@ class HttpClientTest extends TestCase
 
         $this->assertInstanceOf(JsonApiResponse::class, $response);
         $this->assertInstanceOf(AbstractDocument::class, $response->getDocument());
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\HttpClient\Exception\ResponseException
+     */
+    public function testResponseException()
+    {
+        $request   = $this->createMock(RequestInterface::class);
+        $exception = $this->createMock(ResponseException::class);
+        $hydrator  = $this->createMock(DocumentHydrator::class);
+
+        $regularClient = $this->createMock(HttpClientInterface::class);
+
+        $regularClient->expects($this->once())
+            ->method('request')
+            ->willThrowException($exception);
+
+        $jsonApiClient = new HttpClient($regularClient, $hydrator);
+        $jsonApiClient->request($request);
+    }
+
+    public function testBadResponse()
+    {
+        $request   = $this->createMock(RequestInterface::class);
+        $response  = $this->createResponse();
+        $exception = $this->createMock(ResponseException::class);
+        $hydrator  = $this->createMock(DocumentHydrator::class);
+
+        $exception->method('getResponse')
+            ->willReturn($response);
+
+        $regularClient = $this->createMock(HttpClientInterface::class);
+
+        $regularClient->expects($this->once())
+            ->method('request')
+            ->willThrowException($exception);
+
+        $jsonApiClient = new HttpClient($regularClient, $hydrator, [
+            'returnBadResponse' => true
+        ]);
+
+        $result = $jsonApiClient->request($request);
+
+        $this->assertSame($result, $response);
     }
 
     /**

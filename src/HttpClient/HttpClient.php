@@ -5,6 +5,9 @@ namespace Mikemirten\Component\JsonApi\HttpClient;
 
 use GuzzleHttp\Psr7\Stream;
 use Mikemirten\Component\JsonApi\Document\AbstractDocument;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\HttpClientException;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\InvalidOptionException;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\ResponseException;
 use Mikemirten\Component\JsonApi\Hydrator\DocumentHydrator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,6 +21,15 @@ use Psr\Http\Message\StreamInterface;
  */
 class HttpClient implements HttpClientInterface
 {
+    const CONTENT_TYPE_JSON_API = 'application/vnd.api+json';
+
+    /**
+     * Options possible to configure
+     *
+     * @var array
+     */
+    static protected $possibleOptions = ['returnBadResponse'];
+
     /**
      * @var HttpClientInterface
      */
@@ -29,15 +41,42 @@ class HttpClient implements HttpClientInterface
     protected $hydrator;
 
     /**
+     * Return bad response instead of throwing an exception
+     *
+     * @var bool
+     */
+    protected $returnBadResponse = false;
+
+    /**
      * HttpClient constructor.
      *
      * @param HttpClientInterface $client
      * @param DocumentHydrator    $hydrator
+     * @param array               $options
      */
-    public function __construct(HttpClientInterface $client, DocumentHydrator $hydrator)
+    public function __construct(HttpClientInterface $client, DocumentHydrator $hydrator, array $options = [])
     {
         $this->client   = $client;
         $this->hydrator = $hydrator;
+
+        foreach ($options as $option => $value)
+        {
+            if (! in_array($option, static::$possibleOptions, true)) {
+                throw new InvalidOptionException($option, static::$possibleOptions);
+            }
+
+            $this->$option = $value;
+        }
+    }
+
+    /**
+     * Is the client returns bad response instead of throwing an exception ?
+     *
+     * @return bool
+     */
+    public function isReturnBadResponse(): bool
+    {
+        return $this->returnBadResponse;
     }
 
     /**
@@ -45,15 +84,52 @@ class HttpClient implements HttpClientInterface
      */
     public function request(RequestInterface $request): ResponseInterface
     {
+        $request = $this->handleRequest($request);
+
+        try {
+            $response = $this->client->request($request);
+        }
+        catch (ResponseException $exception) {
+            if ($this->returnBadResponse) {
+                $response = $exception->getResponse();
+                return $this->handleResponse($response);
+            }
+
+            throw $exception;
+        }
+
+        return $this->handleResponse($response);
+    }
+
+    /**
+     * Handle request
+     *
+     * @param  RequestInterface $request
+     * @return RequestInterface
+     */
+    protected function handleRequest(RequestInterface $request): RequestInterface
+    {
         if ($request instanceof JsonApiRequest) {
             $document = $request->getDocument();
             $stream   = $this->documentToStream($document);
-            $request  = $request->withBody($stream);
+
+            return $request->withBody($stream);
         }
 
-        $response = $this->client->request($request);
+        return $request;
+    }
 
-        if (in_array('application/vnd.api+json', $response->getHeader('Content-Type'), true)) {
+    /**
+     * Handle response
+     *
+     * @param  ResponseInterface $response
+     * @return ResponseInterface
+     */
+    protected function handleResponse(ResponseInterface $response): ResponseInterface
+    {
+        $contentType = $response->getHeader('Content-Type');
+
+        if (in_array(self::CONTENT_TYPE_JSON_API, $contentType, true)) {
             $stream = $response->getBody();
 
             return new JsonApiResponse(

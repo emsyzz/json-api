@@ -4,6 +4,10 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\HttpClient\Adapter;
 
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
+use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
+use GuzzleHttp\Exception\BadResponseException as GuzzleResponseException;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\RequestException;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\ResponseException;
 use Mikemirten\Component\JsonApi\HttpClient\HttpClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -35,6 +39,33 @@ class GuzzleAdapter implements HttpClientInterface
      */
     public function request(RequestInterface $request): ResponseInterface
     {
-        return $this->client->send($request);
+        try {
+            return $this->client->send($request);
+        }
+        catch (GuzzleRequestException $exception) {
+            throw $this->createException($exception);
+        }
+    }
+
+    /**
+     * Create HTTP-Client RequestException by a Guzzle exception
+     *
+     * @param  GuzzleRequestException $exception
+     * @return RequestException
+     */
+    protected function createException(GuzzleRequestException $exception): RequestException
+    {
+        if ($exception instanceof GuzzleResponseException) {
+            return new ResponseException(
+                $exception->getRequest(),
+                $exception->getResponse(),
+                $exception
+            );
+        }
+
+        throw new RequestException(
+            $exception->getRequest(),
+            $exception
+        );
     }
 }
