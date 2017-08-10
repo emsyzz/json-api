@@ -5,6 +5,7 @@ namespace Mikemirten\Component\JsonApi\HttpClient\Decorator;
 use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\ExceptionEvent;
 use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\RequestEvent;
 use Mikemirten\Component\JsonApi\HttpClient\Decorator\SymfonyEvent\ResponseEvent;
+use Mikemirten\Component\JsonApi\HttpClient\Exception\RequestException;
 use Mikemirten\Component\JsonApi\HttpClient\HttpClientInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -110,5 +111,57 @@ class SymfonyEventDispatcherDecoratorTest extends TestCase
 
         $result = $decorator->request($request);
         $this->assertSame($response, $result);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\HttpClient\Exception\RequestException
+     */
+    public function testDispatchingExceptionThow()
+    {
+        $request    = $this->createMock(RequestInterface::class);
+        $exception  = $this->createMock(\Exception::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $client     = $this->createMock(HttpClientInterface::class);
+
+        $client->method('request')
+            ->willThrowException($exception);
+
+        $decorator = new SymfonyEventDispatcherDecorator(
+            $client,
+            $dispatcher,
+            'event.request',
+            'event.response',
+            'event.exception'
+        );
+
+        $decorator->request($request);
+    }
+
+    public function testDispatchingClientExceptionThrow()
+    {
+        $request    = $this->createMock(RequestInterface::class);
+        $exception  = $this->createMock(RequestException::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $client     = $this->createMock(HttpClientInterface::class);
+
+        $client->method('request')
+            ->willThrowException($exception);
+
+        $decorator = new SymfonyEventDispatcherDecorator(
+            $client,
+            $dispatcher,
+            'event.request',
+            'event.response',
+            'event.exception'
+        );
+
+        try {
+            $decorator->request($request);
+        } catch (\Throwable $thrown) {
+            $this->assertSame($thrown, $exception);
+            return;
+        }
+
+        $this->fail('An exception has not been caught');
     }
 }

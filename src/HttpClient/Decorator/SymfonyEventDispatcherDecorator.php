@@ -87,7 +87,7 @@ class SymfonyEventDispatcherDecorator implements HttpClientInterface
             $this->dispatcher->dispatch($this->exceptionEvent, $exceptionEvent);
 
             if (! $exceptionEvent->hasResponse()) {
-                throw new RequestException($request, $exception);
+                throw $this->handleException($exception, $request);
             }
 
             $response = $exceptionEvent->getResponse();
@@ -98,6 +98,22 @@ class SymfonyEventDispatcherDecorator implements HttpClientInterface
         }
 
         return $this->dispatchOnResponse($response);
+    }
+
+    /**
+     * Handler exception
+     *
+     * @param  \Throwable       $exception
+     * @param  RequestInterface $request
+     * @return RequestException
+     */
+    protected function handleException(\Throwable $exception, RequestInterface $request): RequestException
+    {
+        if ($exception instanceof RequestException) {
+            return $exception;
+        }
+
+        return new RequestException($request, $exception);
     }
 
     /**
