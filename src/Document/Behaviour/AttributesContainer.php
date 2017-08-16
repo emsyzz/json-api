@@ -31,7 +31,7 @@ trait AttributesContainer
      */
     public function setAttribute(string $name, $value)
     {
-        if (isset($this->attributes[$name])) {
+        if (array_key_exists($name, $this->attributes)) {
             throw new AttributeOverrideException($this, $name);
         }
 
@@ -58,7 +58,7 @@ trait AttributesContainer
      */
     public function getAttribute(string $name)
     {
-        if (isset($this->attributes[$name])) {
+        if (array_key_exists($name, $this->attributes)) {
             return $this->attributes[$name];
         }
 
