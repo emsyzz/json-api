@@ -68,6 +68,10 @@ class AttributeHandler implements HandlerInterface
         $getter = $definition->getGetter();
 
         $value = $object->$getter();
+
+        if ($value === null && ! $definition->getProcessNull()) {
+            return;
+        }
         
         if ($definition->hasType()) {
             $value = $this->processTypeToResource($definition, $value);
@@ -180,7 +184,12 @@ class AttributeHandler implements HandlerInterface
             return;
         }
 
-        $value  = $resource->getAttribute($name);
+        $value = $resource->getAttribute($name);
+
+        if ($value === null && ! $definition->getProcessNull()) {
+            return;
+        }
+
         $setter = $definition->getSetter();
 
         if ($definition->hasType()) {

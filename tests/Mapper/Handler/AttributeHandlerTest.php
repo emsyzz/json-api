@@ -41,6 +41,57 @@ class AttributeHandlerTest extends TestCase
         $handler->toResource($object, $resource, $context);
     }
 
+    public function testNullToResource()
+    {
+        $object = new class
+        {
+            public function getTest() {}
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->never())
+            ->method('setAttribute');
+
+        $attributeDefinition = $this->createAttribute('test', 'getTest');
+
+        $attributeDefinition->method('getProcessNull')
+            ->willReturn(false);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->toResource($object, $resource, $context);
+    }
+
+    public function testProcessNullToResource()
+    {
+        $object = new class
+        {
+            public function getTest() {}
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('setAttribute')
+            ->with('test', null);
+
+        $attributeDefinition = $this->createAttribute('test', 'getTest');
+
+        $attributeDefinition->method('getProcessNull')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->toResource($object, $resource, $context);
+    }
+
     public function testFromResource()
     {
         $object = new class
@@ -75,6 +126,84 @@ class AttributeHandlerTest extends TestCase
         $handler->fromResource($object, $resource, $context);
 
         $this->assertSame(12345, $object->value);
+    }
+
+    public function testNullFromResource()
+    {
+        $object = new class
+        {
+            public $value = 12345;
+
+            public function setTest($value)
+            {
+                $this->value = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn(null);
+
+        $attributeDefinition = $this->createAttributeSetContext('test', 'setTest');
+
+        $attributeDefinition->method('getProcessNull')
+            ->willReturn(false);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertSame(12345, $object->value);
+    }
+
+    public function testProcessNullFromResource()
+    {
+        $object = new class
+        {
+            public $value = 12345;
+
+            public function setTest($value)
+            {
+                $this->value = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn(null);
+
+        $attributeDefinition = $this->createAttributeSetContext('test', 'setTest');
+
+        $attributeDefinition->method('getProcessNull')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertNull($object->value);
     }
 
     public function testToResourceGenericDataType()
@@ -237,7 +366,9 @@ class AttributeHandlerTest extends TestCase
     {
         $object = new class
         {
-            public function getTest() {}
+            public function getTest() {
+                return 123;
+            }
         };
 
         $resource = $this->createMock(ResourceObject::class);
@@ -350,8 +481,7 @@ class AttributeHandlerTest extends TestCase
             ->method('hasSetter')
             ->willReturn(true);
 
-        $attribute->expects($this->once())
-            ->method('getSetter')
+        $attribute->method('getSetter')
             ->willReturn($setter);
 
         if ($type !== null) {
