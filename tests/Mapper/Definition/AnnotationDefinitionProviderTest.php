@@ -129,6 +129,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $annotation = new AttributeAnnotation();
         $annotation->type = 'datetime(Y-m-d, 123)';
         $annotation->many = true;
+        $annotation->processNull = true;
 
         $reader = $this->createReader([], [$annotation]);
 
@@ -146,6 +147,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertSame('setTest', $attribute->getSetter());
         $this->assertSame('datetime', $attribute->getType());
         $this->assertTrue($attribute->isMany());
+        $this->assertTrue($attribute->getProcessNull());
         $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
         $this->assertSame('test', $attribute->getPropertyName());
     }
@@ -167,6 +169,7 @@ class AnnotationDefinitionProviderTest extends TestCase
         $this->assertSame('setTest', $attribute->getSetter());
         $this->assertSame('datetime', $attribute->getType());
         $this->assertTrue($attribute->isMany());
+        $this->assertTrue($attribute->getProcessNull());
         $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
         $this->assertSame('test', $attribute->getPropertyName());
     }

@@ -51,4 +51,13 @@ class Attribute
      * @var string
      */
     public $setter;
+
+    /**
+     * Process null-values:
+     *  - add to resource attribute with null-value
+     *  - set to object null value from resources
+     *
+     * @var bool
+     */
+    public $processNull;
 }

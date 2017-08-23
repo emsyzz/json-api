@@ -53,6 +53,17 @@ class AttributeTest extends TestCase
         $this->assertTrue($attribute->isMany());
     }
 
+    public function testProcessNull()
+    {
+        $attribute = new Attribute('test_attr', 'getAttr');
+
+        $this->assertFalse($attribute->getProcessNull());
+
+        $attribute->setProcessNull();
+
+        $this->assertTrue($attribute->getProcessNull());
+    }
+
     public function testTypeParameters()
     {
         $attribute = new Attribute('test_attr', 'getAttr');

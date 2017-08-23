@@ -303,6 +303,10 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
         if ($annotation->many !== null) {
             $attribute->setMany($annotation->many);
         }
+
+        if ($annotation->processNull !== null) {
+            $attribute->setProcessNull($annotation->processNull);
+        }
     }
 
     /**

@@ -10,7 +10,7 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation as JsonApi;
 class Fixture3
 {
     /**
-     * @JsonApi\Attribute(type="datetime(Y-m-d, 123)", many=true)
+     * @JsonApi\Attribute(type="datetime(Y-m-d, 123)", many=true, processNull=true)
      */
     protected $test;
 

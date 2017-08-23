@@ -61,6 +61,15 @@ class Attribute
     protected $setter;
 
     /**
+     * Process null-values:
+     *  - add to resource attribute with null-value
+     *  - set to object null value from resources
+     *
+     * @var bool
+     */
+    protected $processNull;
+
+    /**
      * Attribute constructor.
      *
      * @param string $name
@@ -120,6 +129,36 @@ class Attribute
     public function getSetter(): string
     {
         return $this->setter;
+    }
+
+    /**
+     * Set flag "processNull"
+     *
+     * @param bool $process
+     */
+    public function setProcessNull($process = true)
+    {
+        $this->processNull = $process;
+    }
+
+    /**
+     * Get value of "processNull" flag
+     *
+     * @return bool
+     */
+    public function getProcessNull(): bool
+    {
+        return $this->processNull !== null && $this->processNull;
+    }
+
+    /**
+     * Has flag "processNull" defined
+     *
+     * @return bool
+     */
+    public function hasProcessNull(): bool
+    {
+        return $this->processNull !== null;
     }
 
     /**
@@ -253,6 +292,10 @@ class Attribute
 
         if (empty($this->typeParameters)) {
             $this->typeParameters = $attribute->getTypeParameters();
+        }
+
+        if ($this->processNull === null && $attribute->hasProcessNull()) {
+            $this->processNull = $attribute->getProcessNull();
         }
     }
 }
