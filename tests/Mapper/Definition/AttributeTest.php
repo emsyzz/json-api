@@ -42,6 +42,17 @@ class AttributeTest extends TestCase
         $this->assertSame('datetime', $attribute->getType());
     }
 
+    public function testMany()
+    {
+        $attribute = new Attribute('test_attr', 'getAttr');
+
+        $this->assertFalse($attribute->isMany());
+
+        $attribute->setMany();
+
+        $this->assertTrue($attribute->isMany());
+    }
+
     public function testTypeParameters()
     {
         $attribute = new Attribute('test_attr', 'getAttr');
@@ -81,6 +92,12 @@ class AttributeTest extends TestCase
         $attribute2->method('getType')
             ->willReturn('test_type');
 
+        $attribute2->method('hasManyDefined')
+            ->willReturn(true);
+
+        $attribute2->method('isMany')
+            ->willReturn(true);
+
         $attribute2->method('getTypeParameters')
             ->willReturn(['qwerty']);
 
@@ -95,5 +112,6 @@ class AttributeTest extends TestCase
         $this->assertSame('test_type', $attribute->getType());
         $this->assertSame(['qwerty'], $attribute->getTypeParameters());
         $this->assertSame('test_name', $attribute->getPropertyName());
+        $this->assertTrue($attribute->isMany());
     }
 }

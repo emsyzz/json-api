@@ -32,6 +32,13 @@ class Attribute
     public $type;
 
     /**
+     * Attribute is an iterable container of values
+     *
+     * @var bool
+     */
+    public $many;
+
+    /**
      * Getter-method to access attribute's value
      *
      * @var string

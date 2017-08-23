@@ -283,11 +283,26 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
             $attribute->setSetter($setter);
         }
 
+        $this->processAttributeOptions($annotation, $attribute);
+
+        return $attribute;
+    }
+
+    /**
+     * Process optional properties of attribute
+     *
+     * @param AttributeAnnotation $annotation
+     * @param Attribute           $attribute
+     */
+    protected function processAttributeOptions(AttributeAnnotation $annotation, Attribute $attribute)
+    {
         if ($annotation->type !== null) {
             $this->processDataType($annotation->type, $attribute);
         }
 
-        return $attribute;
+        if ($annotation->many !== null) {
+            $attribute->setMany($annotation->many);
+        }
     }
 
     /**

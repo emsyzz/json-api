@@ -33,6 +33,13 @@ class Attribute
     protected $type;
 
     /**
+     * Attribute is an iterable container of values
+     *
+     * @var bool
+     */
+    protected $many;
+
+    /**
      * Parameters for data-type handler
      *
      * @var array
@@ -146,6 +153,36 @@ class Attribute
     }
 
     /**
+     * Set "many" flag
+     *
+     * @param bool $many
+     */
+    public function setMany($many = true)
+    {
+        $this->many = $many;
+    }
+
+    /**
+     * Attribute is an iterable container of values ?
+     *
+     * @return bool
+     */
+    public function isMany(): bool
+    {
+        return $this->many !== null && $this->many;
+    }
+
+    /**
+     * Flag "many" has been defined
+     *
+     * @return bool
+     */
+    public function hasManyDefined(): bool
+    {
+        return $this->many !== null;
+    }
+
+    /**
      * Set parameters of data-type handling
      *
      * @param array $parameters
@@ -208,6 +245,10 @@ class Attribute
 
         if ($this->type === null && $attribute->hasType()) {
             $this->type = $attribute->getType();
+        }
+
+        if ($this->many === null && $attribute->hasManyDefined()) {
+            $this->many = $attribute->isMany();
         }
 
         if (empty($this->typeParameters)) {
