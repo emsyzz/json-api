@@ -6,6 +6,7 @@ namespace Mikemirten\Component\JsonApi\Mapper\Handler;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Attribute;
 use Mikemirten\Component\JsonApi\Mapper\Handler\DataTypeHandler\DataTypeHandlerInterface;
+use Mikemirten\Component\JsonApi\Mapper\Handler\Exception\NotIterableAttribute;
 use Mikemirten\Component\JsonApi\Mapper\MappingContext;
 
 /**
@@ -72,6 +73,13 @@ class AttributeHandler implements HandlerInterface
         if ($value === null && ! $definition->getProcessNull()) {
             return;
         }
+
+        if ($definition->isMany()) {
+            $value = $this->processIterableValueToResource($value, $definition);
+
+            $resource->setAttribute($name, $value);
+            return;
+        }
         
         if ($definition->hasType()) {
             $value = $this->processTypeToResource($definition, $value);
@@ -79,6 +87,33 @@ class AttributeHandler implements HandlerInterface
 
         $resource->setAttribute($name, $value);
     }
+
+    /**
+     * Process value declared as many (iterable)
+     *
+     * @param mixed      $value
+     * @param  Attribute $definition
+     * @return array
+     */
+    protected function processIterableValueToResource($value, Attribute $definition): array
+    {
+        if (! $value instanceof \Traversable && ! is_array($value)) {
+            throw new NotIterableAttribute($definition, $value);
+        }
+
+        if ($definition->hasType()) {
+            $collection = [];
+
+            foreach ($value as $item) {
+                $collection[] = $this->processTypeToResource($definition, $item);
+            }
+
+            return $collection;
+        }
+
+        return is_array($value) ? $value : iterator_to_array($value, false);
+    }
+
 
     /**
      * Process data-type
@@ -145,7 +180,7 @@ class AttributeHandler implements HandlerInterface
             return (float) $value;
         }
 
-        if ($type === 'bool') {
+        if ($type === 'boolean') {
             return (bool) $value;
         }
 
@@ -190,6 +225,11 @@ class AttributeHandler implements HandlerInterface
             return;
         }
 
+        if ($definition->isMany()) {
+            $this->processIterableValueFromResource($value, $object, $definition);
+            return;
+        }
+
         $setter = $definition->getSetter();
 
         if ($definition->hasType()) {
@@ -197,5 +237,35 @@ class AttributeHandler implements HandlerInterface
         }
 
         $object->$setter($value);
+    }
+
+    /**
+     * Process iterable value
+     *
+     * @param mixed     $value
+     * @param mixed     $object
+     * @param Attribute $definition
+     */
+    protected function processIterableValueFromResource($value, $object, Attribute $definition)
+    {
+        if (! $value instanceof \Traversable && ! is_array($value)) {
+            throw new NotIterableAttribute($definition, $value);
+        }
+
+        $setter = $definition->getSetter();
+
+        if ($definition->hasType()) {
+            foreach ($value as $item) {
+                $processedValue = $this->processResourceToType($definition, $item);
+
+                $object->$setter($processedValue);
+            }
+
+            return;
+        }
+
+        foreach ($value as $item) {
+            $object->$setter($item);
+        }
     }
 }

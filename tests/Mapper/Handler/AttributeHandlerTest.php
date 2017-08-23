@@ -41,6 +41,63 @@ class AttributeHandlerTest extends TestCase
         $handler->toResource($object, $resource, $context);
     }
 
+    public function testManyToResource()
+    {
+        $object = new class
+        {
+            public function getTest()
+            {
+                return new \ArrayIterator(['qwerty']);
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('setAttribute')
+            ->with('test', ['qwerty']);
+
+        $attributeDefinition = $this->createAttribute('test', 'getTest');
+
+        $attributeDefinition->method('isMany')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->toResource($object, $resource, $context);
+    }
+
+    /**
+     * @expectedException \Mikemirten\Component\JsonApi\Mapper\Handler\Exception\NotIterableAttribute
+     */
+    public function testNonIterableToResource()
+    {
+        $object = new class
+        {
+            public function getTest()
+            {
+                return 1;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $attributeDefinition = $this->createAttribute('test', 'getTest');
+
+        $attributeDefinition->method('isMany')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->toResource($object, $resource, $context);
+    }
+
     public function testNullToResource()
     {
         $object = new class
@@ -126,6 +183,45 @@ class AttributeHandlerTest extends TestCase
         $handler->fromResource($object, $resource, $context);
 
         $this->assertSame(12345, $object->value);
+    }
+
+    public function testManyFromResource()
+    {
+        $object = new class
+        {
+            public $value;
+
+            public function addTest($value)
+            {
+                $this->value[] = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn([1, 2, 3]);
+
+        $attributeDefinition = $this->createAttributeSetContext('test', 'addTest');
+
+        $attributeDefinition->method('isMany')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertSame([1, 2, 3], $object->value);
     }
 
     public function testNullFromResource()
@@ -232,6 +328,35 @@ class AttributeHandlerTest extends TestCase
         $handler->toResource($object, $resource, $context);
     }
 
+    public function testManyToResourceGenericDataType()
+    {
+        $object = new class
+        {
+            public function getTest()
+            {
+                return [1, 0, 1];
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('setAttribute')
+            ->with('test', [true, false, true]);
+
+        $attributeDefinition = $this->createAttribute('test', 'getTest', 'boolean');
+
+        $attributeDefinition->method('isMany')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->toResource($object, $resource, $context);
+    }
+
     public function testFromResourceGenericDataType()
     {
         $object = new class
@@ -266,6 +391,45 @@ class AttributeHandlerTest extends TestCase
         $handler->fromResource($object, $resource, $context);
 
         $this->assertSame('12345', $object->value);
+    }
+
+    public function testManyFromResourceGenericDataType()
+    {
+        $object = new class
+        {
+            public $value;
+
+            public function addTest($value)
+            {
+                $this->value[] = $value;
+            }
+        };
+
+        $resource = $this->createMock(ResourceObject::class);
+
+        $resource->expects($this->once())
+            ->method('hasAttribute')
+            ->with('test')
+            ->willReturn(true);
+
+        $resource->expects($this->once())
+            ->method('getAttribute')
+            ->with('test')
+            ->willReturn([1, 2, 3]);
+
+        $attributeDefinition = $this->createAttributeSetContext('test', 'addTest', 'string');
+
+        $attributeDefinition->method('isMany')
+            ->willReturn(true);
+
+        $definition = $this->createDefinition([$attributeDefinition]);
+
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler();
+
+        $handler->fromResource($object, $resource, $context);
+
+        $this->assertSame(['1', '2', '3'], $object->value);
     }
 
     public function testToResourceDataTypeHandler()
@@ -446,7 +610,7 @@ class AttributeHandlerTest extends TestCase
                 ->method('hasType')
                 ->willReturn(true);
 
-            $attribute->expects($this->once())
+            $attribute->expects($this->atLeastOnce())
                 ->method('getType')
                 ->willReturn($type);
         }
@@ -489,7 +653,7 @@ class AttributeHandlerTest extends TestCase
                 ->method('hasType')
                 ->willReturn(true);
 
-            $attribute->expects($this->once())
+            $attribute->expects($this->atLeastOnce())
                 ->method('getType')
                 ->willReturn($type);
         }
