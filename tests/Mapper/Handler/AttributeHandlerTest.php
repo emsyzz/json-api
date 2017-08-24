@@ -29,71 +29,21 @@ class AttributeHandlerTest extends TestCase
 
         $resource->expects($this->once())
             ->method('setAttribute')
-            ->with('test', 'qwerty');
-
-        $definition = $this->createDefinition([
-            $this->createAttribute('test', 'getTest')
-        ]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->toResource($object, $resource, $context);
-    }
-
-    public function testManyToResource()
-    {
-        $object = new class
-        {
-            public function getTest()
-            {
-                return new \ArrayIterator(['qwerty']);
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('setAttribute')
-            ->with('test', ['qwerty']);
+            ->with('test', 'asdfgh');
 
         $attributeDefinition = $this->createAttribute('test', 'getTest');
 
-        $attributeDefinition->method('isMany')
-            ->willReturn(true);
-
         $definition = $this->createDefinition([$attributeDefinition]);
 
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $manager = $this->createMock(DataTypeManager::class);
 
-        $handler->toResource($object, $resource, $context);
-    }
-
-    /**
-     * @expectedException \Mikemirten\Component\JsonApi\Mapper\Handler\Exception\NotIterableAttribute
-     */
-    public function testNonIterableToResource()
-    {
-        $object = new class
-        {
-            public function getTest()
-            {
-                return 1;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $attributeDefinition = $this->createAttribute('test', 'getTest');
-
-        $attributeDefinition->method('isMany')
-            ->willReturn(true);
-
-        $definition = $this->createDefinition([$attributeDefinition]);
+        $manager->expects($this->once())
+            ->method('toResource')
+            ->with($attributeDefinition, 'qwerty')
+            ->willReturn('asdfgh');
 
         $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $handler = new AttributeHandler($manager);
 
         $handler->toResource($object, $resource, $context);
     }
@@ -117,8 +67,13 @@ class AttributeHandlerTest extends TestCase
 
         $definition = $this->createDefinition([$attributeDefinition]);
 
+        $manager = $this->createMock(DataTypeManager::class);
+
+        $manager->expects($this->never())
+            ->method('toResource');
+
         $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $handler = new AttributeHandler($manager);
 
         $handler->toResource($object, $resource, $context);
     }
@@ -134,7 +89,7 @@ class AttributeHandlerTest extends TestCase
 
         $resource->expects($this->once())
             ->method('setAttribute')
-            ->with('test', null);
+            ->with('test', 0);
 
         $attributeDefinition = $this->createAttribute('test', 'getTest');
 
@@ -143,8 +98,15 @@ class AttributeHandlerTest extends TestCase
 
         $definition = $this->createDefinition([$attributeDefinition]);
 
+        $manager = $this->createMock(DataTypeManager::class);
+
+        $manager->expects($this->once())
+            ->method('toResource')
+            ->with($attributeDefinition, null)
+            ->willReturn(0);
+
         $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $handler = new AttributeHandler($manager);
 
         $handler->toResource($object, $resource, $context);
     }
@@ -173,55 +135,23 @@ class AttributeHandlerTest extends TestCase
             ->with('test')
             ->willReturn(12345);
 
-        $definition = $this->createDefinition([
-            $this->createAttributeSetContext('test', 'setTest')
-        ]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->fromResource($object, $resource, $context);
-
-        $this->assertSame(12345, $object->value);
-    }
-
-    public function testManyFromResource()
-    {
-        $object = new class
-        {
-            public $value;
-
-            public function addTest($value)
-            {
-                $this->value[] = $value;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('hasAttribute')
-            ->with('test')
-            ->willReturn(true);
-
-        $resource->expects($this->once())
-            ->method('getAttribute')
-            ->with('test')
-            ->willReturn([1, 2, 3]);
-
-        $attributeDefinition = $this->createAttributeSetContext('test', 'addTest');
-
-        $attributeDefinition->method('isMany')
-            ->willReturn(true);
+        $attributeDefinition = $this->createAttributeSetContext('test', 'setTest');
 
         $definition = $this->createDefinition([$attributeDefinition]);
 
+        $manager = $this->createMock(DataTypeManager::class);
+
+        $manager->expects($this->once())
+            ->method('fromResource')
+            ->with($attributeDefinition, 12345)
+            ->willReturn(45678);
+
         $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $handler = new AttributeHandler($manager);
 
         $handler->fromResource($object, $resource, $context);
 
-        $this->assertSame([1, 2, 3], $object->value);
+        $this->assertSame(45678, $object->value);
     }
 
     public function testNullFromResource()
@@ -255,8 +185,13 @@ class AttributeHandlerTest extends TestCase
 
         $definition = $this->createDefinition([$attributeDefinition]);
 
+        $manager = $this->createMock(DataTypeManager::class);
+
+        $manager->expects($this->never())
+            ->method('fromResource');
+
         $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $handler = new AttributeHandler($manager);
 
         $handler->fromResource($object, $resource, $context);
 
@@ -294,260 +229,19 @@ class AttributeHandlerTest extends TestCase
 
         $definition = $this->createDefinition([$attributeDefinition]);
 
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
+        $manager = $this->createMock(DataTypeManager::class);
 
-        $handler->fromResource($object, $resource, $context);
-
-        $this->assertNull($object->value);
-    }
-
-    public function testToResourceGenericDataType()
-    {
-        $object = new class
-        {
-            public function getTest()
-            {
-                return 1;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('setAttribute')
-            ->with('test', true);
-
-        $definition = $this->createDefinition([
-            $this->createAttribute('test', 'getTest', 'boolean')
-        ]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->toResource($object, $resource, $context);
-    }
-
-    public function testManyToResourceGenericDataType()
-    {
-        $object = new class
-        {
-            public function getTest()
-            {
-                return [1, 0, 1];
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('setAttribute')
-            ->with('test', [true, false, true]);
-
-        $attributeDefinition = $this->createAttribute('test', 'getTest', 'boolean');
-
-        $attributeDefinition->method('isMany')
-            ->willReturn(true);
-
-        $definition = $this->createDefinition([$attributeDefinition]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->toResource($object, $resource, $context);
-    }
-
-    public function testFromResourceGenericDataType()
-    {
-        $object = new class
-        {
-            public $value;
-
-            public function setTest($value)
-            {
-                $this->value = $value;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('hasAttribute')
-            ->with('test')
-            ->willReturn(true);
-
-        $resource->expects($this->once())
-            ->method('getAttribute')
-            ->with('test')
-            ->willReturn(12345);
-
-        $definition = $this->createDefinition([
-            $this->createAttributeSetContext('test', 'setTest', 'string')
-        ]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->fromResource($object, $resource, $context);
-
-        $this->assertSame('12345', $object->value);
-    }
-
-    public function testManyFromResourceGenericDataType()
-    {
-        $object = new class
-        {
-            public $value;
-
-            public function addTest($value)
-            {
-                $this->value[] = $value;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('hasAttribute')
-            ->with('test')
-            ->willReturn(true);
-
-        $resource->expects($this->once())
-            ->method('getAttribute')
-            ->with('test')
-            ->willReturn([1, 2, 3]);
-
-        $attributeDefinition = $this->createAttributeSetContext('test', 'addTest', 'string');
-
-        $attributeDefinition->method('isMany')
-            ->willReturn(true);
-
-        $definition = $this->createDefinition([$attributeDefinition]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->fromResource($object, $resource, $context);
-
-        $this->assertSame(['1', '2', '3'], $object->value);
-    }
-
-    public function testToResourceDataTypeHandler()
-    {
-        $object = new class
-        {
-            public function getTest()
-            {
-                return new \DateTime('1980-01-02');
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('setAttribute')
-            ->with('test', '1980-01-02');
-
-        $definition = $this->createDefinition([
-            $this->createAttribute('test', 'getTest', 'datetime', ['Y-m-d'])
-        ]);
-
-        $context = $this->createMappingContext($definition);
-
-        $typeHandler = $this->createMock(DataTypeHandlerInterface::class);
-
-        $typeHandler->expects($this->once())
-            ->method('supports')
-            ->willReturn(['datetime']);
-
-        $typeHandler->expects($this->once())
-            ->method('toResource')
-            ->with($this->isInstanceOf('DateTime'), ['Y-m-d'])
-            ->willReturn('1980-01-02');
-
-        $handler = new AttributeHandler();
-        $handler->registerDataTypeHandler($typeHandler);
-
-        $handler->toResource($object, $resource, $context);
-    }
-
-    public function testFromResourceDataTypeHandler()
-    {
-        $object = new class
-        {
-            public $value;
-
-            public function setTest($value)
-            {
-                $this->value = $value;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->once())
-            ->method('hasAttribute')
-            ->with('test')
-            ->willReturn(true);
-
-        $resource->expects($this->once())
-            ->method('getAttribute')
-            ->with('test')
-            ->willReturn('1996-06-04');
-
-        $definition = $this->createDefinition([
-            $this->createAttributeSetContext('test', 'setTest', 'datetime', ['Y-m-d'])
-        ]);
-
-        $context = $this->createMappingContext($definition);
-        $value   = new \DateTimeImmutable();
-
-        $typeHandler = $this->createMock(DataTypeHandlerInterface::class);
-
-        $typeHandler->expects($this->once())
-            ->method('supports')
-            ->willReturn(['datetime']);
-
-        $typeHandler->expects($this->once())
+        $manager->expects($this->once())
             ->method('fromResource')
-            ->with('1996-06-04', ['Y-m-d'])
-            ->willReturn($value);
+            ->with($attributeDefinition, null)
+            ->willReturn(0);
 
-        $handler = new AttributeHandler();
-        $handler->registerDataTypeHandler($typeHandler);
+        $context = $this->createMappingContext($definition);
+        $handler = new AttributeHandler($manager);
 
         $handler->fromResource($object, $resource, $context);
 
-        $this->assertSame($value, $object->value);
-    }
-
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessageRegExp ~test~
-     * @expectedExceptionMessageRegExp ~datetime~
-     */
-    public function testToResourceInvalidDateType()
-    {
-        $object = new class
-        {
-            public function getTest() {
-                return 123;
-            }
-        };
-
-        $resource = $this->createMock(ResourceObject::class);
-
-        $resource->expects($this->never())
-            ->method('setAttribute');
-
-        $definition = $this->createDefinition([
-            $this->createAttribute('test', 'getTest', 'datetime')
-        ]);
-
-        $context = $this->createMappingContext($definition);
-        $handler = new AttributeHandler();
-
-        $handler->toResource($object, $resource, $context);
+        $this->assertSame(0, $object->value);
     }
 
     /**

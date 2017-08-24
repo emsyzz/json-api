@@ -20,14 +20,16 @@ class NotIterableAttribute extends MappingHandlerException
     /**
      * NotIterableAttribute constructor.
      *
-     * @param Attribute $attribute
+     * @param Attribute $definition
      * @param mixed     $value
      */
-    public function __construct(Attribute $attribute, $value)
+    public function __construct(Attribute $definition, $value)
     {
+        $this->definition = $definition;
+
         $message = sprintf(
             'Attribute "%s" declared as many (an iterable container) contains %s which cannot be iterated.',
-            $attribute->getName(),
+            $definition->getName(),
             $this->resolveTypeDescription($value)
         );
 
