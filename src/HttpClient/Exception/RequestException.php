@@ -21,9 +21,9 @@ class RequestException extends HttpClientException
      * RequestException constructor.
      *
      * @param RequestInterface $request
-     * @param \Exception       $previous
+     * @param \Throwable       $previous
      */
-    public function __construct(RequestInterface $request, \Exception $previous)
+    public function __construct(RequestInterface $request, \Throwable $previous)
     {
         $this->request = $request;
 

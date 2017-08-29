@@ -23,9 +23,9 @@ class ResponseException extends RequestException
      *
      * @param RequestInterface  $request
      * @param ResponseInterface $response
-     * @param \Exception        $previous
+     * @param \Throwable        $previous
      */
-    public function __construct(RequestInterface $request, ResponseInterface $response, \Exception $previous)
+    public function __construct(RequestInterface $request, ResponseInterface $response, \Throwable $previous)
     {
         parent::__construct($request, $previous);
 
