@@ -17,18 +17,11 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Attribute;
 class DataTypeManager
 {
     /**
-     * List of generic types
-     *
-     * @var array
-     */
-    protected static $genericTypes = ['integer', 'float', 'string', 'boolean'];
-
-    /**
      * Data-type handlers
      *
      * @var DataTypeHandlerInterface[]
      */
-    protected $registeredTypes = [];
+    protected $handlers = [];
 
     /**
      * Register data-type handler
@@ -38,7 +31,7 @@ class DataTypeManager
     public function registerDataTypeHandler(DataTypeHandlerInterface $handler)
     {
         foreach ($handler->supports() as $name) {
-            $this->registeredTypes[$name] = $handler;
+            $this->handlers[$name] = $handler;
         }
     }
 
@@ -57,12 +50,8 @@ class DataTypeManager
 
         $type = $definition->getType();
 
-        if (isset($this->registeredTypes[$type])) {
+        if (isset($this->handlers[$type])) {
             return $this->processHandlerToResource($definition, $value);
-        }
-
-        if (in_array($type, self::$genericTypes)) {
-            return $this->processGeneric($definition, $value);
         }
 
         throw new UnknownDataTypeException($definition);
@@ -83,12 +72,8 @@ class DataTypeManager
 
         $type = $definition->getType();
 
-        if (isset($this->registeredTypes[$type])) {
+        if (isset($this->handlers[$type])) {
             return $this->processHandlerFromResource($definition, $value);
-        }
-
-        if (in_array($type, self::$genericTypes)) {
-            return $this->processGeneric($definition, $value, false);
         }
 
         throw new UnknownDataTypeException($definition);
@@ -158,11 +143,11 @@ class DataTypeManager
     protected function processHandlerToResource(Attribute $definition, $value)
     {
         $type = $definition->getType();
-        $handler = $this->registeredTypes[$type];
+        $handler = $this->handlers[$type];
         $parameters = $definition->getTypeParameters();
 
         if (! $definition->isMany()) {
-            return $handler->toResource($value, $parameters);
+            return $handler->toResource($value, $type, $parameters);
         }
 
         if (! $value instanceof \Traversable && ! is_array($value)) {
@@ -172,7 +157,7 @@ class DataTypeManager
         $collection = [];
 
         foreach ($value as $item) {
-            $collection[] = $handler->toResource($item, $parameters);
+            $collection[] = $handler->toResource($item, $type, $parameters);
         }
 
         return $collection;
@@ -190,11 +175,11 @@ class DataTypeManager
     protected function processHandlerFromResource(Attribute $definition, $value)
     {
         $type = $definition->getType();
-        $handler = $this->registeredTypes[$type];
+        $handler = $this->handlers[$type];
         $parameters = $definition->getTypeParameters();
 
         if (! $definition->isMany()) {
-            return $handler->fromResource($value, $parameters);
+            return $handler->fromResource($value, $type, $parameters);
         }
 
         if (! $value instanceof \Traversable && ! is_array($value)) {
@@ -204,63 +189,9 @@ class DataTypeManager
         $collection = new \ArrayObject();
 
         foreach ($value as $item) {
-            $collection[] = $handler->fromResource($item, $parameters);
+            $collection[] = $handler->fromResource($item, $type, $parameters);
         }
 
         return $collection;
-    }
-
-    /**
-     * Process value by generic data-type
-     * Both directions: from object to resource and from resource to object
-     *
-     * @param  Attribute $definition
-     * @param  mixed     $value
-     * @param  bool      $toResource
-     * @return mixed
-     */
-    protected function processGeneric(Attribute $definition, $value, bool $toResource = true)
-    {
-        $type = $definition->getType();
-
-        if (! $definition->isMany()) {
-            return $this->processGenericType($type, $value);
-        }
-
-        if (! $value instanceof \Traversable && ! is_array($value)) {
-            throw new NotIterableAttribute($definition, $value);
-        }
-
-        $collection = $toResource ? [] : new \ArrayObject();
-
-        foreach ($value as $item) {
-            $collection[] = $this->processGenericType($type, $item);
-        }
-
-        return $collection;
-    }
-
-    /**
-     * Process generic data-types
-     *
-     * @param  string $type
-     * @param  mixed  $value
-     * @return bool|float|int|string
-     */
-    protected function processGenericType(string $type, $value)
-    {
-        if ($type === 'integer') {
-            return (int) $value;
-        }
-
-        if ($type === 'float') {
-            return (float) $value;
-        }
-
-        if ($type === 'boolean') {
-            return (bool) $value;
-        }
-
-        return (string) $value;
     }
 }

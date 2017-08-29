@@ -15,7 +15,7 @@ class DateTimeHandler implements DataTypeHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function toResource($value, array $parameters)
+    public function toResource($value, string $type, array $parameters)
     {
         if ($value === null) {
             return;
@@ -35,7 +35,7 @@ class DateTimeHandler implements DataTypeHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function fromResource($value, array $parameters)
+    public function fromResource($value, string $type, array $parameters)
     {
         if ($value === null) {
             return;

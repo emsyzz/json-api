@@ -13,20 +13,22 @@ interface DataTypeHandlerInterface
     /**
      * Map value to resource
      *
-     * @param  $value
-     * @param  array $parameters
+     * @param  mixed  $value
+     * @param  string $type
+     * @param  array  $parameters
      * @return mixed
      */
-    public function toResource($value, array $parameters);
+    public function toResource($value, string $type, array $parameters);
 
     /**
      * Map value from resource
      *
-     * @param  $value
-     * @param  array $parameters
+     * @param  mixed  $value
+     * @param  string $type
+     * @param  array  $parameters
      * @return mixed
      */
-    public function fromResource($value, array $parameters);
+    public function fromResource($value, string $type, array $parameters);
 
     /**
      * Get a list of supported types

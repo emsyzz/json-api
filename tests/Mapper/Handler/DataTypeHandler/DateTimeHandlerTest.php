@@ -1,8 +1,7 @@
 <?php
 
-namespace Mikemirten\Component\JsonApi\Mapper\Handler;
+namespace Mikemirten\Component\JsonApi\Mapper\Handler\DataTypeHandler;
 
-use Mikemirten\Component\JsonApi\Mapper\Handler\DataTypeHandler\DateTimeHandler;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,7 +15,7 @@ class DateTimeHandlerTest extends TestCase
         $handler  = new DateTimeHandler();
         $datetime = new \DateTimeImmutable('2010-01-02');
 
-        $result = $handler->toResource($datetime, ['Y-m-d']);
+        $result = $handler->toResource($datetime, '', ['Y-m-d']);
 
         $this->assertSame('2010-01-02', $result);
     }
@@ -24,7 +23,7 @@ class DateTimeHandlerTest extends TestCase
     public function testToResourceString()
     {
         $handler = new DateTimeHandler();
-        $result  = $handler->toResource('2010-02-01', ['Y-d-m']);
+        $result  = $handler->toResource('2010-02-01', '', ['Y-d-m']);
 
         $this->assertSame('2010-01-02', $result);
     }
@@ -34,7 +33,7 @@ class DateTimeHandlerTest extends TestCase
         $object = new \DateTimeImmutable();
 
         $handler = new DateTimeHandler();
-        $result  = $handler->fromResource($object, ['Y-d-m']);
+        $result  = $handler->fromResource($object, '', ['Y-d-m']);
 
         $this->assertInstanceOf('DateTimeInterface', $result);
         $this->assertSame($object, $result);
@@ -43,7 +42,7 @@ class DateTimeHandlerTest extends TestCase
     public function testFromResourceString()
     {
         $handler = new DateTimeHandler();
-        $result  = $handler->fromResource('2010-01-02', ['Y-d-m']);
+        $result  = $handler->fromResource('2010-01-02', '', ['Y-d-m']);
 
         $this->assertInstanceOf('DateTimeInterface', $result);
         $this->assertSame('2010-01-02', $result->format('Y-m-d'));
