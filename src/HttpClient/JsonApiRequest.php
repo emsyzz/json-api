@@ -30,6 +30,10 @@ class JsonApiRequest extends Request
     {
         $this->document = $body;
 
+        if (! isset($headers['Content-Type'])) {
+            $headers['Content-Type'] = ['application/vnd.api+json'];
+        }
+
         parent::__construct($method, $uri, $headers);
     }
 
