@@ -48,6 +48,7 @@ class AnnotationDefinitionProvider implements DefinitionProviderInterface
     static protected function registerAnnotations()
     {
         if (self::$annotationsRegistered === false) {
+            AnnotationRegistry::registerFile(__DIR__ . '/Annotation/ResourceIdentifier.php');
             AnnotationRegistry::registerFile(__DIR__ . '/Annotation/Relationship.php');
             AnnotationRegistry::registerFile(__DIR__ . '/Annotation/Attribute.php');
             AnnotationRegistry::registerFile(__DIR__ . '/Annotation/Link.php');
