@@ -1,6 +1,6 @@
 <?php
 
-namespace Mikemirten\Component\JsonApi\Mapper\Definition;
+namespace Mikemirten\Component\JsonApi\Mapper\Definition\AnnotationProcessor;
 
 use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation as JsonApi;
 
