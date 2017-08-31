@@ -20,7 +20,7 @@ class ClassProcessor extends AbstractProcessor
      * @param \ReflectionClass $reflection
      * @param Definition       $definition
      */
-    public function process(\ReflectionClass $reflection, Definition $definition): void
+    public function process(\ReflectionClass $reflection, Definition $definition)
     {
         $annotations = $this->reader->getClassAnnotations($reflection);
 

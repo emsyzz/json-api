@@ -18,5 +18,5 @@ interface AnnotationProcessorInterface
      * @param \ReflectionClass $reflection
      * @param Definition       $definition
      */
-    public function process(\ReflectionClass $reflection, Definition $definition): void;
+    public function process(\ReflectionClass $reflection, Definition $definition);
 }
