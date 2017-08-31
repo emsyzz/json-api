@@ -135,6 +135,63 @@ class AttributeProcessorTest extends TestCase
     }
 
     /**
+     * @dataProvider getValidTypeData
+     *
+     * @param string $definition
+     * @param string $type
+     * @param array  $parameters
+     * @param bool   $many
+     */
+    public function testTypeParsing(string $definition, string $type, array $parameters, bool $many)
+    {
+        $annotation = new AttributeAnnotation();
+        $annotation->type = $definition;
+
+        $reader = $this->createReader([$annotation]);
+
+        $reflection = new \ReflectionClass(Fixture::class);
+        $definition = $this->createMock(Definition::class);
+
+        $definition->expects($this->once())
+            ->method('addAttribute')
+            ->with($this->isInstanceOf(Attribute::class))
+            ->willReturnCallback(
+                function(Attribute $attribute) use($type, $parameters, $many)
+                {
+                    $this->assertSame($type, $attribute->getType());
+                    $this->assertSame($parameters, $attribute->getTypeParameters());
+                    $this->assertSame($many, $attribute->isMany());
+                }
+            );
+
+        $processor = new AttributeProcessor($reader);
+        $processor->process($reflection, $definition);
+    }
+
+    /**
+     * @dataProvider      getInvalidTypeData
+     * @expectedException \LogicException
+     *
+     * @param string $definition
+     */
+    public function testTypeParsingException(string $definition)
+    {
+        $annotation = new AttributeAnnotation();
+        $annotation->type = $definition;
+
+        $reader = $this->createReader([$annotation]);
+
+        $reflection = new \ReflectionClass(Fixture::class);
+        $definition = $this->createMock(Definition::class);
+
+        $definition->expects($this->never())
+            ->method('addAttribute');
+
+        $processor = new AttributeProcessor($reader);
+        $processor->process($reflection, $definition);
+    }
+
+    /**
      * Create mock of annotation reader
      *
      * @param  array $propertyAnnotations
@@ -168,5 +225,43 @@ class AttributeProcessorTest extends TestCase
         }
 
         return $reader;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValidTypeData(): array
+    {
+        return [
+            [ 'string',            'string',      [],         false ],
+            [ 'string(1)',         'string',      ['1'],      false ],
+            [ 'string[]',          'string',      [],         true  ],
+            [ 'string(1)[]',       'string',      ['1'],      true  ],
+            [ '_string',           '_string',     [],         false ],
+            [ 'string2(1,2)',      'string2',     ['1', '2'], false ],
+            [ 'string2[]',         'string2',     [],         true  ],
+            [ 'string_2',          'string_2',    [],         false ],
+            [ 'blog.user',         'blog.user',   [],         false ],
+            [ 'blog.user(1)',      'blog.user',   ['1'],      false ],
+            [ 'blog.user[]',       'blog.user',   [],         true  ],
+            [ 'blog._user',        'blog._user',  [],         false ],
+            [ 'blog.user2',        'blog.user2',  [],         false ],
+            [ 'blog.user2(1,2)[]', 'blog.user2',  ['1', '2'], true  ],
+            [ 'blog.user_2',       'blog.user_2', [],         false ],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getInvalidTypeData(): array
+    {
+        return [[
+            '', '.', '1',
+            '2string',     'string.2',
+            '.string',     'string.',
+            'string[](1)', 'string[',
+            'string.[]',   'string.()'
+        ]];
     }
 }

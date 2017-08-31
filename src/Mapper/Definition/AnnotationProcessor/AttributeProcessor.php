@@ -17,7 +17,7 @@ class AttributeProcessor extends AbstractProcessor
     /**
      * Pattern of "type" parameter of attribute annotation
      */
-    const DATATYPE_PATTERN = '~^(?<type>[a-z_][a-z0-9_]*)\s*(?:\((?<params>[^\)]*)\))?$~i';
+    const DATATYPE_PATTERN = '~^(?<type>[a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)*)\s*(?:\((?<params>[^\)]*)\))?(?<many>\[\])?$~i';
 
     /**
      * Process annotations
@@ -210,6 +210,10 @@ class AttributeProcessor extends AbstractProcessor
         }
 
         $attribute->setType($matches['type']);
+
+        if (! empty($matches['many'])) {
+            $attribute->setMany();
+        }
 
         if (empty($matches['params'])) {
             return;
