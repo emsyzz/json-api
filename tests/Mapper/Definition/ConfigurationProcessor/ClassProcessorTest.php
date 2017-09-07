@@ -1,9 +1,10 @@
 <?php
 declare(strict_types = 1);
 
-namespace Mikemirten\Component\JsonApi\Mapper\Definition;
+namespace Mikemirten\Component\JsonApi\Mapper\Definition\ConfigurationProcessor;
 
-use Mikemirten\Component\JsonApi\Mapper\Definition\ConfigurationProcessor\ClassProcessor;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Definition;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Link;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -5,6 +5,12 @@ namespace Mikemirten\Component\JsonApi\Mapper\Definition\ConfigurationProcessor;
 
 use Mikemirten\Component\JsonApi\Mapper\Definition\Link;
 
+/**
+ * Abstract processor
+ * Contains shared methods
+ *
+ * @package Mikemirten\Component\JsonApi\Mapper\Definition\ConfigurationProcessor
+ */
 abstract class AbstractProcessor implements ConfigurationProcessorInterface
 {
     /**
@@ -35,5 +41,30 @@ abstract class AbstractProcessor implements ConfigurationProcessorInterface
         $link->setMetadata($data['metadata']);
 
         return $link;
+    }
+
+    /**
+     * Resolve getter of related object
+     *
+     * @param  \ReflectionClass $reflection
+     * @param  string           $name
+     * @return string
+     */
+    protected function resolveGetter(\ReflectionClass $reflection, string $name)
+    {
+        foreach (['get', 'is'] as $prefix)
+        {
+            $getter = $prefix . ucfirst($name);
+
+            if ($reflection->hasMethod($getter) && $reflection->getMethod($getter)->isPublic()) {
+                return $getter;
+            }
+        }
+
+        throw new \LogicException(sprintf(
+            'Getter-method for "%s" cannot be resolved automatically. ' .
+            'Probably there is no get%2$s() or is%2$s() method or it is not public.',
+            $name, ucfirst($name)
+        ));
     }
 }
