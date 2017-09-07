@@ -61,6 +61,5 @@ class YamlDefinitionProviderTest extends TestCase
 
         $this->assertInstanceOf(Definition::class, $definition);
         $this->assertSame('fixture', $definition->getClass());
-        $this->assertSame('user', $definition->getType());
     }
 }

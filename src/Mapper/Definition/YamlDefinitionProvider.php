@@ -129,10 +129,6 @@ class YamlDefinitionProvider implements DefinitionProviderInterface
 
         $definition = new Definition($class);
 
-        if (isset($config['type'])) {
-            $definition->setType($config['type']);
-        }
-
         foreach ($this->processors as $processor)
         {
             $processor->process($config, $definition);
