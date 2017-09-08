@@ -21,8 +21,6 @@ class AttributeProcessorTest extends TestCase
     public function testPropertyAttribute()
     {
         $annotation = new AttributeAnnotation();
-        $annotation->type = 'datetime(Y-m-d, 123)';
-        $annotation->many = true;
         $annotation->processNull = true;
 
         $reader = $this->createReader([$annotation]);
@@ -40,10 +38,7 @@ class AttributeProcessorTest extends TestCase
                     $this->assertSame('getTest', $attribute->getGetter());
                     $this->assertTrue($attribute->hasSetter());
                     $this->assertSame('setTest', $attribute->getSetter());
-                    $this->assertSame('datetime', $attribute->getType());
-                    $this->assertTrue($attribute->isMany());
                     $this->assertTrue($attribute->getProcessNull());
-                    $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
                     $this->assertSame('test', $attribute->getPropertyName());
                 }
             );
@@ -84,7 +79,6 @@ class AttributeProcessorTest extends TestCase
     public function testMethodAttribute()
     {
         $annotation = new AttributeAnnotation();
-        $annotation->type = 'datetime(Y-m-d, 123)';
 
         $reader = $this->createReader([], [$annotation]);
 
@@ -99,8 +93,6 @@ class AttributeProcessorTest extends TestCase
                 {
                     $this->assertSame('test', $attribute->getName());
                     $this->assertSame('getTest', $attribute->getGetter());
-                    $this->assertSame('datetime', $attribute->getType());
-                    $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
                     $this->assertFalse($attribute->hasPropertyName());
                 }
             );
@@ -172,12 +164,12 @@ class AttributeProcessorTest extends TestCase
      * @dataProvider      getInvalidTypeData
      * @expectedException \LogicException
      *
-     * @param string $definition
+     * @param string $typeDefinition
      */
-    public function testTypeParsingException(string $definition)
+    public function testTypeParsingException(string $typeDefinition)
     {
         $annotation = new AttributeAnnotation();
-        $annotation->type = $definition;
+        $annotation->type = $typeDefinition;
 
         $reader = $this->createReader([$annotation]);
 
