@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Mikemirten\Component\JsonApi\Mapper\Definition;
 
 use Mikemirten\Component\JsonApi\Mapper\Definition\ConfigurationProcessor\ConfigurationProcessorInterface;
+use Mikemirten\Component\JsonApi\Mapper\Definition\Exception\DefinitionNotFoundException;
 use Mikemirten\Component\JsonApi\Mapper\Definition\Exception\DefinitionProviderException;
 use Symfony\Component\Config\Definition\ConfigurationInterface as Configuration;
 use Symfony\Component\Config\Definition\NodeInterface;
@@ -124,9 +125,13 @@ class YamlDefinitionProvider implements DefinitionProviderInterface
      */
     protected function createDefinition(string $class): Definition
     {
-        $path   = $this->basePath . DIRECTORY_SEPARATOR . str_replace('\\', '.', $class) . '.yml';
-        $config = $this->readConfig($path);
+        $path = $this->basePath . DIRECTORY_SEPARATOR . str_replace('\\', '.', $class) . '.yml';
 
+        if (! is_file($path)) {
+            throw new DefinitionNotFoundException($class);
+        }
+
+        $config = $this->readConfig($path);
         $definition = new Definition($class);
 
         foreach ($this->processors as $processor)
@@ -146,7 +151,7 @@ class YamlDefinitionProvider implements DefinitionProviderInterface
     protected function readConfig(string $path): array
     {
         if (! is_readable($path)) {
-            throw new DefinitionProviderException('Unable to read definition by path: ' . $path);
+            throw new DefinitionProviderException(sprintf('File "%s" with definition is not readable.', $path));
         }
 
         $content = file_get_contents($path);
