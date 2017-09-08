@@ -67,4 +67,20 @@ abstract class AbstractProcessor implements ConfigurationProcessorInterface
             $name, ucfirst($name)
         ));
     }
+
+    /**
+     * Resolve getter of related object
+     *
+     * @param  \ReflectionClass $reflection
+     * @param  string           $name
+     * @return string | null
+     */
+    protected function resolveSetter(\ReflectionClass $reflection, string $name)
+    {
+        $setter = 'set' . ucfirst($name);
+
+        if ($reflection->hasMethod($setter) && $reflection->getMethod($setter)->isPublic()) {
+            return $setter;
+        }
+    }
 }
