@@ -90,12 +90,14 @@ class HttpClient implements HttpClientInterface
             $response = $this->client->request($request);
         }
         catch (ResponseException $exception) {
+            $responseRaw = $exception->getResponse();
+            $response    = $this->handleResponse($responseRaw);
+
             if ($this->returnBadResponse) {
-                $response = $exception->getResponse();
-                return $this->handleResponse($response);
+                return $response;
             }
 
-            throw $exception;
+            throw new ResponseException($request, $response, $exception);
         }
 
         return $this->handleResponse($response);

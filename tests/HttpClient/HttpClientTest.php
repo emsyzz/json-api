@@ -124,8 +124,12 @@ class HttpClientTest extends TestCase
     public function testResponseException()
     {
         $request   = $this->createMock(RequestInterface::class);
+        $response  = $this->createResponse();
         $exception = $this->createMock(ResponseException::class);
         $hydrator  = $this->createMock(DocumentHydrator::class);
+
+        $exception->method('getResponse')
+            ->willReturn($response);
 
         $regularClient = $this->createMock(HttpClientInterface::class);
 
