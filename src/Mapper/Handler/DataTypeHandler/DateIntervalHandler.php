@@ -31,7 +31,7 @@ class DateIntervalHandler implements DataTypeHandlerInterface
 
         $format = $this->resolveFormat($value);
 
-        if ($format !== null) {
+        if ($format !== '') {
             return $value->format($format);
         }
     }
@@ -42,14 +42,14 @@ class DateIntervalHandler implements DataTypeHandlerInterface
      * @param  \DateInterval $interval
      * @return string | null
      */
-    protected function resolveFormat(\DateInterval $interval): ?string
+    protected function resolveFormat(\DateInterval $interval): string
     {
         $baseFormat = $this->resolveBaseFormat($interval);
         $timeFormat = $this->resolveTimeFormat($interval);
 
         if ($baseFormat === '') {
             if ($timeFormat === '') {
-                return null;
+                return '';
             }
 
             return 'PT' . $timeFormat;
