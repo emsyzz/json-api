@@ -79,6 +79,7 @@ class AttributeProcessorTest extends TestCase
     public function testMethodAttribute()
     {
         $annotation = new AttributeAnnotation();
+        $annotation->setter = 'setTest';
 
         $reader = $this->createReader([], [$annotation]);
 
@@ -93,6 +94,7 @@ class AttributeProcessorTest extends TestCase
                 {
                     $this->assertSame('test', $attribute->getName());
                     $this->assertSame('getTest', $attribute->getGetter());
+                    $this->assertSame('setTest', $attribute->getSetter());
                     $this->assertFalse($attribute->hasPropertyName());
                 }
             );
@@ -116,6 +118,7 @@ class AttributeProcessorTest extends TestCase
                 {
                     $this->assertSame('test', $attribute->getName());
                     $this->assertSame('getTest', $attribute->getGetter());
+                    $this->assertSame('setTest', $attribute->getSetter());
                     $this->assertSame('datetime', $attribute->getType());
                     $this->assertSame(['Y-m-d', '123'], $attribute->getTypeParameters());
                     $this->assertFalse($attribute->hasPropertyName());

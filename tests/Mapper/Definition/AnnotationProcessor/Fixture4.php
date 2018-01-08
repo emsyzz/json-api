@@ -10,7 +10,7 @@ use Mikemirten\Component\JsonApi\Mapper\Definition\Annotation as JsonApi;
 class Fixture4
 {
     /**
-     * @JsonApi\Attribute(type="datetime(Y-m-d, 123)")
+     * @JsonApi\Attribute(type="datetime(Y-m-d, 123)", setter="setTest")
      */
     public function getTest()
     {

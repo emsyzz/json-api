@@ -173,6 +173,10 @@ class AttributeProcessor extends AbstractProcessor
 
         $attribute = new Attribute($name, $method->getName());
 
+        if ($annotation->setter !== null) {
+            $attribute->setSetter($annotation->setter);
+        }
+
         if ($annotation->type !== null) {
             $this->processDataType($annotation->type, $attribute);
         }
