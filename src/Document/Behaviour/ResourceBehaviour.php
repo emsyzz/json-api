@@ -55,11 +55,12 @@ trait ResourceBehaviour
     protected function resourceToArray(): array
     {
         $array = [
+            'id' => $this->getId(),
             'type' => $this->getType(),
         ];
 
-        if ($this->getId() !== null) {
-            $array['id'] = $this->getId();
+        if ($array['id'] === null) {
+            unset($array['id']);
         }
 
         return $array;
