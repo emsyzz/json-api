@@ -2,11 +2,11 @@
     "name": "mikemirten/json-api",
     "description": "JsonAPI standard implementation",
     "type": "library",
-    "keyworks": ["JsonAPI", "JSON-API"],
+    "keywords": ["JsonAPI", "JSON-API"],
     "license": "GPL-3.0",
 
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.2",
         "psr/http-message": "~1.0",
         "psr/cache": "^1.0",
         "guzzlehttp/psr7": "~1.2"

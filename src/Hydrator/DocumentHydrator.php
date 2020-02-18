@@ -139,11 +139,12 @@ class DocumentHydrator
      */
     public function hydrateResource($source): ResourceObject
     {
-        if (! isset($source->id)) {
-            throw new InvalidDocumentException('Resource contains no ID');
+        // ID property is optional for new resources
+        if (!property_exists($source, 'id')) {
+            $source->id = null;
         }
 
-        if (! isset($source->type)) {
+        if (!isset($source->type)) {
             throw new InvalidDocumentException('Resource contains no type');
         }
 

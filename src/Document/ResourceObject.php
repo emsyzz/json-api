@@ -35,7 +35,7 @@ class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, Rel
      * @param array  $attributes
      * @param array  $metadata
      */
-    public function __construct(string $id, string $type, array $attributes = [], array $metadata = [])
+    public function __construct(?string $id, string $type, array $attributes = [], array $metadata = [])
     {
         $this->id         = $id;
         $this->type       = $type;
