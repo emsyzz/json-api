@@ -16,7 +16,7 @@ trait ResourceBehaviour
     /**
      * ID of resource
      *
-     * @var string
+     * @var string|null
      */
     protected $id;
 
@@ -54,9 +54,14 @@ trait ResourceBehaviour
      */
     protected function resourceToArray(): array
     {
-        return [
-            'id'   => $this->getId(),
-            'type' => $this->getType()
+        $array = [
+            'type' => $this->getType(),
         ];
+
+        if ($this->getId() !== null) {
+            $array['id'] = $this->getId();
+        }
+
+        return $array;
     }
 }

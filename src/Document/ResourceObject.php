@@ -30,7 +30,7 @@ class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, Rel
     /**
      * ResourceObject constructor.
      *
-     * @param string $id
+     * @param string|null $id
      * @param string $type
      * @param array  $attributes
      * @param array  $metadata
@@ -70,10 +70,17 @@ class ResourceObject implements MetadataAwareInterface, LinksAwareInterface, Rel
      */
     public function __toString(): string
     {
+        if ($this->id !== null) {
+            return sprintf(
+                'Resource-object of type "%s" identified by "%s"',
+                $this->type,
+                $this->id
+            );
+        }
+
         return sprintf(
-            'Resource-object of type "%s" identified by "%s"',
-            $this->type,
-            $this->id
+            'Resource-object of type "%s" without identifier',
+            $this->type
         );
     }
 }
