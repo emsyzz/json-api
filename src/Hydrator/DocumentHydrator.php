@@ -6,7 +6,9 @@ namespace Mikemirten\Component\JsonApi\Hydrator;
 use Mikemirten\Component\JsonApi\Document\AbstractDocument;
 use Mikemirten\Component\JsonApi\Document\NoDataDocument;
 use Mikemirten\Component\JsonApi\Document\ResourceCollectionDocument;
+use Mikemirten\Component\JsonApi\Document\ResourceIdentifierObject;
 use Mikemirten\Component\JsonApi\Document\ResourceObject;
+use Mikemirten\Component\JsonApi\Document\SingleIdentifierRelationship;
 use Mikemirten\Component\JsonApi\Document\SingleResourceDocument;
 use Mikemirten\Component\JsonApi\Exception\InvalidDocumentException;
 use Mikemirten\Component\JsonApi\Hydrator\Extension\ExtensionInterface;
@@ -151,6 +153,24 @@ class DocumentHydrator
         $attributes = empty($source->attributes) ? [] : get_object_vars($source->attributes);
 
         $resource = new ResourceObject($source->id, $source->type, $attributes);
+
+        // FixMe: workaround to create relationships
+        if (!empty($source->relationships)) {
+            foreach ($source->relationships as $relationship => $data) {
+                $relationshipDocument = $this->hydrate($data);
+                if (!$relationshipDocument instanceof SingleResourceDocument) {
+                    continue;
+                }
+
+                $relationshipResource = $relationshipDocument->getResource();
+                $relationshipIdentifier = new ResourceIdentifierObject(
+                    $relationshipResource->getId(),
+                    $relationshipResource->getType()
+                );
+                $relationshipObject = new SingleIdentifierRelationship($relationshipIdentifier);
+                $resource->setRelationship($relationship, $relationshipObject);
+            }
+        }
 
         $this->hydrateObject($resource, $source);
 
